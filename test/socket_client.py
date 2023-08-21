@@ -1,5 +1,4 @@
 import socket
-import shelve
 
 
 class ClientSocket:
