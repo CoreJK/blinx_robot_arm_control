@@ -161,5 +161,5 @@ cython_debug/
 .idea/
 
 # PySide2 generate ui files
-*.ui
-UI/*.ui
+#*.ui
+#UI/*.ui

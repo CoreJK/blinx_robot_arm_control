@@ -219,8 +219,6 @@ class MainWindow(QWidget, Ui_Form):
             self.AngleOneEdit.setText(str(degrade))
             self.warning_message_box(message="关节 1 最大角度值为 300 度！")
 
-
-
     def arm_one_sub(self):
         """机械臂关节角度减少"""
         # todo 获取机械臂当前的角度(手臂未提供该接口)
@@ -238,8 +236,6 @@ class MainWindow(QWidget, Ui_Form):
                 self.TeachArmRunLogWindow.append(response)
         else:
             self.warning_message_box(message="关节 1 角度不能为负！")
-
-
 
     def arm_two_add(self):
         """机械臂关节增加"""
@@ -277,8 +273,6 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.warning_message_box(message="关节 2 角度不能为负！")
 
-
-
     def arm_three_add(self):
         """机械臂关节增加"""
         # todo 获取机械臂当前的角度(手臂未提供该接口)
@@ -315,8 +309,6 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.warning_message_box(message="关节 3 角度不能为负！")
 
-
-
     def arm_four_add(self):
         """机械臂关节增加"""
         # todo 获取机械臂当前的角度(手臂未提供该接口)
@@ -352,8 +344,6 @@ class MainWindow(QWidget, Ui_Form):
                 self.TeachArmRunLogWindow.append(response)
         else:
             self.warning_message_box(message="关节 4 角度不能为负！")
-
-
 
     def arm_five_add(self):
         """机械臂关节增加"""
@@ -392,8 +382,6 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.warning_message_box(message="关节 5 角度不能为负！")
 
-
-
     def arm_six_add(self):
         """机械臂关节增加"""
         # todo 获取机械臂当前的角度(手臂未提供该接口)
@@ -429,8 +417,6 @@ class MainWindow(QWidget, Ui_Form):
                 self.TeachArmRunLogWindow.append(response)
         else:
             self.warning_message_box(message="关节 6 角度不能为负！")
-
-
 
     def arm_angle_step_add(self):
         """机械臂关节步长增加"""
