@@ -26,7 +26,7 @@ class Ui_Form(object):
         self.RobtArmTypeComboBox.setGeometry(QRect(103, 19, 69, 22))
         self.HomePage = QTabWidget(Form)
         self.HomePage.setObjectName(u"HomePage")
-        self.HomePage.setGeometry(QRect(8, 59, 941, 591))
+        self.HomePage.setGeometry(QRect(8, 59, 931, 591))
         self.CommandPage = QWidget()
         self.CommandPage.setObjectName(u"CommandPage")
         self.CommandEditWindow = QTextEdit(self.CommandPage)
@@ -57,8 +57,8 @@ class Ui_Form(object):
         self.HelpTeachPage = QWidget()
         self.HelpTeachPage.setObjectName(u"HelpTeachPage")
         self.ActionTableWidget = QTableWidget(self.HelpTeachPage)
-        if (self.ActionTableWidget.columnCount() < 9):
-            self.ActionTableWidget.setColumnCount(9)
+        if (self.ActionTableWidget.columnCount() < 10):
+            self.ActionTableWidget.setColumnCount(10)
         __qtablewidgetitem = QTableWidgetItem()
         self.ActionTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
@@ -77,6 +77,8 @@ class Ui_Form(object):
         self.ActionTableWidget.setHorizontalHeaderItem(7, __qtablewidgetitem7)
         __qtablewidgetitem8 = QTableWidgetItem()
         self.ActionTableWidget.setHorizontalHeaderItem(8, __qtablewidgetitem8)
+        __qtablewidgetitem9 = QTableWidgetItem()
+        self.ActionTableWidget.setHorizontalHeaderItem(9, __qtablewidgetitem9)
         self.ActionTableWidget.setObjectName(u"ActionTableWidget")
         self.ActionTableWidget.setGeometry(QRect(20, 40, 901, 361))
         self.TeachArmRunLogLabel = QLabel(self.HelpTeachPage)
@@ -412,7 +414,7 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
 
-        self.HomePage.setCurrentIndex(0)
+        self.HomePage.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(Form)
@@ -433,30 +435,32 @@ class Ui_Form(object):
         self.CommandSendWindow.setPlaceholderText(QCoreApplication.translate("Form", u"\u53d1\u9001", None))
         self.HomePage.setTabText(self.HomePage.indexOf(self.CommandPage), QCoreApplication.translate("Form", u"\u547d\u4ee4\u63a7\u5236", None))
         ___qtablewidgetitem = self.ActionTableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("Form", u"\u5907\u6ce8", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("Form", u"J1/X", None));
         ___qtablewidgetitem1 = self.ActionTableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("Form", u"J1/X", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("Form", u"J2/Y", None));
         ___qtablewidgetitem2 = self.ActionTableWidget.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("Form", u"J2/Y", None));
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("Form", u"J3/Z", None));
         ___qtablewidgetitem3 = self.ActionTableWidget.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("Form", u"J3/Z", None));
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("Form", u"J4/RX", None));
         ___qtablewidgetitem4 = self.ActionTableWidget.horizontalHeaderItem(4)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("Form", u"J4/RX", None));
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("Form", u"J5/RY", None));
         ___qtablewidgetitem5 = self.ActionTableWidget.horizontalHeaderItem(5)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("Form", u"J5/RY", None));
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("Form", u"J6/RZ", None));
         ___qtablewidgetitem6 = self.ActionTableWidget.horizontalHeaderItem(6)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("Form", u"J6/RZ", None));
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("Form", u"\u5de5\u5177", None));
         ___qtablewidgetitem7 = self.ActionTableWidget.horizontalHeaderItem(7)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("Form", u"\u5de5\u5177", None));
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("Form", u"\u5f00\u5173", None));
         ___qtablewidgetitem8 = self.ActionTableWidget.horizontalHeaderItem(8)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("Form", u"\u5f00\u5173", None));
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("Form", u"\u5ef6\u8fdf", None));
+        ___qtablewidgetitem9 = self.ActionTableWidget.horizontalHeaderItem(9)
+        ___qtablewidgetitem9.setText(QCoreApplication.translate("Form", u"\u5907\u6ce8", None));
         self.TeachArmRunLogLabel.setText(QCoreApplication.translate("Form", u"\u673a\u68b0\u81c2\u8fd0\u884c\u65e5\u5fd7", None))
         self.ActionDeleteButton.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u52a8\u4f5c", None))
         self.ActionPastButton.setText(QCoreApplication.translate("Form", u"\u7c98\u8d34\u52a8\u4f5c", None))
         self.ActionCopyButton.setText(QCoreApplication.translate("Form", u"\u590d\u5236\u52a8\u4f5c", None))
         self.ActionAddButton.setText(QCoreApplication.translate("Form", u"\u6dfb\u52a0\u52a8\u4f5c", None))
-        self.ActionRunButton.setText(QCoreApplication.translate("Form", u"\u6267\u884c", None))
-        self.ActionStepRunButton.setText(QCoreApplication.translate("Form", u"\u5355\u6b65\u6267\u884c", None))
+        self.ActionRunButton.setText(QCoreApplication.translate("Form", u"\u987a\u5e8f\u6267\u884c", None))
+        self.ActionStepRunButton.setText(QCoreApplication.translate("Form", u"\u5355\u6b21\u6267\u884c", None))
         self.ActionUpdateButton.setText(QCoreApplication.translate("Form", u"\u66f4\u65b0\u52a8\u4f5c", None))
         self.ActionLoopRunButton.setText(QCoreApplication.translate("Form", u"\u5faa\u73af\u6267\u884c", None))
         self.ActionLoopTimes.setPlaceholderText(QCoreApplication.translate("Form", u"1~100", None))

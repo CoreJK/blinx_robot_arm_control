@@ -5,7 +5,7 @@ from pathlib import Path
 
 from serial.tools import list_ports
 
-from PySide2.QtWidgets import QApplication, QWidget, QMessageBox, QTableWidgetItem, QMenu
+from PySide2.QtWidgets import QApplication, QWidget, QMessageBox, QTableWidgetItem, QMenu, QFileDialog
 from PySide2.QtCore import Qt
 
 # 导入转换后的 UI 文件
@@ -22,6 +22,8 @@ class MainWindow(QWidget, Ui_Form):
         # 示教控制页面回调函数绑定
         self.ActionAddButton.clicked.connect(self.add_item)
         self.ActionDeleteButton.clicked.connect(self.remove_item)
+        self.ActionImportButton.clicked.connect(self.import_data)
+        self.ActionOutputButton.clicked.connect(self.export_data)
 
         # 添加上下文菜单
         self.context_menu = QMenu(self)
@@ -462,12 +464,12 @@ class MainWindow(QWidget, Ui_Form):
         if all([angle_1, angle_2, angle_3, angle_4, angle_5, angle_6]):
             row_position = self.ActionTableWidget.rowCount()
             self.ActionTableWidget.insertRow(row_position)
-            self.ActionTableWidget.setItem(row_position, 1, QTableWidgetItem(angle_1))
-            self.ActionTableWidget.setItem(row_position, 2, QTableWidgetItem(angle_2))
-            self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(angle_3))
-            self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(angle_4))
-            self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(angle_5))
-            self.ActionTableWidget.setItem(row_position, 6, QTableWidgetItem(angle_6))
+            self.ActionTableWidget.setItem(row_position, 0, QTableWidgetItem(angle_1))
+            self.ActionTableWidget.setItem(row_position, 1, QTableWidgetItem(angle_2))
+            self.ActionTableWidget.setItem(row_position, 2, QTableWidgetItem(angle_3))
+            self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(angle_4))
+            self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(angle_5))
+            self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(angle_6))
 
     def remove_item(self):
         """示教控制删除一行动作"""
@@ -500,10 +502,66 @@ class MainWindow(QWidget, Ui_Form):
             for col, value in enumerate(self.copied_row):
                 self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(value))
 
+    def import_data(self):
+        """导入动作"""
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(self, "Import Data from JSON", "",
+                                                   "JSON Files (*.json);;All Files (*)", options=options)
+
+        if file_name:
+            with open(file_name, "r") as json_file:
+                data = json.load(json_file)
+
+                self.ActionTableWidget.setRowCount(0)  # 清空表格
+
+                for item in data:
+                    angle_1 = item.get("J1/X", "")
+                    angle_2 = item.get("J2/X", "")
+                    angle_3 = item.get("J3/X", "")
+                    angle_4 = item.get("J4/X", "")
+                    angle_5 = item.get("J5/X", "")
+                    angle_6 = item.get("J6/X", "")
+                    row_position = self.ActionTableWidget.rowCount()
+                    self.ActionTableWidget.insertRow(row_position)
+                    self.ActionTableWidget.setItem(row_position, 0, QTableWidgetItem(angle_1))
+                    self.ActionTableWidget.setItem(row_position, 1, QTableWidgetItem(angle_2))
+                    self.ActionTableWidget.setItem(row_position, 2, QTableWidgetItem(angle_3))
+                    self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(angle_4))
+                    self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(angle_5))
+                    self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(angle_6))
+
+    def export_data(self):
+        """导出动作"""
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Data to JSON", "", "JSON Files (*.json);;All Files (*)",
+                                                   options=options)
+
+        if file_name:
+            data = []
+            for row in range(self.ActionTableWidget.rowCount()):
+                angle_1 = self.ActionTableWidget.item(row, 0).text()
+                angle_2 = self.ActionTableWidget.item(row, 1).text()
+                angle_3 = self.ActionTableWidget.item(row, 2).text()
+                angle_4 = self.ActionTableWidget.item(row, 3).text()
+                angle_5 = self.ActionTableWidget.item(row, 4).text()
+                angle_6 = self.ActionTableWidget.item(row, 5).text()
+                data.append({
+                             "J1/X": angle_1,
+                             "J2/X": angle_2,
+                             "J3/X": angle_3,
+                             "J4/X": angle_4,
+                             "J5/X": angle_5,
+                             "J6/X": angle_6})
+
+            with open(file_name, "w") as json_file:
+                json.dump(data, json_file, indent=4, ensure_ascii=False)
+
     def show_context_menu(self, pos):
+        """右键复制粘贴菜单"""
         self.context_menu.exec_(self.ActionTableWidget.mapToGlobal(pos))
 
     def get_robot_arm_connector(self):
+        """获取与机械臂的连接对象"""
         try:
             socket_info = shelve.open("./config_files/Socket_info")
             host = socket_info['target_ip']

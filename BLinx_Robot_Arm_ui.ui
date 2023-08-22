@@ -171,11 +171,6 @@
      </property>
      <column>
       <property name="text">
-       <string>备注</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
        <string>J1/X</string>
       </property>
      </column>
@@ -212,6 +207,16 @@
      <column>
       <property name="text">
        <string>开关</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>延迟</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>备注</string>
       </property>
      </column>
     </widget>
@@ -290,7 +295,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>执行</string>
+      <string>顺序执行</string>
      </property>
     </widget>
     <widget class="QPushButton" name="ActionStepRunButton">
@@ -303,7 +308,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>单步执行</string>
+      <string>单次执行</string>
      </property>
     </widget>
     <widget class="QPushButton" name="ActionUpdateButton">
