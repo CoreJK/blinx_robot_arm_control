@@ -1,12 +1,12 @@
 import sys
 import json
-import queue
 import shelve
 from pathlib import Path
 
 from serial.tools import list_ports
 
-from PySide2.QtWidgets import QApplication, QWidget, QMessageBox
+from PySide2.QtWidgets import QApplication, QWidget, QMessageBox, QTableWidgetItem, QMenu
+from PySide2.QtCore import Qt
 
 # 导入转换后的 UI 文件
 from BLinx_Robot_Arm_ui import Ui_Form
@@ -19,10 +19,22 @@ class MainWindow(QWidget, Ui_Form):
         self.setupUi(self)
         self.setWindowTitle("BLinx_Robot_Arm_V1.0")
 
-        # todo 初始化队列
-        self.command_queue = queue.Queue()
+        # 示教控制页面回调函数绑定
+        self.ActionAddButton.clicked.connect(self.add_item)
+        self.ActionDeleteButton.clicked.connect(self.remove_item)
 
-        # todo 实例化机械臂关节控制回调函数类
+        # 添加上下文菜单
+        self.context_menu = QMenu(self)
+        self.copy_action = self.context_menu.addAction("复制动作")
+        self.paste_action = self.context_menu.addAction("粘贴动作")
+        self.copy_action.triggered.connect(self.copy_selected_row)
+        self.paste_action.triggered.connect(self.paste_row)
+        self.ActionTableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ActionTableWidget.customContextMenuRequested.connect(self.show_context_menu)
+
+        self.copied_row = None
+
+        # todo 实例化机械臂关节控制回调函数绑定
         self.AngleStepAddButton.clicked.connect(self.arm_angle_step_add)
         self.AngleStepSubButton.clicked.connect(self.arm_angle_step_sub)
         self.AngleOneAddButton.clicked.connect(self.arm_one_add)
@@ -435,6 +447,61 @@ class MainWindow(QWidget, Ui_Form):
             self.AngleStepEdit.setText(str(degrade))
         else:
             self.warning_message_box(message="步长不能为负!")
+
+    # 示教控制回调函数编写
+    def add_item(self):
+        """示教控制添加一行动作"""
+        # 获取所有的关节角度数值
+        angle_1 = self.AngleOneEdit.text()
+        angle_2 = self.AngleTwoEdit.text()
+        angle_3 = self.AngleThreeEdit.text()
+        angle_4 = self.AngleFourEdit.text()
+        angle_5 = self.AngleFiveEdit.text()
+        angle_6 = self.AngleSixEdit.text()
+
+        if all([angle_1, angle_2, angle_3, angle_4, angle_5, angle_6]):
+            row_position = self.ActionTableWidget.rowCount()
+            self.ActionTableWidget.insertRow(row_position)
+            self.ActionTableWidget.setItem(row_position, 1, QTableWidgetItem(angle_1))
+            self.ActionTableWidget.setItem(row_position, 2, QTableWidgetItem(angle_2))
+            self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(angle_3))
+            self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(angle_4))
+            self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(angle_5))
+            self.ActionTableWidget.setItem(row_position, 6, QTableWidgetItem(angle_6))
+
+    def remove_item(self):
+        """示教控制删除一行动作"""
+        selected_rows = self.ActionTableWidget.selectionModel().selectedRows()
+
+        if not selected_rows:
+            # 如果没有选中行，则删除最后一行
+            last_row = self.ActionTableWidget.rowCount() - 1
+            if last_row >= 0:
+                self.ActionTableWidget.removeRow(last_row)
+        else:
+            for row in reversed(selected_rows):
+                self.ActionTableWidget.removeRow(row.row())
+
+    def copy_selected_row(self):
+        """复制选择行"""
+        selected_row = self.ActionTableWidget.currentRow()
+        if selected_row >= 0:
+            self.copied_row = []
+            for col in range(self.ActionTableWidget.columnCount()):
+                item = self.ActionTableWidget.item(selected_row, col)
+                if item is not None:
+                    self.copied_row.append(item.text())
+
+    def paste_row(self):
+        """粘贴选择行"""
+        if self.copied_row:
+            row_position = self.ActionTableWidget.rowCount()
+            self.ActionTableWidget.insertRow(row_position)
+            for col, value in enumerate(self.copied_row):
+                self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(value))
+
+    def show_context_menu(self, pos):
+        self.context_menu.exec_(self.ActionTableWidget.mapToGlobal(pos))
 
     def get_robot_arm_connector(self):
         try:
