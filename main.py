@@ -1,3 +1,4 @@
+import socket
 import sys
 import json
 import shelve
@@ -20,13 +21,15 @@ class MainWindow(QWidget, Ui_Form):
         self.setupUi(self)
         self.setWindowTitle("BLinx_Robot_Arm_V1.0")
 
+        self.arm_socket_connect_flag = False  # 机械臂 Socket 连接状态标志
+
         # 示教控制页面回调函数绑定
         self.ActionAddButton.clicked.connect(self.add_item)
         self.ActionDeleteButton.clicked.connect(self.remove_item)
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
         self.ActionRunButton.clicked.connect(self.run_action)
-        # self.ActionStepRunButton.clicked.connect(self.run_action_step)
+        self.ActionStepRunButton.clicked.connect(self.run_action_step)
         # self.ActionLoopRunButton.clicked.connect(self.run_action_loop)
 
         self.ArmToolOptions = self.ArmToolComboBox.model()
@@ -74,7 +77,7 @@ class MainWindow(QWidget, Ui_Form):
         self.SbInfoFreshButton.clicked.connect(self.get_sb_info)
 
         # todo 连接机械臂按钮回调函数绑定
-        self.RobotArmLinkButton.clicked.connect(self.reset_robot_arm)
+        self.RobotArmLinkButton.clicked.connect(self.check_arm_connect_state)
 
         # todo 命令控制页面回调函数绑定
         self.CommandSendButton.clicked.connect(self.send_json_command)
@@ -183,7 +186,7 @@ class MainWindow(QWidget, Ui_Form):
         self.SerialNumComboBox.addItems([f"{port.device}" for port in ports])
 
     # 机械臂连接按钮回调函数
-    def reset_robot_arm(self, mode="connect"):
+    def reset_robot_arm(self):
         """机械臂复位
         :param mode:
         """
@@ -194,11 +197,21 @@ class MainWindow(QWidget, Ui_Form):
         with robot_arm_client as rac:
             rac.send(b'{"command":"set_joint_Auto_zero"}\r\n')
             rs_data = json.loads(rac.recv(1024).decode('utf-8').strip()).get("data")
-            if rs_data == "true" and mode == "connect":
-                self.success_message_box("机械臂连接成功")
-            else:
+            if rs_data == "true":
                 self.warning_message_box("机械臂复位中!请注意手臂姿态")
 
+    def check_arm_connect_state(self):
+        """检查机械臂的连接状态"""
+        robot_arm_client = self.get_robot_arm_connector()
+        with robot_arm_client as rac:
+            try:
+                remote_address = rac.getpeername()
+                self.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
+                self.arm_socket_connect_flag = True
+            except socket.error as e:
+                self.arm_socket_connect_flag = False
+                self.error_message_box(message="机械臂连接失败！请检查设备网络连接状态！")
+                
     # 命令控制页面 json 发送与调试
     def send_json_command(self):
         """json数据发送按钮"""
@@ -644,15 +657,15 @@ class MainWindow(QWidget, Ui_Form):
                     arm_tool_control_widget = ""
 
                 data.append({
-                             "J1/X": angle_1,
-                             "J2/X": angle_2,
-                             "J3/X": angle_3,
-                             "J4/X": angle_4,
-                             "J5/X": angle_5,
-                             "J6/X": angle_6,
-                             "速度": speed_percentage,
-                             "工具": arm_tool_option,
-                             "开关": arm_tool_control_widget
+                    "J1/X": angle_1,
+                    "J2/X": angle_2,
+                    "J3/X": angle_3,
+                    "J4/X": angle_4,
+                    "J5/X": angle_5,
+                    "J6/X": angle_6,
+                    "速度": speed_percentage,
+                    "工具": arm_tool_option,
+                    "开关": arm_tool_control_widget
                 })
 
             with open(file_name, "w") as json_file:
@@ -674,7 +687,8 @@ class MainWindow(QWidget, Ui_Form):
                 delay_time = int(self.ActionTableWidget.item(row, 9).text())
                 # todo 构造命令
                 json_command = {"command": "set_joint_angle_all_time",
-                                "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, delay_time, speed_percentage]}
+                                "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, delay_time,
+                                         speed_percentage]}
                 str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
                 robot_client.send(str_command.encode('utf-8'))
                 self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
@@ -683,8 +697,8 @@ class MainWindow(QWidget, Ui_Form):
 
     def run_action_step(self):
         """单次执行选定的动作"""
+        # todo 获取到选定的任务
         pass
-
     def run_action_loop(self):
         """循环执行动作"""
         pass
