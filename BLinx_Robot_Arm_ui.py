@@ -57,8 +57,8 @@ class Ui_Form(object):
         self.HelpTeachPage = QWidget()
         self.HelpTeachPage.setObjectName(u"HelpTeachPage")
         self.ActionTableWidget = QTableWidget(self.HelpTeachPage)
-        if (self.ActionTableWidget.columnCount() < 10):
-            self.ActionTableWidget.setColumnCount(10)
+        if (self.ActionTableWidget.columnCount() < 11):
+            self.ActionTableWidget.setColumnCount(11)
         __qtablewidgetitem = QTableWidgetItem()
         self.ActionTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
@@ -79,6 +79,8 @@ class Ui_Form(object):
         self.ActionTableWidget.setHorizontalHeaderItem(8, __qtablewidgetitem8)
         __qtablewidgetitem9 = QTableWidgetItem()
         self.ActionTableWidget.setHorizontalHeaderItem(9, __qtablewidgetitem9)
+        __qtablewidgetitem10 = QTableWidgetItem()
+        self.ActionTableWidget.setHorizontalHeaderItem(10, __qtablewidgetitem10)
         self.ActionTableWidget.setObjectName(u"ActionTableWidget")
         self.ActionTableWidget.setGeometry(QRect(20, 40, 901, 361))
         self.TeachArmRunLogLabel = QLabel(self.HelpTeachPage)
@@ -223,6 +225,7 @@ class Ui_Form(object):
         self.ArmToolLabel.setObjectName(u"ArmToolLabel")
         self.ArmToolLabel.setGeometry(QRect(10, 23, 31, 16))
         self.ArmToolComboBox = QComboBox(self.RobotArmToolsGrop)
+        self.ArmToolComboBox.addItem("")
         self.ArmToolComboBox.addItem("")
         self.ArmToolComboBox.addItem("")
         self.ArmToolComboBox.setObjectName(u"ArmToolComboBox")
@@ -447,13 +450,15 @@ class Ui_Form(object):
         ___qtablewidgetitem5 = self.ActionTableWidget.horizontalHeaderItem(5)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("Form", u"J6/RZ", None));
         ___qtablewidgetitem6 = self.ActionTableWidget.horizontalHeaderItem(6)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("Form", u"\u5de5\u5177", None));
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("Form", u"\u901f\u5ea6", None));
         ___qtablewidgetitem7 = self.ActionTableWidget.horizontalHeaderItem(7)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("Form", u"\u5f00\u5173", None));
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("Form", u"\u5de5\u5177", None));
         ___qtablewidgetitem8 = self.ActionTableWidget.horizontalHeaderItem(8)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("Form", u"\u5ef6\u8fdf", None));
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("Form", u"\u5f00\u5173", None));
         ___qtablewidgetitem9 = self.ActionTableWidget.horizontalHeaderItem(9)
-        ___qtablewidgetitem9.setText(QCoreApplication.translate("Form", u"\u5907\u6ce8", None));
+        ___qtablewidgetitem9.setText(QCoreApplication.translate("Form", u"\u5ef6\u65f6", None));
+        ___qtablewidgetitem10 = self.ActionTableWidget.horizontalHeaderItem(10)
+        ___qtablewidgetitem10.setText(QCoreApplication.translate("Form", u"\u5907\u6ce8", None));
         self.TeachArmRunLogLabel.setText(QCoreApplication.translate("Form", u"\u673a\u68b0\u81c2\u8fd0\u884c\u65e5\u5fd7", None))
         self.ActionDeleteButton.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u52a8\u4f5c", None))
         self.ActionPastButton.setText(QCoreApplication.translate("Form", u"\u7c98\u8d34\u52a8\u4f5c", None))
@@ -499,8 +504,9 @@ class Ui_Form(object):
         self.ArmControlLabel.setText(QCoreApplication.translate("Form", u"\u63a7\u5236", None))
         self.ArmClawOpenButton.setText(QCoreApplication.translate("Form", u"\u5f00", None))
         self.ArmToolLabel.setText(QCoreApplication.translate("Form", u"\u5de5\u5177", None))
-        self.ArmToolComboBox.setItemText(0, QCoreApplication.translate("Form", u"\u5939\u722a", None))
-        self.ArmToolComboBox.setItemText(1, QCoreApplication.translate("Form", u"\u5438\u76d8", None))
+        self.ArmToolComboBox.setItemText(0, "")
+        self.ArmToolComboBox.setItemText(1, QCoreApplication.translate("Form", u"\u5939\u722a", None))
+        self.ArmToolComboBox.setItemText(2, QCoreApplication.translate("Form", u"\u5438\u76d8", None))
 
         self.RobotArmPositionControlGroup.setTitle(QCoreApplication.translate("Form", u"\u4f4d\u7f6e\u63a7\u5236", None))
         self.ZAxisAddButton.setText(QCoreApplication.translate("Form", u"+", None))

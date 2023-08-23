@@ -1,11 +1,12 @@
 import sys
 import json
 import shelve
+import time
 from pathlib import Path
 
 from serial.tools import list_ports
 
-from PySide2.QtWidgets import QApplication, QWidget, QMessageBox, QTableWidgetItem, QMenu, QFileDialog
+from PySide2.QtWidgets import QApplication, QWidget, QMessageBox, QTableWidgetItem, QMenu, QFileDialog, QComboBox
 from PySide2.QtCore import Qt
 
 # 导入转换后的 UI 文件
@@ -24,8 +25,13 @@ class MainWindow(QWidget, Ui_Form):
         self.ActionDeleteButton.clicked.connect(self.remove_item)
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
+        self.ActionRunButton.clicked.connect(self.run_action)
+        # self.ActionStepRunButton.cllicked.connect(self.run_action_step)
+        # self.ActionLoopRunButton.clicked.connect(self.run_action_loop)
 
-        # 添加上下文菜单
+        self.ArmToolOptions = self.ArmToolComboBox.model()
+
+        # 示教控制添加右键的上下文菜单
         self.context_menu = QMenu(self)
         self.copy_action = self.context_menu.addAction("复制动作")
         self.paste_action = self.context_menu.addAction("粘贴动作")
@@ -460,6 +466,7 @@ class MainWindow(QWidget, Ui_Form):
         angle_4 = self.AngleFourEdit.text()
         angle_5 = self.AngleFiveEdit.text()
         angle_6 = self.AngleSixEdit.text()
+        speed_percentage = self.ArmSpeedEdit.text()  # 速度值，暂定百分比
 
         if all([angle_1, angle_2, angle_3, angle_4, angle_5, angle_6]):
             row_position = self.ActionTableWidget.rowCount()
@@ -470,6 +477,19 @@ class MainWindow(QWidget, Ui_Form):
             self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(angle_4))
             self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(angle_5))
             self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(angle_6))
+            self.ActionTableWidget.setItem(row_position, 6, QTableWidgetItem(speed_percentage))
+
+            # 工具列添加下拉选择框
+            arm_tool_combobox = QComboBox()
+            arm_tool_combobox.setModel(self.ArmToolOptions)
+            self.ActionTableWidget.setCellWidget(row_position, 7, arm_tool_combobox)
+
+            # 开关列添加下拉选择框
+            arm_tool_control = QComboBox()
+            arm_tool_control.addItems(["", "关", "开"])
+            self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control)
+        else:
+            self.warning_message_box(message="角度值不能为空!")
 
     def remove_item(self):
         """示教控制删除一行动作"""
@@ -490,9 +510,15 @@ class MainWindow(QWidget, Ui_Form):
         if selected_row >= 0:
             self.copied_row = []
             for col in range(self.ActionTableWidget.columnCount()):
-                item = self.ActionTableWidget.item(selected_row, col)
-                if item is not None:
-                    self.copied_row.append(item.text())
+                # 工具列、开关列，需要获取下拉框中的文本
+                if col in (7, 8):
+                    item_widget = self.ActionTableWidget.cellWidget(selected_row, col)
+                    if item_widget is not None:
+                        self.copied_row.append(item_widget.currentText())
+                else:
+                    item = self.ActionTableWidget.item(selected_row, col)
+                    if item is not None:
+                        self.copied_row.append(item.text())
 
     def paste_row(self):
         """粘贴选择行"""
@@ -500,7 +526,20 @@ class MainWindow(QWidget, Ui_Form):
             row_position = self.ActionTableWidget.rowCount()
             self.ActionTableWidget.insertRow(row_position)
             for col, value in enumerate(self.copied_row):
-                self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(value))
+                if col == 7:  # 工具列、开关列需要获取下拉框的选中值
+                    # 工具列添加下拉选择框
+                    arm_tool_combobox = QComboBox()
+                    arm_tool_combobox.setModel(self.ArmToolOptions)
+                    arm_tool_combobox.setCurrentText(value)
+                    self.ActionTableWidget.setCellWidget(row_position, col, arm_tool_combobox)
+                elif col == 8:
+                    # 开关列添加下拉选择框
+                    arm_tool_control = QComboBox()
+                    arm_tool_control.addItems(["", "关", "开"])
+                    arm_tool_control.setCurrentText(value)
+                    self.ActionTableWidget.setCellWidget(row_position, col, arm_tool_control)
+                else:
+                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(value))
 
     def import_data(self):
         """导入动作"""
@@ -521,6 +560,10 @@ class MainWindow(QWidget, Ui_Form):
                     angle_4 = item.get("J4/X", "")
                     angle_5 = item.get("J5/X", "")
                     angle_6 = item.get("J6/X", "")
+                    speed_percentage = item.get("速度", 30)  # 速度百分比默认为 30%
+                    arm_tool_option = item.get("工具", "")
+                    arm_tool_control = item.get("开关", "")
+
                     row_position = self.ActionTableWidget.rowCount()
                     self.ActionTableWidget.insertRow(row_position)
                     self.ActionTableWidget.setItem(row_position, 0, QTableWidgetItem(angle_1))
@@ -529,6 +572,19 @@ class MainWindow(QWidget, Ui_Form):
                     self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(angle_4))
                     self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(angle_5))
                     self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(angle_6))
+                    self.ActionTableWidget.setItem(row_position, 6, QTableWidgetItem(speed_percentage))
+
+                    # 工具列
+                    arm_tool_combobox = QComboBox()
+                    arm_tool_combobox.setModel(self.ArmToolOptions)
+                    arm_tool_combobox.setCurrentText(arm_tool_option)
+                    self.ActionTableWidget.setCellWidget(row_position, 7, arm_tool_combobox)
+
+                    # 开关列
+                    arm_tool_control_combobox = QComboBox()
+                    arm_tool_control_combobox.addItems(["", "关", "开"])
+                    arm_tool_control_combobox.setCurrentText(arm_tool_control)
+                    self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control_combobox)
 
     def export_data(self):
         """导出动作"""
@@ -545,16 +601,65 @@ class MainWindow(QWidget, Ui_Form):
                 angle_4 = self.ActionTableWidget.item(row, 3).text()
                 angle_5 = self.ActionTableWidget.item(row, 4).text()
                 angle_6 = self.ActionTableWidget.item(row, 5).text()
+                speed_percentage = self.ActionTableWidget.item(row, 6).text()
+                arm_tool_widget = self.ActionTableWidget.cellWidget(row, 7)  # 工具列
+                arm_tool_control_widget = self.ActionTableWidget.cellWidget(row, 8)  # 开关列
+
+                if arm_tool_widget is not None:
+                    arm_tool_option = arm_tool_widget.currentText()
+                else:
+                    arm_tool_option = ""
+
+                if arm_tool_control_widget is not None:
+                    arm_tool_control_widget = arm_tool_control_widget.currentText()
+                else:
+                    arm_tool_control_widget = ""
+
                 data.append({
                              "J1/X": angle_1,
                              "J2/X": angle_2,
                              "J3/X": angle_3,
                              "J4/X": angle_4,
                              "J5/X": angle_5,
-                             "J6/X": angle_6})
+                             "J6/X": angle_6,
+                             "速度": speed_percentage,
+                             "工具": arm_tool_option,
+                             "开关": arm_tool_control_widget
+                })
 
             with open(file_name, "w") as json_file:
                 json.dump(data, json_file, indent=4, ensure_ascii=False)
+
+    def run_action(self):
+        """顺序执行动作"""
+        # todo 遍历动作
+        self.TeachArmRunLogWindow.append("【顺序执行】开始！")
+        with self.get_robot_arm_connector() as robot_client:
+            for row in range(self.ActionTableWidget.rowCount()):
+                angle_1 = int(self.ActionTableWidget.item(row, 0).text())
+                angle_2 = int(self.ActionTableWidget.item(row, 1).text())
+                angle_3 = int(self.ActionTableWidget.item(row, 2).text())
+                angle_4 = int(self.ActionTableWidget.item(row, 3).text())
+                angle_5 = int(self.ActionTableWidget.item(row, 4).text())
+                angle_6 = int(self.ActionTableWidget.item(row, 5).text())
+                speed_percentage = int(self.ActionTableWidget.item(row, 6).text())
+                delay_time = int(self.ActionTableWidget.item(row, 9).text())
+                # todo 构造命令
+                json_command = {"command": "set_joint_angle_all_time",
+                                "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, delay_time, speed_percentage]}
+                str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+                robot_client.send(str_command.encode('utf-8'))
+                self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
+                time.sleep(delay_time)  # 等待动作执行完成
+        self.TeachArmRunLogWindow.append("【顺序执行】结束！")
+
+    def run_action_step(self):
+        """单次执行选定的动作"""
+        pass
+
+    def run_action_loop(self):
+        """循环执行动作"""
+        pass
 
     def show_context_menu(self, pos):
         """右键复制粘贴菜单"""

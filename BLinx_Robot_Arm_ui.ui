@@ -201,6 +201,11 @@
      </column>
      <column>
       <property name="text">
+       <string>速度</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>工具</string>
       </property>
      </column>
@@ -211,7 +216,7 @@
      </column>
      <column>
       <property name="text">
-       <string>延迟</string>
+       <string>延时</string>
       </property>
      </column>
      <column>
@@ -807,6 +812,11 @@
       <height>21</height>
      </rect>
     </property>
+    <item>
+     <property name="text">
+      <string/>
+     </property>
+    </item>
     <item>
      <property name="text">
       <string>夹爪</string>
