@@ -26,7 +26,7 @@ class MainWindow(QWidget, Ui_Form):
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
         self.ActionRunButton.clicked.connect(self.run_action)
-        # self.ActionStepRunButton.cllicked.connect(self.run_action_step)
+        # self.ActionStepRunButton.clicked.connect(self.run_action_step)
         # self.ActionLoopRunButton.clicked.connect(self.run_action_loop)
 
         self.ArmToolOptions = self.ArmToolComboBox.model()
@@ -57,6 +57,8 @@ class MainWindow(QWidget, Ui_Form):
         self.AngleFiveSubButton.clicked.connect(self.arm_five_sub)
         self.AngleSixAddButton.clicked.connect(self.arm_six_add)
         self.AngleSixSubButton.clicked.connect(self.arm_six_sub)
+        self.ArmSpeedUpButton.clicked.connect(self.arm_speed_percentage_add)
+        self.ArmSpeedDecButton.clicked.connect(self.arm_speed_percentage_sub)
 
         # 机械臂连接配置页面回调函数绑定
         self.reload_ip_port_history()  # 加载上一次的配置
@@ -187,7 +189,7 @@ class MainWindow(QWidget, Ui_Form):
         """
         # 初始化步长和速度值
         self.AngleStepEdit.setText(str(5))
-        self.ArmSpeedEdit.setText(str(80))
+        self.ArmSpeedEdit.setText(str(50))
         robot_arm_client = self.get_robot_arm_connector()
         with robot_arm_client as rac:
             rac.send(b'{"command":"set_joint_Auto_zero"}\r\n')
@@ -455,6 +457,32 @@ class MainWindow(QWidget, Ui_Form):
             self.AngleStepEdit.setText(str(degrade))
         else:
             self.warning_message_box(message="步长不能为负!")
+
+    def arm_speed_percentage_add(self):
+        """关节运动速度百分比增加"""
+        speed_percentage_edit = self.ArmSpeedEdit.text()
+        if speed_percentage_edit is not None and speed_percentage_edit.isdigit():
+            old_speed_percentage = int(speed_percentage_edit.strip())
+            new_speed_percentage = old_speed_percentage + 5
+            if 50 <= new_speed_percentage <= 100:
+                self.ArmSpeedEdit.setText(str(new_speed_percentage))
+            else:
+                self.warning_message_box(message=f"关节速度范围 50 ~ 100")
+        else:
+            self.error_message_box(message="请输入整数字符!")
+
+    def arm_speed_percentage_sub(self):
+        """关节运动速度百分比减少"""
+        speed_percentage_edit = self.ArmSpeedEdit.text()
+        if speed_percentage_edit is not None and speed_percentage_edit.isdigit():
+            old_speed_percentage = int(speed_percentage_edit.strip())
+            new_speed_percentage = old_speed_percentage - 5
+            if new_speed_percentage >= 50:
+                self.ArmSpeedEdit.setText(str(new_speed_percentage))
+            else:
+                self.warning_message_box(message=f"关节最低速度为 50 ，速度不能为负!")
+        else:
+            self.error_message_box(message="请输入整数字符!")
 
     # 示教控制回调函数编写
     def add_item(self):
