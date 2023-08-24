@@ -8,6 +8,7 @@ from pathlib import Path
 from serial.tools import list_ports
 
 from PySide2.QtWidgets import QApplication, QWidget, QMessageBox, QTableWidgetItem, QMenu, QFileDialog, QComboBox
+from qt_material import apply_stylesheet
 from PySide2.QtCore import Qt
 
 # 导入转换后的 UI 文件
@@ -19,7 +20,7 @@ class MainWindow(QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.setWindowTitle("BLinx_Robot_Arm_V1.0")
+        self.setWindowTitle("比邻星科技")
 
         self.arm_socket_connect_flag = False  # 机械臂 Socket 连接状态标志
 
@@ -84,6 +85,10 @@ class MainWindow(QWidget, Ui_Form):
 
         # 复位和急停按钮绑定
         self.RobotArmResetButton.clicked.connect(self.reset_robot_arm)
+
+        # todo 末端工具控制组回调函数绑定
+        self.ArmClawOpenButton.clicked.connect(self.tool_open)
+        self.ArmClawCloseButton.clicked.connect(self.tool_close)
 
     # 按钮执行结果消息弹窗
     def success_message_box(self, message="成功"):
@@ -190,15 +195,32 @@ class MainWindow(QWidget, Ui_Form):
         """机械臂复位
         :param mode:
         """
-        # 初始化步长和速度值
-        self.AngleStepEdit.setText(str(5))
-        self.ArmSpeedEdit.setText(str(50))
         robot_arm_client = self.get_robot_arm_connector()
         with robot_arm_client as rac:
             rac.send(b'{"command":"set_joint_Auto_zero"}\r\n')
             rs_data = json.loads(rac.recv(1024).decode('utf-8').strip()).get("data")
             if rs_data == "true":
-                self.warning_message_box("机械臂复位中!请注意手臂姿态")
+                self.warning_message_box("机械臂复位中!\n请注意手臂姿态")
+
+        time.sleep(15)  # 等待命令执行完成后，再获取机械臂的角度，不能阻塞
+
+        with robot_arm_client as rac:
+            rac.send(b'{"command":"get_joint_angle_all"}\r\n')
+            bytes_data = rac.recv(2048)
+            print(bytes_data)
+            angle_data_list = json.loads(bytes_data.decode().strip()).get("data")
+            print(angle_data_list)
+
+        # 获取初始化后关节的角度值
+        self.AngleOneEdit.setText(str(round(float(angle_data_list[0]))))
+        self.AngleTwoEdit.setText(str(round(float(angle_data_list[1]))))
+        self.AngleThreeEdit.setText(str(round(float(angle_data_list[2]))))
+        self.AngleFourEdit.setText(str(round(float(angle_data_list[3]))))
+        self.AngleFiveEdit.setText(str(round(float(angle_data_list[4]))))
+        self.AngleSixEdit.setText(str(round(float(angle_data_list[5]))))
+        # 初始化步长和速度值
+        self.AngleStepEdit.setText(str(5))
+        self.ArmSpeedEdit.setText(str(50))
 
     def check_arm_connect_state(self):
         """检查机械臂的连接状态"""
@@ -210,8 +232,8 @@ class MainWindow(QWidget, Ui_Form):
                 self.arm_socket_connect_flag = True
             except socket.error as e:
                 self.arm_socket_connect_flag = False
-                self.error_message_box(message="机械臂连接失败！请检查设备网络连接状态！")
-                
+                self.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
+
     # 命令控制页面 json 发送与调试
     def send_json_command(self):
         """json数据发送按钮"""
@@ -235,13 +257,15 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleOneEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         # 每个关节的最大限位值不同
         if 0 <= degrade <= 300:
             self.AngleOneEdit.setText(str(degrade))  # 更新关节角度值
 
             # todo 构造发送命令
-            command = json.dumps({"command": "set_joint_angle", "data": [1, degrade]}) + '\r\n'
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [1, degrade, speed_percentage]}) + '\r\n'
 
             # 发送命令
             robot_arm_client = self.get_robot_arm_connector()
@@ -259,11 +283,13 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleOneEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade <= 300:
             self.AngleOneEdit.setText(str(degrade))
             # 发送命令
-            command = json.dumps({"command": "set_joint_angle", "data": [1, degrade]}) + '\r\n'
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [1, degrade, speed_percentage]}) + '\r\n'
             robot_arm_client = self.get_robot_arm_connector()
             with robot_arm_client as rc:
                 rc.send(command.replace(' ', '').encode())
@@ -277,11 +303,13 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleTwoEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         self.AngleTwoEdit.setText(str(degrade))  # 更新关节角度值
 
         # todo 构造发送命令
-        command = json.dumps({"command": "set_joint_angle", "data": [2, degrade]}) + '\r\n'
+        command = json.dumps(
+            {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
         robot_arm_client = self.get_robot_arm_connector()
@@ -295,11 +323,13 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleTwoEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade:
             self.AngleTwoEdit.setText(str(degrade))
             # 发送命令
-            command = json.dumps({"command": "set_joint_angle", "data": [2, degrade]}) + '\r\n'
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
             robot_arm_client = self.get_robot_arm_connector()
             with robot_arm_client as rc:
                 rc.send(command.replace(' ', '').encode())
@@ -313,11 +343,13 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleThreeEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         self.AngleThreeEdit.setText(str(degrade))  # 更新关节角度值
 
         # todo 构造发送命令
-        command = json.dumps({"command": "set_joint_angle", "data": [3, degrade]}) + '\r\n'
+        command = json.dumps(
+            {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
         robot_arm_client = self.get_robot_arm_connector()
@@ -331,11 +363,13 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleThreeEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade:
             self.AngleThreeEdit.setText(str(degrade))
             # 发送命令
-            command = json.dumps({"command": "set_joint_angle", "data": [3, degrade]}) + '\r\n'
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
             robot_arm_client = self.get_robot_arm_connector()
             with robot_arm_client as rc:
                 rc.send(command.replace(' ', '').encode())
@@ -349,11 +383,13 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleFourEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         self.AngleFourEdit.setText(str(degrade))  # 更新关节角度值
 
         # todo 构造发送命令
-        command = json.dumps({"command": "set_joint_angle", "data": [4, degrade]}) + '\r\n'
+        command = json.dumps(
+            {"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
         robot_arm_client = self.get_robot_arm_connector()
@@ -367,11 +403,13 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleFourEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade:
             self.AngleFourEdit.setText(str(degrade))
             # 发送命令
-            command = json.dumps({"command": "set_joint_angle", "data": [4, degrade]}) + '\r\n'
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
             robot_arm_client = self.get_robot_arm_connector()
             with robot_arm_client as rc:
                 rc.send(command.replace(' ', '').encode())
@@ -385,12 +423,14 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleFiveEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         if 0 <= degrade:
             self.AngleFiveEdit.setText(str(degrade))  # 更新关节角度值
 
         # todo 构造发送命令
-        command = json.dumps({"command": "set_joint_angle", "data": [5, degrade]}) + '\r\n'
+        command = json.dumps(
+            {"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
         robot_arm_client = self.get_robot_arm_connector()
@@ -404,11 +444,13 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleFiveEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade:
             self.AngleFiveEdit.setText(str(degrade))
             # 发送命令
-            command = json.dumps({"command": "set_joint_angle", "data": [5, degrade]}) + '\r\n'
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
             robot_arm_client = self.get_robot_arm_connector()
             with robot_arm_client as rc:
                 rc.send(command.replace(' ', '').encode())
@@ -422,11 +464,13 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleSixEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         self.AngleSixEdit.setText(str(degrade))  # 更新关节角度值
 
         # todo 构造发送命令
-        command = json.dumps({"command": "set_joint_angle", "data": [6, degrade]}) + '\r\n'
+        command = json.dumps(
+            {"command": "set_joint_angle_speed_percentage", "data": [6, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
         robot_arm_client = self.get_robot_arm_connector()
@@ -440,11 +484,13 @@ class MainWindow(QWidget, Ui_Form):
         # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleSixEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
+        speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade:
             self.AngleSixEdit.setText(str(degrade))
             # 发送命令
-            command = json.dumps({"command": "set_joint_angle", "data": [6, degrade]}) + '\r\n'
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [6, degrade, speed_percentage]}) + '\r\n'
             robot_arm_client = self.get_robot_arm_connector()
             with robot_arm_client as rc:
                 rc.send(command.replace(' ', '').encode())
@@ -496,6 +542,15 @@ class MainWindow(QWidget, Ui_Form):
                 self.warning_message_box(message=f"关节最低速度为 50 ，速度不能为负!")
         else:
             self.error_message_box(message="请输入整数字符!")
+
+    # 末端工具控制回调函数
+    def tool_open(self):
+        """"""
+        pass
+
+    def tool_close(self):
+        """"""
+        pass
 
     # 示教控制回调函数编写
     def add_item(self):
@@ -699,6 +754,7 @@ class MainWindow(QWidget, Ui_Form):
         """单次执行选定的动作"""
         # todo 获取到选定的任务
         pass
+
     def run_action_loop(self):
         """循环执行动作"""
         pass
@@ -722,5 +778,6 @@ class MainWindow(QWidget, Ui_Form):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
+    apply_stylesheet(app, theme='light_blue.xml')
     window.show()
     sys.exit(app.exec_())
