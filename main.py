@@ -20,7 +20,7 @@ class MainWindow(QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.setWindowTitle("比邻星科技")
+        self.setWindowTitle("BLinx Robot Arm V1.0")
 
         self.arm_socket_connect_flag = False  # 机械臂 Socket 连接状态标志
 

@@ -12,15 +12,19 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+import blinx_logo
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(1476, 682)
+        Form.resize(1493, 680)
+        icon = QIcon()
+        icon.addFile(u":/logo/UI/Robot_arm_log.png", QSize(), QIcon.Normal, QIcon.Off)
+        Form.setWindowIcon(icon)
         self.HomePage = QTabWidget(Form)
         self.HomePage.setObjectName(u"HomePage")
-        self.HomePage.setGeometry(QRect(8, 59, 971, 591))
+        self.HomePage.setGeometry(QRect(10, 80, 971, 591))
         self.HomePage.setTabPosition(QTabWidget.West)
         self.HomePage.setTabShape(QTabWidget.Rounded)
         self.HomePage.setIconSize(QSize(16, 16))
@@ -83,6 +87,9 @@ class Ui_Form(object):
         self.ActionTableWidget.setHorizontalHeaderItem(10, __qtablewidgetitem10)
         self.ActionTableWidget.setObjectName(u"ActionTableWidget")
         self.ActionTableWidget.setGeometry(QRect(20, 40, 901, 361))
+        self.ActionTableWidget.horizontalHeader().setVisible(True)
+        self.ActionTableWidget.horizontalHeader().setCascadingSectionResizes(False)
+        self.ActionTableWidget.horizontalHeader().setDefaultSectionSize(81)
         self.TeachArmRunLogLabel = QLabel(self.HelpTeachPage)
         self.TeachArmRunLogLabel.setObjectName(u"TeachArmRunLogLabel")
         self.TeachArmRunLogLabel.setGeometry(QRect(24, 444, 91, 16))
@@ -208,7 +215,7 @@ class Ui_Form(object):
         self.HomePage.addTab(self.SystemInfoPage, "")
         self.RobotArmToolsGrop = QGroupBox(Form)
         self.RobotArmToolsGrop.setObjectName(u"RobotArmToolsGrop")
-        self.RobotArmToolsGrop.setGeometry(QRect(990, 430, 241, 121))
+        self.RobotArmToolsGrop.setGeometry(QRect(1000, 496, 241, 121))
         self.ArmClawCloseButton = QPushButton(self.RobotArmToolsGrop)
         self.ArmClawCloseButton.setObjectName(u"ArmClawCloseButton")
         self.ArmClawCloseButton.setGeometry(QRect(150, 70, 51, 31))
@@ -229,7 +236,7 @@ class Ui_Form(object):
         self.ArmToolComboBox.setGeometry(QRect(90, 40, 111, 21))
         self.RobotArmPositionControlGroup = QGroupBox(Form)
         self.RobotArmPositionControlGroup.setObjectName(u"RobotArmPositionControlGroup")
-        self.RobotArmPositionControlGroup.setGeometry(QRect(1240, 60, 221, 181))
+        self.RobotArmPositionControlGroup.setGeometry(QRect(1260, 90, 221, 181))
         self.ZAxisAddButton = QPushButton(self.RobotArmPositionControlGroup)
         self.ZAxisAddButton.setObjectName(u"ZAxisAddButton")
         self.ZAxisAddButton.setGeometry(QRect(160, 130, 51, 31))
@@ -268,7 +275,7 @@ class Ui_Form(object):
         self.XAxisAddButton.setGeometry(QRect(160, 50, 51, 31))
         self.RobotArmControlGroup = QGroupBox(Form)
         self.RobotArmControlGroup.setObjectName(u"RobotArmControlGroup")
-        self.RobotArmControlGroup.setGeometry(QRect(990, 60, 241, 361))
+        self.RobotArmControlGroup.setGeometry(QRect(1000, 90, 241, 361))
         self.AngleOneSubButton = QPushButton(self.RobotArmControlGroup)
         self.AngleOneSubButton.setObjectName(u"AngleOneSubButton")
         self.AngleOneSubButton.setGeometry(QRect(61, 40, 51, 31))
@@ -368,7 +375,7 @@ class Ui_Form(object):
         self.AngleStepEdit.setGeometry(QRect(121, 280, 51, 31))
         self.RobotArmAttituControlGroup = QGroupBox(Form)
         self.RobotArmAttituControlGroup.setObjectName(u"RobotArmAttituControlGroup")
-        self.RobotArmAttituControlGroup.setGeometry(QRect(1240, 240, 221, 181))
+        self.RobotArmAttituControlGroup.setGeometry(QRect(1260, 280, 221, 171))
         self.RzAxisAddButton = QPushButton(self.RobotArmAttituControlGroup)
         self.RzAxisAddButton.setObjectName(u"RzAxisAddButton")
         self.RzAxisAddButton.setGeometry(QRect(160, 130, 51, 31))
@@ -407,17 +414,23 @@ class Ui_Form(object):
         self.RyAxisSubButton.setGeometry(QRect(40, 90, 51, 31))
         self.RobotArmResetButton = QPushButton(Form)
         self.RobotArmResetButton.setObjectName(u"RobotArmResetButton")
-        self.RobotArmResetButton.setGeometry(QRect(1250, 460, 101, 81))
+        self.RobotArmResetButton.setGeometry(QRect(1250, 510, 111, 101))
         self.RobotArmStopButton = QPushButton(Form)
         self.RobotArmStopButton.setObjectName(u"RobotArmStopButton")
-        self.RobotArmStopButton.setGeometry(QRect(1360, 460, 101, 81))
-        self.graphicsView = QGraphicsView(Form)
-        self.graphicsView.setObjectName(u"graphicsView")
-        self.graphicsView.setGeometry(QRect(990, 566, 341, 81))
+        self.RobotArmStopButton.setGeometry(QRect(1370, 510, 111, 101))
+        self.label_2 = QLabel(Form)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setGeometry(QRect(42, 8, 281, 51))
+        self.label_2.setStyleSheet(u"image: url(:/logo/UI/Blinx_tec_logo.png);")
+        self.line = QFrame(Form)
+        self.line.setObjectName(u"line")
+        self.line.setGeometry(QRect(0, 57, 1521, 20))
+        self.line.setFrameShape(QFrame.HLine)
+        self.line.setFrameShadow(QFrame.Sunken)
 
         self.retranslateUi(Form)
 
-        self.HomePage.setCurrentIndex(0)
+        self.HomePage.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(Form)
@@ -434,17 +447,17 @@ class Ui_Form(object):
         self.CommandSendWindow.setPlaceholderText(QCoreApplication.translate("Form", u"\u53d1\u9001", None))
         self.HomePage.setTabText(self.HomePage.indexOf(self.CommandPage), QCoreApplication.translate("Form", u"\u547d\u4ee4\u63a7\u5236", None))
         ___qtablewidgetitem = self.ActionTableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("Form", u"J1/X", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("Form", u"J1", None));
         ___qtablewidgetitem1 = self.ActionTableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("Form", u"J2/Y", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("Form", u"J2", None));
         ___qtablewidgetitem2 = self.ActionTableWidget.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("Form", u"J3/Z", None));
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("Form", u"J3", None));
         ___qtablewidgetitem3 = self.ActionTableWidget.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("Form", u"J4/RX", None));
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("Form", u"J4", None));
         ___qtablewidgetitem4 = self.ActionTableWidget.horizontalHeaderItem(4)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("Form", u"J5/RY", None));
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("Form", u"J5", None));
         ___qtablewidgetitem5 = self.ActionTableWidget.horizontalHeaderItem(5)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("Form", u"J6/RZ", None));
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("Form", u"J6", None));
         ___qtablewidgetitem6 = self.ActionTableWidget.horizontalHeaderItem(6)
         ___qtablewidgetitem6.setText(QCoreApplication.translate("Form", u"\u901f\u5ea6", None));
         ___qtablewidgetitem7 = self.ActionTableWidget.horizontalHeaderItem(7)
@@ -564,5 +577,6 @@ class Ui_Form(object):
         self.RyAxisSubButton.setText(QCoreApplication.translate("Form", u"-", None))
         self.RobotArmResetButton.setText(QCoreApplication.translate("Form", u"\u590d\u4f4d", None))
         self.RobotArmStopButton.setText(QCoreApplication.translate("Form", u"\u6025\u505c", None))
+        self.label_2.setText("")
     # retranslateUi
 
