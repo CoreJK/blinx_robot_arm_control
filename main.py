@@ -3,6 +3,7 @@ import sys
 import json
 import shelve
 import time
+import threading
 from pathlib import Path
 
 from serial.tools import list_ports
@@ -121,10 +122,10 @@ class MainWindow(QWidget, Ui_Form):
     # 机械臂连接配置回调函数
     def reload_ip_port_history(self):
         """获取历史IP和Port填写记录"""
-        with Path('./config_files/Socket_Info.dat') as socket_file_info:
+        with Path('./config_files/Socket_Info') as socket_file_info:
             if socket_file_info.exists():
                 try:
-                    socket_info = shelve.open("./config_files/Socket_info")
+                    socket_info = shelve.open("./config_files/Socket_Info")
                     self.TargetIpEdit.setText(socket_info["target_ip"])
                     self.TargetPortEdit.setText(str(socket_info["target_port"]))
                 except KeyError:
@@ -154,10 +155,10 @@ class MainWindow(QWidget, Ui_Form):
     # 机械臂 WiFi AP 模式配置回调函数
     def reload_ap_passwd_history(self):
         """获取历史 WiFi 名称和 Passwd 记录"""
-        with Path('./config_files/Socket_Info.dat') as socket_file_info:
+        with Path('./config_files/WiFi_Info') as socket_file_info:
             if socket_file_info.exists():
                 try:
-                    socket_info = shelve.open("./config_files/WiFi_info")
+                    socket_info = shelve.open("./config_files/WiFi_Info")
                     self.WiFiSsidEdit.setText(socket_info["SSID"])
                     self.WiFiPasswdEdit.setText(socket_info["passwd"])
                 except KeyError:
@@ -171,7 +172,7 @@ class MainWindow(QWidget, Ui_Form):
         ip = self.WiFiSsidEdit.text().strip()
         port = self.WiFiPasswdEdit.text().strip()
         # 保存 IP 和 Port 信息
-        with shelve.open('./config_files/WiFi_info') as connect_info:
+        with shelve.open('./config_files/WiFi_Info') as connect_info:
             if all([ip, port]):
                 connect_info["SSID"] = ip
                 connect_info["passwd"] = port
@@ -202,25 +203,33 @@ class MainWindow(QWidget, Ui_Form):
             if rs_data == "true":
                 self.warning_message_box("机械臂复位中!\n请注意手臂姿态")
 
-        time.sleep(15)  # 等待命令执行完成后，再获取机械臂的角度，不能阻塞
-
-        with robot_arm_client as rac:
-            rac.send(b'{"command":"get_joint_angle_all"}\r\n')
-            bytes_data = rac.recv(2048)
-            print(bytes_data)
-            angle_data_list = json.loads(bytes_data.decode().strip()).get("data")
-            print(angle_data_list)
-
-        # 获取初始化后关节的角度值
-        self.AngleOneEdit.setText(str(round(float(angle_data_list[0]))))
-        self.AngleTwoEdit.setText(str(round(float(angle_data_list[1]))))
-        self.AngleThreeEdit.setText(str(round(float(angle_data_list[2]))))
-        self.AngleFourEdit.setText(str(round(float(angle_data_list[3]))))
-        self.AngleFiveEdit.setText(str(round(float(angle_data_list[4]))))
-        self.AngleSixEdit.setText(str(round(float(angle_data_list[5]))))
         # 初始化步长和速度值
         self.AngleStepEdit.setText(str(5))
         self.ArmSpeedEdit.setText(str(50))
+
+    def get_angle_value(self):
+        """实时获取关节的角度值"""
+        with self.get_robot_arm_connector() as rac:
+            while self.closeEvent:
+                try:
+                    time.sleep(0.5)
+                    rac.sendall(b'{"command":"get_joint_angle_all"}\r\n')  # 获取机械臂角度值 API
+                    rs_data = rac.recv(1024).decode('utf-8')
+                    rs_data_dict = json.loads(rs_data)
+                    print(rs_data_dict)
+                    # 只获取关节角度的回执
+                    if rs_data_dict["return"] == "get_joint_angle_all":
+                        # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签
+                        self.AngleOneEdit.setText(str(round(float(rs_data_dict['data'][0]))))
+                        self.AngleTwoEdit.setText(str(round(float(rs_data_dict['data'][1]))))
+                        self.AngleThreeEdit.setText(str(round(float(rs_data_dict['data'][2]))))
+                        self.AngleFourEdit.setText(str(round(float(rs_data_dict['data'][3]))))
+                        self.AngleFiveEdit.setText(str(round(float(rs_data_dict['data'][4]))))
+                        self.AngleSixEdit.setText(str(round(float(rs_data_dict['data'][5]))))
+
+                except (UnicodeError, json.decoder.JSONDecodeError) as e:
+                    # 等待其他指令完成操作，跳过获取机械臂角度值
+                    print(str(e))
 
     def check_arm_connect_state(self):
         """检查机械臂的连接状态"""
@@ -230,6 +239,10 @@ class MainWindow(QWidget, Ui_Form):
                 remote_address = rac.getpeername()
                 self.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
                 self.arm_socket_connect_flag = True
+                # self.controller.start_thread(self.get_angle_value, ())
+                # self.controller.close_threads_signal.connect(self.controller.close_all_threads)
+                get_all_angle = threading.Thread(target=self.get_angle_value)
+                get_all_angle.start()
             except socket.error as e:
                 self.arm_socket_connect_flag = False
                 self.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
@@ -766,12 +779,13 @@ class MainWindow(QWidget, Ui_Form):
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
         try:
-            socket_info = shelve.open("./config_files/Socket_info")
+            socket_info = shelve.open("./config_files/Socket_Info")
             host = socket_info['target_ip']
             port = int(socket_info['target_port'])
+            robot_arm_client = ClientSocket(host, port)
         except Exception as e:
+            print(str(e))
             self.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 ！")
-        robot_arm_client = ClientSocket(host, port)
         return robot_arm_client
 
 
