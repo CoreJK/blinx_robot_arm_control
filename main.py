@@ -3,6 +3,7 @@ import sys
 import json
 import shelve
 import time
+import threading
 from pathlib import Path
 
 from serial.tools import list_ports
@@ -222,6 +223,21 @@ class MainWindow(QWidget, Ui_Form):
         self.AngleStepEdit.setText(str(5))
         self.ArmSpeedEdit.setText(str(50))
 
+    def get_angle_value(self):
+        """实时获取关节的角度值"""
+        with self.get_robot_arm_connector() as rac:
+            while True:
+                try:
+                    time.sleep(1.5)
+                    rac.sendall(b'{"command":"get_joint_angle_all"}\r\n')  # 获取机械臂角度值 API
+                    rs_data = rac.recv(1024).decode('utf-8')
+                    rs_data_dict = json.loads(rs_data)
+                    # 只获取关节角度的回执
+                    if rs_data_dict["return"] == "get_joint_angle_all":
+                        self.CommandArmRunLogWindow.append(str(rs_data_dict))
+                except (UnicodeError, json.decoder.JSONDecodeError) as e:
+                    # 等待其他指令完成操作，跳过获取机械臂角度值
+                    print(str(e))
     def check_arm_connect_state(self):
         """检查机械臂的连接状态"""
         robot_arm_client = self.get_robot_arm_connector()
@@ -230,6 +246,8 @@ class MainWindow(QWidget, Ui_Form):
                 remote_address = rac.getpeername()
                 self.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
                 self.arm_socket_connect_flag = True
+                get_all_angle = threading.Thread(target=self.get_angle_value)
+                get_all_angle.start()
             except socket.error as e:
                 self.arm_socket_connect_flag = False
                 self.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
