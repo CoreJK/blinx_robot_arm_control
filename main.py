@@ -10,11 +10,11 @@ from serial.tools import list_ports
 
 from PySide2.QtWidgets import QApplication, QWidget, QMessageBox, QTableWidgetItem, QMenu, QFileDialog, QComboBox
 from qt_material import apply_stylesheet
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt, QThreadPool
 
 # 导入转换后的 UI 文件
 from BLinx_Robot_Arm_ui import Ui_Form
-from test.socket_client import ClientSocket
+from test.socket_client import ClientSocket, Worker
 
 
 class MainWindow(QWidget, Ui_Form):
@@ -23,7 +23,11 @@ class MainWindow(QWidget, Ui_Form):
         self.setupUi(self)
         self.setWindowTitle("BLinx Robot Arm V1.0")
 
-        self.arm_socket_connect_flag = False  # 机械臂 Socket 连接状态标志
+        # 开启 QT 线程池
+        self.threadpool = QThreadPool()
+
+        # 机械臂的查询循环控制位
+        self.loop_flag = False
 
         # 示教控制页面回调函数绑定
         self.ActionAddButton.clicked.connect(self.add_item)
@@ -210,7 +214,7 @@ class MainWindow(QWidget, Ui_Form):
     def get_angle_value(self):
         """实时获取关节的角度值"""
         with self.get_robot_arm_connector() as rac:
-            while self.closeEvent:
+            while not self.loop_flag:
                 try:
                     time.sleep(0.5)
                     rac.sendall(b'{"command":"get_joint_angle_all"}\r\n')  # 获取机械臂角度值 API
@@ -238,13 +242,11 @@ class MainWindow(QWidget, Ui_Form):
             try:
                 remote_address = rac.getpeername()
                 self.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
-                self.arm_socket_connect_flag = True
-                # self.controller.start_thread(self.get_angle_value, ())
-                # self.controller.close_threads_signal.connect(self.controller.close_all_threads)
-                get_all_angle = threading.Thread(target=self.get_angle_value)
-                get_all_angle.start()
+                # todo 连接没有问题后，运行后台线程
+                get_all_angle = Worker(self.get_angle_value)
+                # get_all_angle.finished.emit()
+                self.threadpool.start(get_all_angle)
             except socket.error as e:
-                self.arm_socket_connect_flag = False
                 self.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
 
     # 命令控制页面 json 发送与调试
@@ -788,6 +790,10 @@ class MainWindow(QWidget, Ui_Form):
             self.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 ！")
         return robot_arm_client
 
+    def closeEvent(self, event):
+        self.loop_flag = True
+        print("窗口关闭！")
+        event.accept()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

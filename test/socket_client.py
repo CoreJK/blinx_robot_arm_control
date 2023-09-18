@@ -1,4 +1,26 @@
+import sys
+import traceback
 import socket
+
+from PySide2.QtCore import QRunnable, Slot
+
+
+class Worker(QRunnable):
+    """Worker thread
+
+    用于在 PySide 中实现界面的线程
+    """
+
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+
+    @Slot()
+    def run(self):
+        """运行需要作为线程运行的函数"""
+        self.fn(*self.args, **self.kwargs)
 
 
 class ClientSocket:
@@ -21,15 +43,16 @@ class ClientSocket:
 if __name__ == "__main__":
     import time
     import json
-    HOST = '192.168.10.242'  # 服务端IP地址
-    PORT = 1234  # 服务端端口号
+    HOST = '192.168.10.242'  # 机械臂 IP 地址
+    PORT = 1234  # 机械臂端口号
     robot_arm_client = ClientSocket(HOST, PORT)
     with robot_arm_client as rac:
         rac.send(b'{"command":"set_joint_Auto_zero"}\r\n')
         while True:
             try:
                 time.sleep(2)
-                rac.sendall(b'{"command":"get_joint_angle_all"}\r\n')  # 获取机械臂角度值 API
+                # 获取机械臂角度值 API
+                rac.sendall(b'{"command":"get_joint_angle_all"}\r\n')
                 rs_data = rac.recv(1024).decode('utf-8')
                 rs_data_dict = json.loads(rs_data)
                 # 只获取关节角度的回执
