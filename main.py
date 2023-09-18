@@ -51,7 +51,7 @@ class MainWindow(QWidget, Ui_Form):
 
         self.copied_row = None
 
-        # todo 实例化机械臂关节控制回调函数绑定
+        # 实例化机械臂关节控制回调函数绑定
         self.AngleStepAddButton.clicked.connect(self.arm_angle_step_add)
         self.AngleStepSubButton.clicked.connect(self.arm_angle_step_sub)
         self.AngleOneAddButton.clicked.connect(self.arm_one_add)
@@ -82,10 +82,10 @@ class MainWindow(QWidget, Ui_Form):
         # 机械臂串口连接配置页面回调函数绑定
         self.SbInfoFreshButton.clicked.connect(self.get_sb_info)
 
-        # todo 连接机械臂按钮回调函数绑定
+        # 连接机械臂按钮回调函数绑定
         self.RobotArmLinkButton.clicked.connect(self.check_arm_connect_state)
 
-        # todo 命令控制页面回调函数绑定
+        # 命令控制页面回调函数绑定
         self.CommandSendButton.clicked.connect(self.send_json_command)
 
         # 复位和急停按钮绑定
@@ -220,9 +220,10 @@ class MainWindow(QWidget, Ui_Form):
                     rac.sendall(b'{"command":"get_joint_angle_all"}\r\n')  # 获取机械臂角度值 API
                     rs_data = rac.recv(1024).decode('utf-8')
                     rs_data_dict = json.loads(rs_data)
-                    print(rs_data_dict)
+                    
                     # 只获取关节角度的回执
                     if rs_data_dict["return"] == "get_joint_angle_all":
+                        print(rs_data_dict)
                         # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签
                         self.AngleOneEdit.setText(str(round(float(rs_data_dict['data'][0]))))
                         self.AngleTwoEdit.setText(str(round(float(rs_data_dict['data'][1]))))
@@ -242,9 +243,8 @@ class MainWindow(QWidget, Ui_Form):
             try:
                 remote_address = rac.getpeername()
                 self.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
-                # todo 连接没有问题后，运行后台线程
+                # 连接没有问题后，运行后台线程
                 get_all_angle = Worker(self.get_angle_value)
-                # get_all_angle.finished.emit()
                 self.threadpool.start(get_all_angle)
             except socket.error as e:
                 self.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
@@ -269,7 +269,6 @@ class MainWindow(QWidget, Ui_Form):
     # 机械臂关节控制回调函数
     def arm_one_add(self):
         """机械臂关节增加"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleOneEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
@@ -278,7 +277,7 @@ class MainWindow(QWidget, Ui_Form):
         if 0 <= degrade <= 300:
             self.AngleOneEdit.setText(str(degrade))  # 更新关节角度值
 
-            # todo 构造发送命令
+            # 构造发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [1, degrade, speed_percentage]}) + '\r\n'
 
@@ -295,7 +294,6 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_one_sub(self):
         """机械臂关节角度减少"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleOneEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
@@ -315,14 +313,13 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_two_add(self):
         """机械臂关节增加"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleTwoEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         self.AngleTwoEdit.setText(str(degrade))  # 更新关节角度值
 
-        # todo 构造发送命令
+        # 构造发送命令
         command = json.dumps(
             {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
 
@@ -335,7 +332,7 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_two_sub(self):
         """机械臂关节角度减少"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
+        # 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleTwoEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
@@ -355,14 +352,13 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_three_add(self):
         """机械臂关节增加"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleThreeEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         self.AngleThreeEdit.setText(str(degrade))  # 更新关节角度值
 
-        # todo 构造发送命令
+        # 构造发送命令
         command = json.dumps(
             {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
 
@@ -375,7 +371,6 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_three_sub(self):
         """机械臂关节角度减少"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleThreeEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
@@ -395,14 +390,13 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_four_add(self):
         """机械臂关节增加"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleFourEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         self.AngleFourEdit.setText(str(degrade))  # 更新关节角度值
 
-        # todo 构造发送命令
+        # 构造发送命令
         command = json.dumps(
             {"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
 
@@ -415,7 +409,6 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_four_sub(self):
         """机械臂关节角度减少"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleFourEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
@@ -435,7 +428,6 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_five_add(self):
         """机械臂关节增加"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleFiveEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
@@ -443,7 +435,7 @@ class MainWindow(QWidget, Ui_Form):
         if 0 <= degrade:
             self.AngleFiveEdit.setText(str(degrade))  # 更新关节角度值
 
-        # todo 构造发送命令
+        # 构造发送命令
         command = json.dumps(
             {"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
 
@@ -456,7 +448,6 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_five_sub(self):
         """机械臂关节角度减少"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleFiveEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
@@ -476,14 +467,13 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_six_add(self):
         """机械臂关节增加"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleSixEdit.text().strip())
         increase_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         self.AngleSixEdit.setText(str(degrade))  # 更新关节角度值
 
-        # todo 构造发送命令
+        # 构造发送命令
         command = json.dumps(
             {"command": "set_joint_angle_speed_percentage", "data": [6, degrade, speed_percentage]}) + '\r\n'
 
@@ -496,7 +486,6 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_six_sub(self):
         """机械臂关节角度减少"""
-        # todo 获取机械臂当前的角度(手臂未提供该接口)
         old_degrade = int(self.AngleSixEdit.text().strip())
         decrease_degrade = int(self.AngleStepEdit.text().strip())
         speed_percentage = int(self.ArmSpeedEdit.text().strip())
@@ -560,12 +549,22 @@ class MainWindow(QWidget, Ui_Form):
 
     # 末端工具控制回调函数
     def tool_open(self):
-        """"""
-        pass
+        """吸盘工具开"""
+        command = json.dumps({"command":"set_robot_io_interface", "data": [0, True]}) + '\r\n'
+        robot_arm_client = self.get_robot_arm_connector()
+        with robot_arm_client as rc:
+            rc.send(command.replace(' ', '').encode())
+            response = rc.recv(1024).decode('utf-8').strip()
+            self.TeachArmRunLogWindow.append(response)
 
     def tool_close(self):
-        """"""
-        pass
+        """吸盘工具关"""
+        command = json.dumps({"command":"set_robot_io_interface", "data": [0, False]}) + '\r\n'
+        robot_arm_client = self.get_robot_arm_connector()
+        with robot_arm_client as rc:
+            rc.send(command.replace(' ', '').encode())
+            response = rc.recv(1024).decode('utf-8').strip()
+            self.TeachArmRunLogWindow.append(response)
 
     # 示教控制回调函数编写
     def add_item(self):
@@ -578,6 +577,7 @@ class MainWindow(QWidget, Ui_Form):
         angle_5 = self.AngleFiveEdit.text()
         angle_6 = self.AngleSixEdit.text()
         speed_percentage = self.ArmSpeedEdit.text()  # 速度值，暂定百分比
+        type_of_tool = self.ArmToolComboBox.currentText()  # 获取末端工具类型
 
         if all([angle_1, angle_2, angle_3, angle_4, angle_5, angle_6]):
             row_position = self.ActionTableWidget.rowCount()
@@ -593,12 +593,16 @@ class MainWindow(QWidget, Ui_Form):
             # 工具列添加下拉选择框
             arm_tool_combobox = QComboBox()
             arm_tool_combobox.setModel(self.ArmToolOptions)
+            arm_tool_combobox.setCurrentText(type_of_tool)
             self.ActionTableWidget.setCellWidget(row_position, 7, arm_tool_combobox)
 
             # 开关列添加下拉选择框
             arm_tool_control = QComboBox()
             arm_tool_control.addItems(["", "关", "开"])
             self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control)
+            
+            # 默认延时给 1 s
+            self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem("1"))
         else:
             self.warning_message_box(message="角度值不能为空!")
 
@@ -791,6 +795,7 @@ class MainWindow(QWidget, Ui_Form):
         return robot_arm_client
 
     def closeEvent(self, event):
+        """用户触发窗口关闭事件，所有线程标志位为退出"""
         self.loop_flag = True
         print("窗口关闭！")
         event.accept()
