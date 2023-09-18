@@ -1,5 +1,3 @@
-import sys
-import traceback
 import socket
 
 from PySide2.QtCore import QRunnable, Slot

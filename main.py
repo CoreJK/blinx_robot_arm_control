@@ -3,18 +3,19 @@ import sys
 import json
 import shelve
 import time
-import threading
 from pathlib import Path
 
 from serial.tools import list_ports
 
 from PySide2.QtWidgets import QApplication, QWidget, QMessageBox, QTableWidgetItem, QMenu, QFileDialog, QComboBox
-from qt_material import apply_stylesheet
 from PySide2.QtCore import Qt, QThreadPool
+from qt_material import apply_stylesheet
+
+from common.socket_client import ClientSocket, Worker
 
 # 导入转换后的 UI 文件
 from BLinx_Robot_Arm_ui import Ui_Form
-from test.socket_client import ClientSocket, Worker
+from BLinx_ui_widgets.message_box import BlinxMessageBox
 
 
 class MainWindow(QWidget, Ui_Form):
@@ -29,6 +30,9 @@ class MainWindow(QWidget, Ui_Form):
         # 机械臂的查询循环控制位
         self.loop_flag = False
 
+        # 初始化消息提示窗口
+        self.message_box = BlinxMessageBox(self)
+        
         # 示教控制页面回调函数绑定
         self.ActionAddButton.clicked.connect(self.add_item)
         self.ActionDeleteButton.clicked.connect(self.remove_item)
@@ -95,34 +99,6 @@ class MainWindow(QWidget, Ui_Form):
         self.ArmClawOpenButton.clicked.connect(self.tool_open)
         self.ArmClawCloseButton.clicked.connect(self.tool_close)
 
-    # 按钮执行结果消息弹窗
-    def success_message_box(self, message="成功"):
-        """操作成功提示框
-        :param message: 提示框显示的消息
-        """
-        msg_box = QMessageBox(self)
-        msg_box.setWindowTitle('⚠️Success')
-        msg_box.setText(message)
-        msg_box.exec_()
-
-    def error_message_box(self, message="失败"):
-        """操作失败提示框
-        :param message: 提示框显示的消息
-        """
-        msg_box = QMessageBox(self)
-        msg_box.setWindowTitle('⚠️Error')
-        msg_box.setText(message)
-        msg_box.exec_()
-
-    def warning_message_box(self, message="警告"):
-        """操作失败警告框
-        :param message: 提示框显示的消息
-        """
-        msg_box = QMessageBox(self)
-        msg_box.setWindowTitle('⚠️Warning')
-        msg_box.setText(message)
-        msg_box.exec_()
-
     # 机械臂连接配置回调函数
     def reload_ip_port_history(self):
         """获取历史IP和Port填写记录"""
@@ -147,9 +123,9 @@ class MainWindow(QWidget, Ui_Form):
             if all([ip, port]):
                 connect_info["target_ip"] = ip
                 connect_info["target_port"] = int(port)
-                self.success_message_box(message="配置添加成功!")
+                self.message_box.success_message_box(message="配置添加成功!")
             else:
-                self.warning_message_box(message="IP 或 Port 号为空，请重新填写!")
+                self.message_box.warning_message_box(message="IP 或 Port 号为空，请重新填写!")
 
     def reset_ip_port_info(self):
         """重置 IP 和 Port 输入框内容"""
@@ -180,9 +156,9 @@ class MainWindow(QWidget, Ui_Form):
             if all([ip, port]):
                 connect_info["SSID"] = ip
                 connect_info["passwd"] = port
-                self.success_message_box(message="WiFi 配置添加成功!")
+                self.message_box.success_message_box(message="WiFi 配置添加成功!")
             else:
-                self.warning_message_box(message="WiFi名称 或密码为空，请重新填写!")
+                self.message_box.warning_message_box(message="WiFi名称 或密码为空，请重新填写!")
 
     def reset_ap_passwd_info(self):
         """重置 WiFi 名称和 passwd 输入框内容"""
@@ -205,7 +181,7 @@ class MainWindow(QWidget, Ui_Form):
             rac.send(b'{"command":"set_joint_Auto_zero"}\r\n')
             rs_data = json.loads(rac.recv(1024).decode('utf-8').strip()).get("data")
             if rs_data == "true":
-                self.warning_message_box("机械臂复位中!\n请注意手臂姿态")
+                self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
 
         # 初始化步长和速度值
         self.AngleStepEdit.setText(str(5))
@@ -242,12 +218,12 @@ class MainWindow(QWidget, Ui_Form):
         with robot_arm_client as rac:
             try:
                 remote_address = rac.getpeername()
-                self.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
+                self.message_box.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
                 # 连接没有问题后，运行后台线程
                 get_all_angle = Worker(self.get_angle_value)
                 self.threadpool.start(get_all_angle)
             except socket.error as e:
-                self.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
+                self.message_box.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
 
     # 命令控制页面 json 发送与调试
     def send_json_command(self):
@@ -290,7 +266,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             degrade = 300
             self.AngleOneEdit.setText(str(degrade))
-            self.warning_message_box(message="关节 1 最大角度值为 300 度！")
+            self.message_box.warning_message_box(message="关节 1 最大角度值为 300 度！")
 
     def arm_one_sub(self):
         """机械臂关节角度减少"""
@@ -309,7 +285,7 @@ class MainWindow(QWidget, Ui_Form):
                 response = rc.recv(1024).decode('utf-8').strip()
                 self.TeachArmRunLogWindow.append(response)
         else:
-            self.warning_message_box(message="关节 1 角度不能为负！")
+            self.message_box.warning_message_box(message="关节 1 角度不能为负！")
 
     def arm_two_add(self):
         """机械臂关节增加"""
@@ -348,7 +324,7 @@ class MainWindow(QWidget, Ui_Form):
                 response = rc.recv(1024).decode('utf-8').strip()
                 self.TeachArmRunLogWindow.append(response)
         else:
-            self.warning_message_box(message="关节 2 角度不能为负！")
+            self.message_box.warning_message_box(message="关节 2 角度不能为负！")
 
     def arm_three_add(self):
         """机械臂关节增加"""
@@ -386,7 +362,7 @@ class MainWindow(QWidget, Ui_Form):
                 response = rc.recv(1024).decode('utf-8').strip()
                 self.TeachArmRunLogWindow.append(response)
         else:
-            self.warning_message_box(message="关节 3 角度不能为负！")
+            self.message_box.warning_message_box(message="关节 3 角度不能为负！")
 
     def arm_four_add(self):
         """机械臂关节增加"""
@@ -424,7 +400,7 @@ class MainWindow(QWidget, Ui_Form):
                 response = rc.recv(1024).decode('utf-8').strip()
                 self.TeachArmRunLogWindow.append(response)
         else:
-            self.warning_message_box(message="关节 4 角度不能为负！")
+            self.message_box.warning_message_box(message="关节 4 角度不能为负！")
 
     def arm_five_add(self):
         """机械臂关节增加"""
@@ -463,7 +439,7 @@ class MainWindow(QWidget, Ui_Form):
                 response = rc.recv(1024).decode('utf-8').strip()
                 self.TeachArmRunLogWindow.append(response)
         else:
-            self.warning_message_box(message="关节 5 角度不能为负！")
+            self.message_box.warning_message_box(message="关节 5 角度不能为负！")
 
     def arm_six_add(self):
         """机械臂关节增加"""
@@ -501,7 +477,7 @@ class MainWindow(QWidget, Ui_Form):
                 response = rc.recv(1024).decode('utf-8').strip()
                 self.TeachArmRunLogWindow.append(response)
         else:
-            self.warning_message_box(message="关节 6 角度不能为负！")
+            self.message_box.warning_message_box(message="关节 6 角度不能为负！")
 
     def arm_angle_step_add(self):
         """机械臂关节步长增加"""
@@ -510,7 +486,7 @@ class MainWindow(QWidget, Ui_Form):
         if 0 < degrade <= 20:
             self.AngleStepEdit.setText(str(degrade))
         else:
-            self.warning_message_box(message="步长不能超过 20")
+            self.message_box.warning_message_box(message="步长不能超过 20")
 
     def arm_angle_step_sub(self):
         """机械臂关节步长减少"""
@@ -519,7 +495,7 @@ class MainWindow(QWidget, Ui_Form):
         if degrade > 0:
             self.AngleStepEdit.setText(str(degrade))
         else:
-            self.warning_message_box(message="步长不能为负!")
+            self.message_box.warning_message_box(message="步长不能为负!")
 
     def arm_speed_percentage_add(self):
         """关节运动速度百分比增加"""
@@ -530,9 +506,9 @@ class MainWindow(QWidget, Ui_Form):
             if 50 <= new_speed_percentage <= 100:
                 self.ArmSpeedEdit.setText(str(new_speed_percentage))
             else:
-                self.warning_message_box(message=f"关节速度范围 50 ~ 100")
+                self.message_box.warning_message_box(message=f"关节速度范围 50 ~ 100")
         else:
-            self.error_message_box(message="请输入整数字符!")
+            self.message_box.error_message_box(message="请输入整数字符!")
 
     def arm_speed_percentage_sub(self):
         """关节运动速度百分比减少"""
@@ -543,9 +519,9 @@ class MainWindow(QWidget, Ui_Form):
             if new_speed_percentage >= 50:
                 self.ArmSpeedEdit.setText(str(new_speed_percentage))
             else:
-                self.warning_message_box(message=f"关节最低速度为 50 ，速度不能为负!")
+                self.message_box.warning_message_box(message=f"关节最低速度为 50 ，速度不能为负!")
         else:
-            self.error_message_box(message="请输入整数字符!")
+            self.message_box.error_message_box(message="请输入整数字符!")
 
     # 末端工具控制回调函数
     def tool_open(self):
@@ -604,7 +580,7 @@ class MainWindow(QWidget, Ui_Form):
             # 默认延时给 1 s
             self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem("1"))
         else:
-            self.warning_message_box(message="角度值不能为空!")
+            self.message_box.warning_message_box(message="角度值不能为空!")
 
     def remove_item(self):
         """示教控制删除一行动作"""
@@ -791,7 +767,7 @@ class MainWindow(QWidget, Ui_Form):
             robot_arm_client = ClientSocket(host, port)
         except Exception as e:
             print(str(e))
-            self.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 ！")
+            self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 ！")
         return robot_arm_client
 
     def closeEvent(self, event):
