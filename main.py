@@ -7,7 +7,7 @@ from pathlib import Path
 
 from serial.tools import list_ports
 
-from PySide2.QtWidgets import QApplication, QWidget, QMessageBox, QTableWidgetItem, QMenu, QFileDialog, QComboBox
+from PySide2.QtWidgets import QApplication, QWidget, QTableWidgetItem, QMenu, QFileDialog, QComboBox
 from PySide2.QtCore import Qt, QThreadPool
 from qt_material import apply_stylesheet
 
@@ -40,7 +40,7 @@ class MainWindow(QWidget, Ui_Form):
         self.ActionOutputButton.clicked.connect(self.export_data)
         self.ActionRunButton.clicked.connect(self.run_all_action)
         self.ActionStepRunButton.clicked.connect(self.run_action_step)
-        # self.ActionLoopRunButton.clicked.connect(self.run_action_loop)
+        self.ActionLoopRunButton.clicked.connect(self.run_action_loop)
 
         self.ArmToolOptions = self.ArmToolComboBox.model()
 
@@ -183,16 +183,13 @@ class MainWindow(QWidget, Ui_Form):
             if rs_data == "true":
                 self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
 
-        # 初始化步长和速度值
-        self.AngleStepEdit.setText(str(5))
-        self.ArmSpeedEdit.setText(str(50))
 
     def get_angle_value(self):
         """实时获取关节的角度值"""
         with self.get_robot_arm_connector() as rac:
             while not self.loop_flag:
                 try:
-                    time.sleep(0.5)
+                    time.sleep(1)
                     rac.sendall(b'{"command":"get_joint_angle_all"}\r\n')  # 获取机械臂角度值 API
                     rs_data = rac.recv(1024).decode('utf-8')
                     rs_data_dict = json.loads(rs_data)
@@ -214,6 +211,11 @@ class MainWindow(QWidget, Ui_Form):
 
     def check_arm_connect_state(self):
         """检查机械臂的连接状态"""
+        
+        # 初始化步长和速度值
+        self.AngleStepEdit.setText(str(5))
+        self.ArmSpeedEdit.setText(str(50))
+        
         robot_arm_client = self.get_robot_arm_connector()
         with robot_arm_client as rac:
             try:
@@ -729,16 +731,16 @@ class MainWindow(QWidget, Ui_Form):
 
     def run_all_action(self):
         """顺序执行示教动作"""
-        # todo 遍历动作
-        self.TeachArmRunLogWindow.append("【顺序执行】开始！")
+        self.TeachArmRunLogWindow.append('【顺序执行】开始')
+        def all_action_thread():
+            for row in range(self.ActionTableWidget.rowCount()):
+                delay_time = self.run_action(row)
+                self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
+                time.sleep(delay_time)  # 等待动作执行完成    
+            
+        run_all_action_thread = Worker(all_action_thread)
+        self.threadpool.start(run_all_action_thread)
         
-        for row in range(self.ActionTableWidget.rowCount()):
-            delay_time = self.run_action(row)
-            self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
-            time.sleep(delay_time)  # 等待动作执行完成
-                
-        self.TeachArmRunLogWindow.append("【顺序执行】结束！")
-
     def run_action(self, row):
         """机械臂示执行示教动作
 
@@ -768,22 +770,33 @@ class MainWindow(QWidget, Ui_Form):
 
     def run_action_step(self):
         """单次执行选定的动作"""
-        # todo 获取到选定的任务
+        # 获取到选定的动作
         selected_row = self.ActionTableWidget.currentRow()
         if selected_row >= 0:
             self.TeachArmRunLogWindow.append("正在执行第 " + str(selected_row + 1) + " 号动作")
-            self.run_action(selected_row)
+            # 启动机械臂动作执行线程
+            run_action_step_thread = Worker(self.run_action, selected_row)
+            self.threadpool.start(run_action_step_thread)
+            
         else:
             self.message_box.warning_message_box("请选择需要执行的动作!")
             
 
     def run_action_loop(self):
         """循环执行动作"""
-        pass
-
+        
+        # 获取循环动作循环执行的次数
+        loop_times = int(self.ActionLoopTimes.text().strip())
+        
+        if loop_times:
+            for _ in range(loop_times):
+                self.run_all_action()
+        
+        
     def show_context_menu(self, pos):
         """右键复制粘贴菜单"""
         self.context_menu.exec_(self.ActionTableWidget.mapToGlobal(pos))
+
 
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
