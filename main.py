@@ -3,6 +3,7 @@ import sys
 import json
 import shelve
 import time
+import platform
 from pathlib import Path
 
 from serial.tools import list_ports
@@ -23,7 +24,11 @@ class MainWindow(QWidget, Ui_Form):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("BLinx Robot Arm V1.0")
-
+        
+        # 获取操作系统的版本信息
+        self.os_name = platform.system()
+        self.os_version = platform.release()
+        
         # 开启 QT 线程池
         self.threadpool = QThreadPool()
 
@@ -98,7 +103,7 @@ class MainWindow(QWidget, Ui_Form):
         # todo 末端工具控制组回调函数绑定
         self.ArmClawOpenButton.clicked.connect(self.tool_open)
         self.ArmClawCloseButton.clicked.connect(self.tool_close)
-
+        
     # 机械臂连接配置回调函数
     def reload_ip_port_history(self):
         """获取历史IP和Port填写记录"""
@@ -224,9 +229,15 @@ class MainWindow(QWidget, Ui_Form):
                 # 连接没有问题后，运行后台线程
                 get_all_angle = Worker(self.get_angle_value)
                 self.threadpool.start(get_all_angle)
+                
+                #  连接成功后，将连接机械臂按钮禁用，避免重复连接
+                self.RobotArmLinkButton.setEnabled(False)
+
             except socket.error as e:
                 self.message_box.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
 
+       
+        
     # 命令控制页面 json 发送与调试
     def send_json_command(self):
         """json数据发送按钮"""

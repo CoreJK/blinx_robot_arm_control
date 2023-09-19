@@ -33,7 +33,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="iconSize">
     <size>
@@ -260,36 +260,10 @@
       <string>删除动作</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="ActionPastButton">
-     <property name="geometry">
-      <rect>
-       <x>821</x>
-       <y>410</y>
-       <width>91</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>粘贴动作</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="ActionCopyButton">
-     <property name="geometry">
-      <rect>
-       <x>710</x>
-       <y>410</y>
-       <width>91</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>复制动作</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="ActionAddButton">
      <property name="geometry">
       <rect>
-       <x>490</x>
+       <x>710</x>
        <y>410</y>
        <width>91</width>
        <height>23</height>
@@ -328,7 +302,7 @@
     <widget class="QPushButton" name="ActionUpdateButton">
      <property name="geometry">
       <rect>
-       <x>600</x>
+       <x>820</x>
        <y>410</y>
        <width>91</width>
        <height>23</height>
