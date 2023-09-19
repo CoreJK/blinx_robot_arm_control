@@ -38,7 +38,7 @@ class MainWindow(QWidget, Ui_Form):
         self.ActionDeleteButton.clicked.connect(self.remove_item)
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
-        self.ActionRunButton.clicked.connect(self.run_action)
+        self.ActionRunButton.clicked.connect(self.run_all_action)
         self.ActionStepRunButton.clicked.connect(self.run_action_step)
         # self.ActionLoopRunButton.clicked.connect(self.run_action_loop)
 
@@ -727,34 +727,55 @@ class MainWindow(QWidget, Ui_Form):
             with open(file_name, "w") as json_file:
                 json.dump(data, json_file, indent=4, ensure_ascii=False)
 
-    def run_action(self):
-        """顺序执行动作"""
+    def run_all_action(self):
+        """顺序执行示教动作"""
         # todo 遍历动作
         self.TeachArmRunLogWindow.append("【顺序执行】开始！")
-        with self.get_robot_arm_connector() as robot_client:
-            for row in range(self.ActionTableWidget.rowCount()):
-                angle_1 = int(self.ActionTableWidget.item(row, 0).text())
-                angle_2 = int(self.ActionTableWidget.item(row, 1).text())
-                angle_3 = int(self.ActionTableWidget.item(row, 2).text())
-                angle_4 = int(self.ActionTableWidget.item(row, 3).text())
-                angle_5 = int(self.ActionTableWidget.item(row, 4).text())
-                angle_6 = int(self.ActionTableWidget.item(row, 5).text())
-                speed_percentage = int(self.ActionTableWidget.item(row, 6).text())
-                delay_time = int(self.ActionTableWidget.item(row, 9).text())
-                # todo 构造命令
-                json_command = {"command": "set_joint_angle_all_time",
-                                "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, delay_time,
-                                         speed_percentage]}
-                str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
-                robot_client.send(str_command.encode('utf-8'))
-                self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
-                time.sleep(delay_time)  # 等待动作执行完成
+        
+        for row in range(self.ActionTableWidget.rowCount()):
+            delay_time = self.run_action(row)
+            self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
+            time.sleep(delay_time)  # 等待动作执行完成
+                
         self.TeachArmRunLogWindow.append("【顺序执行】结束！")
+
+    def run_action(self, row):
+        """机械臂示执行示教动作
+
+        Args:
+            row (QTableWidget): 用户在示教界面，点击选中的行
+
+        Returns:
+            delay_time (int): 返回动作的执行耗时
+        """
+        with self.get_robot_arm_connector() as robot_client:
+            angle_1 = int(self.ActionTableWidget.item(row, 0).text())
+            angle_2 = int(self.ActionTableWidget.item(row, 1).text())
+            angle_3 = int(self.ActionTableWidget.item(row, 2).text())
+            angle_4 = int(self.ActionTableWidget.item(row, 3).text())
+            angle_5 = int(self.ActionTableWidget.item(row, 4).text())
+            angle_6 = int(self.ActionTableWidget.item(row, 5).text())
+            speed_percentage = int(self.ActionTableWidget.item(row, 6).text())
+            delay_time = int(self.ActionTableWidget.item(row, 9).text())  # 执行动作需要的时间
+            
+            # 机械臂执行命令
+            json_command = {"command": "set_joint_angle_all_time",
+                                    "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, delay_time,
+                                            speed_percentage]}
+            str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+            robot_client.send(str_command.encode('utf-8'))
+        return delay_time
 
     def run_action_step(self):
         """单次执行选定的动作"""
         # todo 获取到选定的任务
-        pass
+        selected_row = self.ActionTableWidget.currentRow()
+        if selected_row >= 0:
+            self.TeachArmRunLogWindow.append("正在执行第 " + str(selected_row + 1) + " 号动作")
+            self.run_action(selected_row)
+        else:
+            self.message_box.warning_message_box("请选择需要执行的动作!")
+            
 
     def run_action_loop(self):
         """循环执行动作"""
