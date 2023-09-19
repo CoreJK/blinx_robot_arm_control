@@ -654,6 +654,7 @@ class MainWindow(QWidget, Ui_Form):
                     speed_percentage = item.get("速度", 30)  # 速度百分比默认为 30%
                     arm_tool_option = item.get("工具", "")
                     arm_tool_control = item.get("开关", "")
+                    arm_action_delay_time = item.get("延时", "")
 
                     row_position = self.ActionTableWidget.rowCount()
                     self.ActionTableWidget.insertRow(row_position)
@@ -677,6 +678,9 @@ class MainWindow(QWidget, Ui_Form):
                     arm_tool_control_combobox.setCurrentText(arm_tool_control)
                     self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control_combobox)
 
+                    # 延时列
+                    self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem(arm_action_delay_time))
+                    
     def export_data(self):
         """导出动作"""
         options = QFileDialog.Options()
@@ -692,9 +696,10 @@ class MainWindow(QWidget, Ui_Form):
                 angle_4 = self.ActionTableWidget.item(row, 3).text()
                 angle_5 = self.ActionTableWidget.item(row, 4).text()
                 angle_6 = self.ActionTableWidget.item(row, 5).text()
-                speed_percentage = self.ActionTableWidget.item(row, 6).text()
+                speed_percentage = self.ActionTableWidget.item(row, 6).text()  # 速度列
                 arm_tool_widget = self.ActionTableWidget.cellWidget(row, 7)  # 工具列
                 arm_tool_control_widget = self.ActionTableWidget.cellWidget(row, 8)  # 开关列
+                arm_action_delay_time = self.ActionTableWidget.item(row, 9).text()  # 延时列
 
                 if arm_tool_widget is not None:
                     arm_tool_option = arm_tool_widget.currentText()
@@ -715,7 +720,8 @@ class MainWindow(QWidget, Ui_Form):
                     "J6/X": angle_6,
                     "速度": speed_percentage,
                     "工具": arm_tool_option,
-                    "开关": arm_tool_control_widget
+                    "开关": arm_tool_control_widget,
+                    "延时": arm_action_delay_time,
                 })
 
             with open(file_name, "w") as json_file:
