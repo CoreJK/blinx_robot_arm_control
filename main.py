@@ -740,16 +740,16 @@ class MainWindow(QWidget, Ui_Form):
             with open(file_name, "w") as json_file:
                 json.dump(data, json_file, indent=4, ensure_ascii=False)
 
+    def tale_action_thread(self):
+        for row in range(self.ActionTableWidget.rowCount()):
+            delay_time = self.run_action(row)
+            self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
+            time.sleep(delay_time)  # 等待动作执行完成
+    
     def run_all_action(self):
         """顺序执行示教动作"""
         self.TeachArmRunLogWindow.append('【顺序执行】开始')
-        def all_action_thread():
-            for row in range(self.ActionTableWidget.rowCount()):
-                delay_time = self.run_action(row)
-                self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
-                time.sleep(delay_time)  # 等待动作执行完成    
-            
-        run_all_action_thread = Worker(all_action_thread)
+        run_all_action_thread = Worker(self.tale_action_thread)
         self.threadpool.start(run_all_action_thread)
         
     def run_action(self, row):
@@ -769,7 +769,7 @@ class MainWindow(QWidget, Ui_Form):
             angle_5 = int(self.ActionTableWidget.item(row, 4).text())
             angle_6 = int(self.ActionTableWidget.item(row, 5).text())
             speed_percentage = int(self.ActionTableWidget.item(row, 6).text())
-            delay_time = int(self.ActionTableWidget.item(row, 9).text())  # 执行动作需要的时间
+            delay_time = float(self.ActionTableWidget.item(row, 9).text())  # 执行动作需要的时间
             
             # 机械臂执行命令
             json_command = {"command": "set_joint_angle_all_time",
@@ -795,13 +795,13 @@ class MainWindow(QWidget, Ui_Form):
 
     def run_action_loop(self):
         """循环执行动作"""
-        
         # 获取循环动作循环执行的次数
-        loop_times = int(self.ActionLoopTimes.text().strip())
-        
-        if loop_times:
+        if self.ActionLoopTimes.text().isdigit():
+            loop_times = int(self.ActionLoopTimes.text().strip()) 
             for _ in range(loop_times):
-                self.run_all_action()
+                self.tale_action_thread()
+        else:
+            self.message_box.warning_message_box(f"请输入所以动作循环次数[0-9]")
         
         
     def show_context_menu(self, pos):

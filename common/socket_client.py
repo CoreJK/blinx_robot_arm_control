@@ -18,7 +18,9 @@ class Worker(QRunnable):
     @Slot()
     def run(self):
         """运行需要作为线程运行的函数"""
+        print("线程开始")
         self.fn(*self.args, **self.kwargs)
+        print("线程结束")
 
 
 class ClientSocket:

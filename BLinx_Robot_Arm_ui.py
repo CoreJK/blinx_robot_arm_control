@@ -87,7 +87,7 @@ class Ui_Form(object):
         self.ActionTableWidget.setHorizontalHeaderItem(10, __qtablewidgetitem10)
         self.ActionTableWidget.setObjectName(u"ActionTableWidget")
         self.ActionTableWidget.setGeometry(QRect(20, 40, 901, 361))
-        self.ActionTableWidget.horizontalHeader().setVisible(False)
+        self.ActionTableWidget.horizontalHeader().setVisible(True)
         self.ActionTableWidget.horizontalHeader().setCascadingSectionResizes(False)
         self.ActionTableWidget.horizontalHeader().setDefaultSectionSize(81)
         self.TeachArmRunLogLabel = QLabel(self.HelpTeachPage)
