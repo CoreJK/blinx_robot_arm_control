@@ -1,23 +1,24 @@
+import json
+import platform
+import shelve
 import socket
 import sys
-import json
-import shelve
 import time
-import platform
+import threading
 from pathlib import Path
 
-from serial.tools import list_ports
-
-from PySide2.QtWidgets import QApplication, QWidget, QTableWidgetItem, QMenu, QFileDialog, QComboBox
 from PySide2.QtCore import Qt, QThreadPool
+from PySide2.QtWidgets import (QApplication, QComboBox, QFileDialog, QMenu,
+                               QTableWidgetItem, QWidget)
 from qt_material import apply_stylesheet
-
-from common.socket_client import ClientSocket, Worker
+from serial.tools import list_ports
 
 # 导入转换后的 UI 文件
 from BLinx_Robot_Arm_ui import Ui_Form
 from BLinx_ui_widgets.message_box import BlinxMessageBox
+from common.socket_client import ClientSocket, Worker
 
+import faulthandler;faulthandler.enable()
 
 class MainWindow(QWidget, Ui_Form):
     def __init__(self):
