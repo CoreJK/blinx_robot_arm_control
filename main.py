@@ -107,7 +107,12 @@ class MainWindow(QWidget, Ui_Form):
     # 机械臂连接配置回调函数
     def reload_ip_port_history(self):
         """获取历史IP和Port填写记录"""
-        with Path('./config_files/Socket_Info') as socket_file_info:
+        if self.os_name == "Windows":
+            ip_port_info_file = './config_files/Socket_Info.dat'
+        else:
+            ip_port_info_file = './config_files/Socket_Info'
+            
+        with Path(ip_port_info_file) as socket_file_info:
             if socket_file_info.exists():
                 try:
                     socket_info = shelve.open("./config_files/Socket_Info")
@@ -140,7 +145,12 @@ class MainWindow(QWidget, Ui_Form):
     # 机械臂 WiFi AP 模式配置回调函数
     def reload_ap_passwd_history(self):
         """获取历史 WiFi 名称和 Passwd 记录"""
-        with Path('./config_files/WiFi_Info') as socket_file_info:
+        if self.os_name == "Windows":
+            ap_passwd_info_file = './config_files/WiFi_Info.dat'
+        else:
+            ap_passwd_info_file = './config_files/WiFi_Info'
+            
+        with Path(ap_passwd_info_file) as socket_file_info:
             if socket_file_info.exists():
                 try:
                     socket_info = shelve.open("./config_files/WiFi_Info")
