@@ -4,7 +4,6 @@ import shelve
 import socket
 import sys
 import time
-import threading
 from pathlib import Path
 
 from PySide2.QtCore import Qt, QThreadPool
@@ -540,21 +539,29 @@ class MainWindow(QWidget, Ui_Form):
     # 末端工具控制回调函数
     def tool_open(self):
         """吸盘工具开"""
-        command = json.dumps({"command":"set_robot_io_interface", "data": [0, True]}) + '\r\n'
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        type_of_tool = self.ArmToolComboBox.currentText()
+        if type_of_tool == "吸盘":
+            command = json.dumps({"command":"set_robot_io_interface", "data": [0, True]}) + '\r\n'
+            robot_arm_client = self.get_robot_arm_connector()
+            with robot_arm_client as rc:
+                rc.send(command.replace(' ', '').encode())
+                response = rc.recv(1024).decode('utf-8').strip()
+                self.TeachArmRunLogWindow.append(response)
+        else:
+            self.message_box.warning_message_box("末端工具未选择吸盘!")
 
     def tool_close(self):
         """吸盘工具关"""
-        command = json.dumps({"command":"set_robot_io_interface", "data": [0, False]}) + '\r\n'
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        type_of_tool = self.ArmToolComboBox.currentText()
+        if type_of_tool == "吸盘":
+            command = json.dumps({"command":"set_robot_io_interface", "data": [0, False]}) + '\r\n'
+            robot_arm_client = self.get_robot_arm_connector()
+            with robot_arm_client as rc:
+                rc.send(command.replace(' ', '').encode())
+                response = rc.recv(1024).decode('utf-8').strip()
+                self.TeachArmRunLogWindow.append(response)
+        else:
+            self.message_box.warning_message_box("末端工具未选择吸盘!")
 
     # 示教控制回调函数编写
     def add_item(self):
@@ -785,7 +792,7 @@ class MainWindow(QWidget, Ui_Form):
         # 获取到选定的动作
         selected_row = self.ActionTableWidget.currentRow()
         if selected_row >= 0:
-            self.TeachArmRunLogWindow.append("正在执行第 " + str(selected_row + 1) + " 号动作")
+            self.TeachArmRunLogWindow.append("正在执行第 " + str(selected_row + 1) + " 个动作")
             # 启动机械臂动作执行线程
             run_action_step_thread = Worker(self.run_action, selected_row)
             self.threadpool.start(run_action_step_thread)

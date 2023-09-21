@@ -19,7 +19,10 @@ class Worker(QRunnable):
     def run(self):
         """运行需要作为线程运行的函数"""
         print("线程开始")
-        self.fn(*self.args, **self.kwargs)
+        try:
+            self.fn(*self.args, **self.kwargs)
+        except Exception as e:
+            print(str(e))
         print("线程结束")
 
 
