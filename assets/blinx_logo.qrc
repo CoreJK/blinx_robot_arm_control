@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="images">
+    <file>images/Blinx_tec_logo.png</file>
+  </qresource>
+  <qresource prefix="icons">
+    <file>icons/Robot_arm_log.png</file>
+  </qresource>
+</RCC>
