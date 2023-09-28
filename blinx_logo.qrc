@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="logo">
-    <file>UI/Blinx_tec_logo.png</file>
-    <file>UI/Robot_arm_log.png</file>
-  </qresource>
-</RCC>

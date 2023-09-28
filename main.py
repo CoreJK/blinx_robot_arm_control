@@ -13,8 +13,8 @@ from qt_material import apply_stylesheet
 from serial.tools import list_ports
 
 # 导入转换后的 UI 文件
-from BLinx_Robot_Arm_ui import Ui_Form
-from BLinx_ui_widgets.message_box import BlinxMessageBox
+from app.BLinx_Robot_Arm_ui import Ui_Form
+from componets.message_box import BlinxMessageBox
 from common.socket_client import ClientSocket, Worker
 
 import faulthandler;faulthandler.enable()
@@ -108,14 +108,14 @@ class MainWindow(QWidget, Ui_Form):
     def reload_ip_port_history(self):
         """获取历史IP和Port填写记录"""
         if self.os_name == "Windows":
-            ip_port_info_file = './config_files/Socket_Info.dat'
+            ip_port_info_file = './config/Socket_Info.dat'
         else:
-            ip_port_info_file = './config_files/Socket_Info'
+            ip_port_info_file = './config/Socket_Info'
             
         with Path(ip_port_info_file) as socket_file_info:
             if socket_file_info.exists():
                 try:
-                    socket_info = shelve.open("./config_files/Socket_Info")
+                    socket_info = shelve.open("./config/Socket_Info")
                     self.TargetIpEdit.setText(socket_info["target_ip"])
                     self.TargetPortEdit.setText(str(socket_info["target_port"]))
                 except KeyError:
@@ -129,7 +129,7 @@ class MainWindow(QWidget, Ui_Form):
         ip = self.TargetIpEdit.text().strip()
         port = self.TargetPortEdit.text().strip()
         # 保存 IP 和 Port 信息
-        with shelve.open('./config_files/Socket_Info') as connect_info:
+        with shelve.open('./config/Socket_Info') as connect_info:
             if all([ip, port]):
                 connect_info["target_ip"] = ip
                 connect_info["target_port"] = int(port)
@@ -146,14 +146,14 @@ class MainWindow(QWidget, Ui_Form):
     def reload_ap_passwd_history(self):
         """获取历史 WiFi 名称和 Passwd 记录"""
         if self.os_name == "Windows":
-            ap_passwd_info_file = './config_files/WiFi_Info.dat'
+            ap_passwd_info_file = './config/WiFi_Info.dat'
         else:
-            ap_passwd_info_file = './config_files/WiFi_Info'
+            ap_passwd_info_file = './config/WiFi_Info'
             
         with Path(ap_passwd_info_file) as socket_file_info:
             if socket_file_info.exists():
                 try:
-                    socket_info = shelve.open("./config_files/WiFi_Info")
+                    socket_info = shelve.open("./config/WiFi_Info")
                     self.WiFiSsidEdit.setText(socket_info["SSID"])
                     self.WiFiPasswdEdit.setText(socket_info["passwd"])
                 except KeyError:
@@ -167,7 +167,7 @@ class MainWindow(QWidget, Ui_Form):
         ip = self.WiFiSsidEdit.text().strip()
         port = self.WiFiPasswdEdit.text().strip()
         # 保存 IP 和 Port 信息
-        with shelve.open('./config_files/WiFi_Info') as connect_info:
+        with shelve.open('./config/WiFi_Info') as connect_info:
             if all([ip, port]):
                 connect_info["SSID"] = ip
                 connect_info["passwd"] = port
@@ -830,7 +830,7 @@ class MainWindow(QWidget, Ui_Form):
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
         try:
-            socket_info = shelve.open("./config_files/Socket_Info")
+            socket_info = shelve.open("./config/Socket_Info")
             host = socket_info['target_ip']
             port = int(socket_info['target_port'])
             robot_arm_client = ClientSocket(host, port)
