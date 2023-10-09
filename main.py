@@ -6,16 +6,28 @@ import sys
 import time
 from pathlib import Path
 
+# 正逆解相关模块
+import numpy as np
+from math import degrees
+from spatialmath import SE3
+from spatialmath.base import rpy2tr
+
+# UI 相关模块
 from PySide2.QtCore import Qt, QThreadPool
 from PySide2.QtWidgets import (QApplication, QComboBox, QFileDialog, QMenu,
                                QTableWidgetItem, QWidget)
 from qt_material import apply_stylesheet
+
+# 三方通讯模块
 from serial.tools import list_ports
 
 # 导入转换后的 UI 文件
 from app.BLinx_Robot_Arm_ui import Ui_Form
 from componets.message_box import BlinxMessageBox
 from common.socket_client import ClientSocket, Worker
+
+# 机械臂MDH模型
+from common.blinx_robot_module import Mirobot
 
 # 调试 segment 异常时，解除改注释
 # import faulthandler;faulthandler.enable()
@@ -25,6 +37,8 @@ class MainWindow(QWidget, Ui_Form):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("BLinx Robot Arm V1.0")
+        # todo 初始化机械臂模型
+        self.blinx_robot_arm = Mirobot()
         
         # 获取操作系统的版本信息
         self.os_name = platform.system()
@@ -199,7 +213,6 @@ class MainWindow(QWidget, Ui_Form):
             if rs_data == "true":
                 self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
 
-
     def get_angle_value(self):
         """实时获取关节的角度值"""
         with self.get_robot_arm_connector() as rac:
@@ -216,7 +229,16 @@ class MainWindow(QWidget, Ui_Form):
                         # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签的角度值
                         all_angle_degrees = self.update_joint_degrees_text(rs_data_dict)
                         # todo 计算并更新机械臂的正运动解
-
+                        arm_pose_degrees = np.array(all_angle_degrees)
+                        translation_vector = self.blinx_robot_arm.fkine(arm_pose_degrees)
+                        x, y, z = translation_vector.t  # 平移向量
+                        Rz, Ry, Rx = map(lambda x: degrees(x), translation_vector.rpy())  # 旋转角
+                        self.XAxisEdit.setText(str(round(x, 2)))
+                        self.YAxisEdit.setText(str(round(y, 2)))
+                        self.ZAxisEdit.setText(str(round(z, 2)))
+                        self.RxAxisEdit.setText(str(round(Rx, 2)))
+                        self.RyAxisEdit.setText(str(round(Ry, 2)))
+                        self.RzAxisEdit.setText(str(round(Rz, 2)))
                 except (UnicodeError, json.decoder.JSONDecodeError) as e:
                     # 等待其他指令完成操作，跳过获取机械臂角度值
                     print(str(e))

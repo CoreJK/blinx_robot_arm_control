@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1493</width>
+    <width>1544</width>
     <height>680</height>
    </rect>
   </property>
@@ -33,7 +33,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="iconSize">
     <size>
@@ -170,7 +170,7 @@
       </rect>
      </property>
      <attribute name="horizontalHeaderVisible">
-      <bool>true</bool>
+      <bool>false</bool>
      </attribute>
      <attribute name="horizontalHeaderCascadingSectionResizes">
       <bool>false</bool>
@@ -802,9 +802,9 @@
   <widget class="QGroupBox" name="RobotArmPositionControlGroup">
    <property name="geometry">
     <rect>
-     <x>1260</x>
+     <x>1282</x>
      <y>90</y>
-     <width>221</width>
+     <width>241</width>
      <height>181</height>
     </rect>
    </property>
@@ -814,7 +814,7 @@
    <widget class="QPushButton" name="ZAxisAddButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>180</x>
       <y>130</y>
       <width>51</width>
       <height>31</height>
@@ -829,7 +829,7 @@
      <rect>
       <x>100</x>
       <y>50</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -840,7 +840,7 @@
    <widget class="QPushButton" name="YAxisAddButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>180</x>
       <y>90</y>
       <width>51</width>
       <height>31</height>
@@ -894,7 +894,7 @@
      <rect>
       <x>100</x>
       <y>90</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -920,7 +920,7 @@
      <rect>
       <x>100</x>
       <y>130</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -957,7 +957,7 @@
    <widget class="QPushButton" name="XAxisAddButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>180</x>
       <y>50</y>
       <width>51</width>
       <height>31</height>
@@ -973,7 +973,7 @@
     <rect>
      <x>1000</x>
      <y>90</y>
-     <width>241</width>
+     <width>261</width>
      <height>361</height>
     </rect>
    </property>
@@ -1012,7 +1012,7 @@
    <widget class="QPushButton" name="AngleFourAddButton">
     <property name="geometry">
      <rect>
-      <x>181</x>
+      <x>196</x>
       <y>160</y>
       <width>51</width>
       <height>31</height>
@@ -1077,7 +1077,7 @@
    <widget class="QPushButton" name="AngleSixAddButton">
     <property name="geometry">
      <rect>
-      <x>181</x>
+      <x>196</x>
       <y>240</y>
       <width>51</width>
       <height>31</height>
@@ -1105,7 +1105,7 @@
      <rect>
       <x>121</x>
       <y>320</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -1116,7 +1116,7 @@
    <widget class="QPushButton" name="AngleOneAddButton">
     <property name="geometry">
      <rect>
-      <x>181</x>
+      <x>196</x>
       <y>40</y>
       <width>51</width>
       <height>31</height>
@@ -1129,7 +1129,7 @@
    <widget class="QPushButton" name="AngleStepAddButton">
     <property name="geometry">
      <rect>
-      <x>181</x>
+      <x>196</x>
       <y>280</y>
       <width>51</width>
       <height>31</height>
@@ -1144,7 +1144,7 @@
      <rect>
       <x>121</x>
       <y>200</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -1170,7 +1170,7 @@
      <rect>
       <x>121</x>
       <y>80</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -1183,7 +1183,7 @@
      <rect>
       <x>121</x>
       <y>240</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -1194,7 +1194,7 @@
    <widget class="QPushButton" name="ArmSpeedUpButton">
     <property name="geometry">
      <rect>
-      <x>181</x>
+      <x>196</x>
       <y>320</y>
       <width>51</width>
       <height>31</height>
@@ -1209,7 +1209,7 @@
      <rect>
       <x>121</x>
       <y>120</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -1235,7 +1235,7 @@
      <rect>
       <x>121</x>
       <y>160</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -1248,7 +1248,7 @@
      <rect>
       <x>121</x>
       <y>40</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -1337,7 +1337,7 @@
    <widget class="QPushButton" name="AngleFiveAddButton">
     <property name="geometry">
      <rect>
-      <x>181</x>
+      <x>196</x>
       <y>200</y>
       <width>51</width>
       <height>31</height>
@@ -1350,7 +1350,7 @@
    <widget class="QPushButton" name="AngleTwoAddButton">
     <property name="geometry">
      <rect>
-      <x>181</x>
+      <x>196</x>
       <y>80</y>
       <width>51</width>
       <height>31</height>
@@ -1376,7 +1376,7 @@
    <widget class="QPushButton" name="AngleThreeAddButton">
     <property name="geometry">
      <rect>
-      <x>181</x>
+      <x>196</x>
       <y>120</y>
       <width>51</width>
       <height>31</height>
@@ -1391,7 +1391,7 @@
      <rect>
       <x>121</x>
       <y>280</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -1403,9 +1403,9 @@
   <widget class="QGroupBox" name="RobotArmAttituControlGroup">
    <property name="geometry">
     <rect>
-     <x>1260</x>
+     <x>1282</x>
      <y>280</y>
-     <width>221</width>
+     <width>241</width>
      <height>171</height>
     </rect>
    </property>
@@ -1415,7 +1415,7 @@
    <widget class="QPushButton" name="RzAxisAddButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>180</x>
       <y>130</y>
       <width>51</width>
       <height>31</height>
@@ -1430,7 +1430,7 @@
      <rect>
       <x>100</x>
       <y>130</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -1443,7 +1443,7 @@
      <rect>
       <x>100</x>
       <y>50</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -1480,7 +1480,7 @@
    <widget class="QPushButton" name="RyAxisAddButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>180</x>
       <y>90</y>
       <width>51</width>
       <height>31</height>
@@ -1532,7 +1532,7 @@
    <widget class="QPushButton" name="RxAxisAddButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>180</x>
       <y>50</y>
       <width>51</width>
       <height>31</height>
@@ -1547,7 +1547,7 @@
      <rect>
       <x>100</x>
       <y>90</y>
-      <width>51</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
