@@ -5,6 +5,7 @@ import socket
 import sys
 import time
 from pathlib import Path
+from functools import partial
 
 # 正逆解相关模块
 import numpy as np
@@ -115,9 +116,26 @@ class MainWindow(QWidget, Ui_Form):
         # 复位和急停按钮绑定
         self.RobotArmResetButton.clicked.connect(self.reset_robot_arm)
 
-        # todo 末端工具控制组回调函数绑定
+        # 末端工具控制组回调函数绑定
         self.ArmClawOpenButton.clicked.connect(self.tool_open)
         self.ArmClawCloseButton.clicked.connect(self.tool_close)
+        
+        # 末端工具坐标增减回调函数绑定 
+        self.XAxisAddButton.clicked.connect(partial(self.tool_x_operate, action="add"))
+        self.XAxisSubButton.clicked.connect(partial(self.tool_x_operate, action="sub"))
+        self.YAxisAddButton.clicked.connect(partial(self.tool_y_operate, action="add"))
+        self.YAxisSubButton.clicked.connect(partial(self.tool_y_operate, action="sub"))
+        self.ZAxisAddButton.clicked.connect(partial(self.tool_z_operate, action="add"))
+        self.ZAxisSubButton.clicked.connect(partial(self.tool_z_operate, action="sub"))
+        
+        # 末端工具姿态增减回调函数绑定
+        self.RxAxisAddButton.clicked.connect(partial(self.tool_rx_operate, action="add"))
+        self.RxAxisSubButton.clicked.connect(partial(self.tool_rx_operate, action="sub"))
+        self.RyAxisAddButton.clicked.connect(partial(self.tool_ry_operate, action="add"))
+        self.RyAxisSubButton.clicked.connect(partial(self.tool_ry_operate, action="sub"))
+        self.RzAxisAddButton.clicked.connect(partial(self.tool_rz_operate, action="add"))
+        self.RzAxisSubButton.clicked.connect(partial(self.tool_rz_operate, action="sub"))
+        
         
     # 机械臂连接配置回调函数
     def reload_ip_port_history(self):
@@ -227,9 +245,11 @@ class MainWindow(QWidget, Ui_Form):
                     if rs_data_dict["return"] == "get_joint_angle_all":
                         print(rs_data_dict)
                         # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签的角度值
-                        all_angle_degrees = self.update_joint_degrees_text(rs_data_dict)
-                        # todo 计算并更新机械臂的正运动解
-                        arm_pose_degrees = np.array(all_angle_degrees)
+                        # 将角度值转换为列表
+                        rs_data_list = [round(float(data), 2) for data in rs_data_dict['data']]
+                        self.update_joint_degrees_text(rs_data_list)
+                        # 计算并更新机械臂的正运动解
+                        arm_pose_degrees = np.array(rs_data_list)
                         translation_vector = self.blinx_robot_arm.fkine(arm_pose_degrees)
                         x, y, z = translation_vector.t  # 平移向量
                         Rz, Ry, Rx = map(lambda x: degrees(x), translation_vector.rpy())  # 旋转角
@@ -243,25 +263,19 @@ class MainWindow(QWidget, Ui_Form):
                     # 等待其他指令完成操作，跳过获取机械臂角度值
                     print(str(e))
 
-    def update_joint_degrees_text(self, rs_data_dict):
+    def update_joint_degrees_text(self, six_joint_degrees):
         """更新界面上的角度值, 并返回实时角度值
 
         Args:
             rs_data_dict (_dict_): 与机械臂通讯获取到的机械臂角度值
         """
-        q1 = round(float(rs_data_dict['data'][0]), 2)
-        q2 = round(float(rs_data_dict['data'][1]), 2)
-        q3 = round(float(rs_data_dict['data'][2]), 2)
-        q4 = round(float(rs_data_dict['data'][3]), 2)
-        q5 = round(float(rs_data_dict['data'][4]), 2)
-        q6 = round(float(rs_data_dict['data'][5]), 2)
+        q1, q2, q3, q4, q5, q6 = six_joint_degrees
         self.AngleOneEdit.setText(str(q1))
         self.AngleTwoEdit.setText(str(q2))
         self.AngleThreeEdit.setText(str(q3))
         self.AngleFourEdit.setText(str(q4))
         self.AngleFiveEdit.setText(str(q5))
         self.AngleSixEdit.setText(str(q6))
-        return [q1, q2, q3, q4, q5, q6]
     
     def check_arm_connect_state(self):
         """检查机械臂的连接状态"""
@@ -612,6 +626,147 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box("末端工具未选择吸盘!")
 
+    def tool_x_operate(self, action="add"):
+        """末端工具坐标 x 增减函数"""
+        # 获取末端工具的坐标和姿态，用于逆运动计算关节角度
+        old_x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
+        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
+        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
+        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
+        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        change_value = round(float(self.AngleStepEdit.text().strip()), 2)  # 步长值
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)  # 速度值
+        
+        if action == "add":
+            new_x_coordinate = old_x_coordinate + change_value
+            self.XAxisEdit.setText(str(new_x_coordinate))  # 更新末端工具坐标 X
+            
+        else:
+            new_x_coordinate = old_x_coordinate - change_value
+            self.XAxisEdit.setText(str(new_x_coordinate))  
+        
+        # 通过逆解算出机械臂各个关节角度值
+        R_T = SE3([new_x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 2) for d in sol.q]
+        print("逆解关节角度 = ", degrade)
+        
+        # 更新关节控制界面中的角度值
+        self.update_joint_degrees_text(degrade)
+        
+        # 构造发送命令
+        command = json.dumps(
+                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+
+        # 发送命令
+        robot_arm_client = self.get_robot_arm_connector()
+        with robot_arm_client as rc:
+            rc.send(command.replace(' ', '').encode())
+            response = rc.recv(1024).decode('utf-8').strip()
+            self.TeachArmRunLogWindow.append(response)
+            
+    def tool_y_operate(self, action="add"):
+        """末端工具坐标 y 增减函数"""
+       # 获取末端工具的坐标和姿态，用于逆运动计算关节角度
+        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
+        old_y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
+        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
+        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
+        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        change_value = round(float(self.AngleStepEdit.text().strip()), 2)  # 步长值
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)  # 速度值
+        
+        if action == "add":
+            new_y_coordinate = old_y_coordinate + change_value
+            self.YAxisEdit.setText(str(new_y_coordinate))  # 更新末端工具坐标 Y
+            
+        else:
+            new_y_coordinate = old_y_coordinate - change_value
+            self.YAxisEdit.setText(str(new_y_coordinate))  
+        
+        # 通过逆解算出机械臂各个关节角度值
+        R_T = SE3([x_coordinate, new_y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 2) for d in sol.q]
+        print("逆解关节角度 = ", degrade)
+        
+        # 更新关节控制界面中的角度值
+        self.update_joint_degrees_text(degrade)
+        
+        # 构造发送命令
+        command = json.dumps(
+                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+
+        # 发送命令
+        robot_arm_client = self.get_robot_arm_connector()
+        with robot_arm_client as rc:
+            rc.send(command.replace(' ', '').encode())
+            response = rc.recv(1024).decode('utf-8').strip()
+            self.TeachArmRunLogWindow.append(response)
+    
+    def tool_z_operate(self, action="add"):
+        """末端工具坐标 z 增减函数"""
+        # 获取末端工具的坐标和姿态，用于逆运动计算关节角度
+        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
+        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
+        old_z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
+        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
+        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        change_value = round(float(self.AngleStepEdit.text().strip()), 2)  # 步长值
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)  # 速度值
+        
+        if action == "add":
+            new_z_coordinate = old_z_coordinate + change_value
+            self.ZAxisEdit.setText(str(new_z_coordinate))  # 更新末端工具坐标 Z
+            
+        else:
+            new_z_coordinate = old_z_coordinate - change_value
+            self.ZAxisEdit.setText(str(new_z_coordinate))  
+        
+        # 通过逆解算出机械臂各个关节角度值
+        R_T = SE3([x_coordinate, y_coordinate, new_z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 2) for d in sol.q]
+        print("逆解关节角度 = ", degrade)
+        
+        # 更新关节控制界面中的角度值
+        self.update_joint_degrees_text(degrade)
+        
+        # 构造发送命令
+        command = json.dumps(
+                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+
+        # 发送命令
+        robot_arm_client = self.get_robot_arm_connector()
+        with robot_arm_client as rc:
+            rc.send(command.replace(' ', '').encode())
+            response = rc.recv(1024).decode('utf-8').strip()
+            self.TeachArmRunLogWindow.append(response)
+    
+    def tool_rx_operate(self, action="add"):
+        """末端工具坐标 Rx 增减函数"""
+        if action == "add":
+            print("增按钮")
+        else:
+            print("减按钮")
+    
+    def tool_ry_operate(self, action="add"):
+        """末端工具坐标 Ry 增减函数"""
+        if action == "add":
+            print("增按钮")
+        else:
+            print("减按钮")
+    
+    def tool_rz_operate(self, action="add"):
+        """末端工具坐标 Rz 增减函数"""
+        if action == "add":
+            print("增按钮")
+        else:
+            print("减按钮")
+    
     # 示教控制回调函数编写
     def add_item(self):
         """示教控制添加一行动作"""

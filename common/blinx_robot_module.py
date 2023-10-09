@@ -53,7 +53,7 @@ if __name__ == "__main__":
     q4 = radians(10)
     q5 = radians(-5)
     q6 = radians(-5)
-    print("机械臂关节角度 = ", [q1, q2, q3, q4, q5, q6])
+    print("机械臂关节角度 = ", [round(degrees(i), 2) for i in [q1, q2, q3, q4, q5, q6]])
     arm_pose_degree = np.array([q1, q2, q3, q4, q5, q6])
     translation_vector = mirobot.fkine(arm_pose_degree)
 
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # 机器人逆运动解
     # 给出符合逆解条件的末端坐标 T 值
     print("机械臂逆解结果")
-    R_T = SE3([x, y, z]) * rpy2tr([Rz, Ry, Rx], unit='deg')
+    R_T = SE3([round(x, 2), round(y, 2), round(z, 2)]) * rpy2tr([round(Rz, 2), round(Ry, 2), round(Rx, 2)], unit='deg')
     sol = mirobot.ikine_LM(R_T, joint_limits=True)
 
     def get_value(number):
