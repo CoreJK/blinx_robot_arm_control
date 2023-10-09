@@ -1,12 +1,12 @@
 from math import pi, radians, degrees
 import numpy as np
-from roboticstoolbox import DHRobot, RevoluteMDH, tools
+from roboticstoolbox import DHRobot, RevoluteMDH
 from spatialmath import SE3
 from spatialmath.base import rpy2tr
 
 
 class Mirobot(DHRobot):
-    """比邻星机械臂建模"""
+    """比邻星机械臂模型"""
 
     def __init__(self):
         L0 = RevoluteMDH(
@@ -53,6 +53,7 @@ if __name__ == "__main__":
     q4 = radians(10)
     q5 = radians(-5)
     q6 = radians(-5)
+    print("机械臂关节角度 = ", [q1, q2, q3, q4, q5, q6])
     arm_pose_degree = np.array([q1, q2, q3, q4, q5, q6])
     translation_vector = mirobot.fkine(arm_pose_degree)
 
@@ -68,6 +69,7 @@ if __name__ == "__main__":
     print("Ry = ", round(Ry, 2))
     print("Rx = ", round(Rx, 2))
     print("")
+    
     # 机器人逆运动解
     # 给出符合逆解条件的末端坐标 T 值
     print("机械臂逆解结果")

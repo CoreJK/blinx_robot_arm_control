@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="dySlD6uRkyWUafbQhPtK" name="通讯设计">
-        <mxGraphModel dx="1891" dy="686" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="294" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -114,6 +114,53 @@
                 </mxCell>
                 <mxCell id="zDmB2GXEYL_0vO5WYvwZ-36" value="命令队列&lt;br&gt;4" style="rounded=1;whiteSpace=wrap;html=1;rotation=0;" parent="1" vertex="1">
                     <mxGeometry x="360" y="420" width="120" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="DDPe8knLSakZP3yzetyY" name="正逆解数据流">
+        <mxGraphModel dx="294" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-38" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ldWby0ta9qMnKybVQAXX-1" target="ldWby0ta9qMnKybVQAXX-2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-1" value="机械臂控制器" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="480" width="122" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-51" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ldWby0ta9qMnKybVQAXX-2" target="ldWby0ta9qMnKybVQAXX-43" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-2" value="实时获取机械臂&lt;br&gt;角度线程" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="280" y="480" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-48" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" parent="1" source="ldWby0ta9qMnKybVQAXX-24" target="ldWby0ta9qMnKybVQAXX-39" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-49" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" parent="1" source="ldWby0ta9qMnKybVQAXX-24" target="ldWby0ta9qMnKybVQAXX-40" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-24" value="正逆解转换" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="480" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-39" value="末端工具&lt;br&gt;坐标值" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="380" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-40" value="末端工具姿态&lt;br&gt;角度值" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="555" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-42" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;" parent="1" source="ldWby0ta9qMnKybVQAXX-41" target="ldWby0ta9qMnKybVQAXX-24" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-41" value="6 轴机械臂模型&lt;br&gt;MDH 参数" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="320" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-52" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" parent="1" source="ldWby0ta9qMnKybVQAXX-43" target="ldWby0ta9qMnKybVQAXX-24" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ldWby0ta9qMnKybVQAXX-43" value="机械臂角度值" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="440" y="480" width="120" height="60" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

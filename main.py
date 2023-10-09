@@ -17,7 +17,8 @@ from app.BLinx_Robot_Arm_ui import Ui_Form
 from componets.message_box import BlinxMessageBox
 from common.socket_client import ClientSocket, Worker
 
-import faulthandler;faulthandler.enable()
+# 调试 segment 异常时，解除改注释
+# import faulthandler;faulthandler.enable()
 
 class MainWindow(QWidget, Ui_Form):
     def __init__(self):
@@ -212,18 +213,34 @@ class MainWindow(QWidget, Ui_Form):
                     # 只获取关节角度的回执
                     if rs_data_dict["return"] == "get_joint_angle_all":
                         print(rs_data_dict)
-                        # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签
-                        self.AngleOneEdit.setText(str(round(float(rs_data_dict['data'][0]))))
-                        self.AngleTwoEdit.setText(str(round(float(rs_data_dict['data'][1]))))
-                        self.AngleThreeEdit.setText(str(round(float(rs_data_dict['data'][2]))))
-                        self.AngleFourEdit.setText(str(round(float(rs_data_dict['data'][3]))))
-                        self.AngleFiveEdit.setText(str(round(float(rs_data_dict['data'][4]))))
-                        self.AngleSixEdit.setText(str(round(float(rs_data_dict['data'][5]))))
+                        # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签的角度值
+                        all_angle_degrees = self.update_joint_degrees_text(rs_data_dict)
+                        # todo 计算并更新机械臂的正运动解
 
                 except (UnicodeError, json.decoder.JSONDecodeError) as e:
                     # 等待其他指令完成操作，跳过获取机械臂角度值
                     print(str(e))
 
+    def update_joint_degrees_text(self, rs_data_dict):
+        """更新界面上的角度值, 并返回实时角度值
+
+        Args:
+            rs_data_dict (_dict_): 与机械臂通讯获取到的机械臂角度值
+        """
+        q1 = round(float(rs_data_dict['data'][0]), 2)
+        q2 = round(float(rs_data_dict['data'][1]), 2)
+        q3 = round(float(rs_data_dict['data'][2]), 2)
+        q4 = round(float(rs_data_dict['data'][3]), 2)
+        q5 = round(float(rs_data_dict['data'][4]), 2)
+        q6 = round(float(rs_data_dict['data'][5]), 2)
+        self.AngleOneEdit.setText(str(q1))
+        self.AngleTwoEdit.setText(str(q2))
+        self.AngleThreeEdit.setText(str(q3))
+        self.AngleFourEdit.setText(str(q4))
+        self.AngleFiveEdit.setText(str(q5))
+        self.AngleSixEdit.setText(str(q6))
+        return [q1, q2, q3, q4, q5, q6]
+    
     def check_arm_connect_state(self):
         """检查机械臂的连接状态"""
         
@@ -268,9 +285,9 @@ class MainWindow(QWidget, Ui_Form):
     # 机械臂关节控制回调函数
     def arm_one_add(self):
         """机械臂关节增加"""
-        old_degrade = int(self.AngleOneEdit.text().strip())
-        increase_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleOneEdit.text().strip()), 2)
+        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade + increase_degrade
         # 每个关节的最大限位值不同
         if 0 <= degrade <= 300:
@@ -293,9 +310,9 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_one_sub(self):
         """机械臂关节角度减少"""
-        old_degrade = int(self.AngleOneEdit.text().strip())
-        decrease_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleOneEdit.text().strip()), 2)
+        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade <= 300:
             self.AngleOneEdit.setText(str(degrade))
@@ -312,9 +329,9 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_two_add(self):
         """机械臂关节增加"""
-        old_degrade = int(self.AngleTwoEdit.text().strip())
-        increase_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleTwoEdit.text().strip()), 2)
+        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade + increase_degrade
         self.AngleTwoEdit.setText(str(degrade))  # 更新关节角度值
 
@@ -332,9 +349,9 @@ class MainWindow(QWidget, Ui_Form):
     def arm_two_sub(self):
         """机械臂关节角度减少"""
         # 获取机械臂当前的角度(手臂未提供该接口)
-        old_degrade = int(self.AngleTwoEdit.text().strip())
-        decrease_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleTwoEdit.text().strip()), 2)
+        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade:
             self.AngleTwoEdit.setText(str(degrade))
@@ -351,9 +368,9 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_three_add(self):
         """机械臂关节增加"""
-        old_degrade = int(self.AngleThreeEdit.text().strip())
-        increase_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleThreeEdit.text().strip()), 2)
+        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade + increase_degrade
         self.AngleThreeEdit.setText(str(degrade))  # 更新关节角度值
 
@@ -370,9 +387,9 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_three_sub(self):
         """机械臂关节角度减少"""
-        old_degrade = int(self.AngleThreeEdit.text().strip())
-        decrease_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleThreeEdit.text().strip()), 2)
+        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade:
             self.AngleThreeEdit.setText(str(degrade))
@@ -389,9 +406,9 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_four_add(self):
         """机械臂关节增加"""
-        old_degrade = int(self.AngleFourEdit.text().strip())
-        increase_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleFourEdit.text().strip()), 2)
+        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade + increase_degrade
         self.AngleFourEdit.setText(str(degrade))  # 更新关节角度值
 
@@ -408,9 +425,9 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_four_sub(self):
         """机械臂关节角度减少"""
-        old_degrade = int(self.AngleFourEdit.text().strip())
-        decrease_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleFourEdit.text().strip()), 2)
+        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade:
             self.AngleFourEdit.setText(str(degrade))
@@ -427,9 +444,9 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_five_add(self):
         """机械臂关节增加"""
-        old_degrade = int(self.AngleFiveEdit.text().strip())
-        increase_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleFiveEdit.text().strip()), 2)
+        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade + increase_degrade
         if 0 <= degrade:
             self.AngleFiveEdit.setText(str(degrade))  # 更新关节角度值
@@ -447,9 +464,9 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_five_sub(self):
         """机械臂关节角度减少"""
-        old_degrade = int(self.AngleFiveEdit.text().strip())
-        decrease_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleFiveEdit.text().strip()), 2)
+        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade:
             self.AngleFiveEdit.setText(str(degrade))
@@ -466,9 +483,9 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_six_add(self):
         """机械臂关节增加"""
-        old_degrade = int(self.AngleSixEdit.text().strip())
-        increase_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleSixEdit.text().strip()), 2)
+        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade + increase_degrade
         self.AngleSixEdit.setText(str(degrade))  # 更新关节角度值
 
@@ -485,9 +502,9 @@ class MainWindow(QWidget, Ui_Form):
 
     def arm_six_sub(self):
         """机械臂关节角度减少"""
-        old_degrade = int(self.AngleSixEdit.text().strip())
-        decrease_degrade = int(self.AngleStepEdit.text().strip())
-        speed_percentage = int(self.ArmSpeedEdit.text().strip())
+        old_degrade = round(float(self.AngleSixEdit.text().strip()), 2)
+        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
         degrade = old_degrade - decrease_degrade
         if 0 <= degrade:
             self.AngleSixEdit.setText(str(degrade))

@@ -809,7 +809,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>位置控制</string>
+    <string>末端工具坐标</string>
    </property>
    <widget class="QPushButton" name="ZAxisAddButton">
     <property name="geometry">
@@ -1410,7 +1410,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>姿态控制</string>
+    <string>末端工具姿态</string>
    </property>
    <widget class="QPushButton" name="RzAxisAddButton">
     <property name="geometry">
@@ -1461,7 +1461,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>RZ</string>
+     <string>Rz</string>
     </property>
    </widget>
    <widget class="QPushButton" name="RzAxisSubButton">
@@ -1500,7 +1500,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>RY</string>
+     <string>Ry</string>
     </property>
    </widget>
    <widget class="QLabel" name="RxLabel">
@@ -1513,7 +1513,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>RX</string>
+     <string>Rx</string>
     </property>
    </widget>
    <widget class="QPushButton" name="RxAxisSubButton">
