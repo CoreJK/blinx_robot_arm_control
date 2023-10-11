@@ -836,6 +836,9 @@
     <property name="text">
      <string>0</string>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QPushButton" name="YAxisAddButton">
     <property name="geometry">
@@ -901,6 +904,9 @@
     <property name="text">
      <string>0</string>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QPushButton" name="YAxisSubButton">
     <property name="geometry">
@@ -926,6 +932,9 @@
     </property>
     <property name="text">
      <string>0</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="XLable">
@@ -1151,6 +1160,9 @@
     <property name="text">
      <string>0</string>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QLabel" name="AngleThreeLabel">
     <property name="geometry">
@@ -1177,6 +1189,9 @@
     <property name="text">
      <string>0</string>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QLineEdit" name="AngleSixEdit">
     <property name="geometry">
@@ -1189,6 +1204,9 @@
     </property>
     <property name="text">
      <string>0</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="ArmSpeedUpButton">
@@ -1216,6 +1234,9 @@
     <property name="text">
      <string>0</string>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QPushButton" name="AngleFiveSubButton">
     <property name="geometry">
@@ -1242,6 +1263,9 @@
     <property name="text">
      <string>0</string>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QLineEdit" name="AngleOneEdit">
     <property name="geometry">
@@ -1254,6 +1278,9 @@
     </property>
     <property name="text">
      <string>0</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="AngleStepSubButton">
@@ -1437,6 +1464,9 @@
     <property name="text">
      <string>0</string>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QLineEdit" name="RxAxisEdit">
     <property name="geometry">
@@ -1449,6 +1479,9 @@
     </property>
     <property name="text">
      <string>0</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="RzLabel">
@@ -1553,6 +1586,9 @@
     </property>
     <property name="text">
      <string>0</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="RyAxisSubButton">

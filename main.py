@@ -6,6 +6,7 @@ import sys
 import time
 from pathlib import Path
 from functools import partial
+from retrying import retry
 
 # 正逆解相关模块
 import numpy as np
@@ -32,6 +33,10 @@ from common.blinx_robot_module import Mirobot
 
 # 调试 segment 异常时，解除改注释
 # import faulthandler;faulthandler.enable()
+
+# 日志模块
+from loguru import logger
+logger.add("./logs/record_{time}.log", level="INFO")
 
 class MainWindow(QWidget, Ui_Form):
     """机械臂上位机控制窗口"""
@@ -153,7 +158,7 @@ class MainWindow(QWidget, Ui_Form):
                     self.TargetIpEdit.setText(socket_info["target_ip"])
                     self.TargetPortEdit.setText(str(socket_info["target_port"]))
                 except KeyError:
-                    print("IP 和 Port 未找到对应记录")
+                    logger.error("IP 和 Port 未找到对应记录")
             else:
                 self.TargetIpEdit.setText("")
                 self.TargetPortEdit.setText("")
@@ -191,7 +196,7 @@ class MainWindow(QWidget, Ui_Form):
                     self.WiFiSsidEdit.setText(socket_info["SSID"])
                     self.WiFiPasswdEdit.setText(socket_info["passwd"])
                 except KeyError:
-                    print("WiFi 配置未找到历史记录")
+                    logger.error("WiFi 配置未找到历史记录")
             else:
                 self.WiFiSsidEdit.setText("")
                 self.WiFiPasswdEdit.setText("")
@@ -231,7 +236,10 @@ class MainWindow(QWidget, Ui_Form):
             rs_data = json.loads(rac.recv(1024).decode('utf-8').strip()).get("data")
             if rs_data == "true":
                 self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
-
+                logger.warning("机械臂复位中!请注意手臂姿态")
+                
+    @logger.catch
+    @retry
     def get_angle_value(self):
         """实时获取关节的角度值"""
         with self.get_robot_arm_connector() as rac:
@@ -244,7 +252,7 @@ class MainWindow(QWidget, Ui_Form):
                     
                     # 只获取关节角度的回执
                     if rs_data_dict["return"] == "get_joint_angle_all":
-                        print(rs_data_dict)
+                        logger.debug(rs_data_dict)
                         # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签的角度值
                         # 将角度值转换为列表
                         rs_data_list = [round(float(data), 2) for data in rs_data_dict['data']]
@@ -262,7 +270,7 @@ class MainWindow(QWidget, Ui_Form):
                         self.RzAxisEdit.setText(str(round(Rz, 2)))
                 except (UnicodeError, json.decoder.JSONDecodeError) as e:
                     # 等待其他指令完成操作，跳过获取机械臂角度值
-                    print(str(e))
+                    logger.info(str(e))
 
     def update_joint_degrees_text(self, six_joint_degrees):
         """更新界面上的角度值, 并返回实时角度值
@@ -278,6 +286,7 @@ class MainWindow(QWidget, Ui_Form):
         self.AngleFiveEdit.setText(str(q5))
         self.AngleSixEdit.setText(str(q6))
     
+    @retry(wait_fixed=2000)
     def check_arm_connect_state(self):
         """检查机械臂的连接状态"""
         
@@ -289,13 +298,17 @@ class MainWindow(QWidget, Ui_Form):
         with robot_arm_client as rac:
             try:
                 remote_address = rac.getpeername()
+                logger.info("机械臂连接成功!")
                 self.message_box.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
+                
                 # 连接没有问题后，运行后台线程
                 get_all_angle = Worker(self.get_angle_value)
                 self.threadpool.start(get_all_angle)
+                logger.info("开始后台获取机械臂角度")
                 
                 #  连接成功后，将连接机械臂按钮禁用，避免重复连接
                 self.RobotArmLinkButton.setEnabled(False)
+                logger.warning("禁用连接机械臂按钮!")
 
             except socket.error as e:
                 self.message_box.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
@@ -653,7 +666,7 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([new_x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        print("逆解关节角度 = ", degrade)
+        logger.debug(f"ikine = {degrade}")
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
@@ -697,7 +710,7 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, new_y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        print("逆解关节角度 = ", degrade)
+        logger.debug(f"ikine = {degrade}")
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
@@ -741,7 +754,7 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, y_coordinate, new_z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        print("逆解关节角度 = ", degrade)
+        logger.debug("ikine = {degrade}")
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
@@ -784,7 +797,7 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, new_rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        print("逆解关节角度 = ", degrade)
+        logger.debug(f"ikine = {degrade}")
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
@@ -827,7 +840,7 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, new_ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        print("逆解关节角度 = ", degrade)
+        logger.debug(f"ikine = {degrade}")
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
@@ -870,7 +883,7 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([new_rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        print("逆解关节角度 = ", degrade)
+        logger.debug(f"ikine = {degrade}")
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
@@ -981,7 +994,7 @@ class MainWindow(QWidget, Ui_Form):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(self, "Import Data from JSON", "",
                                                    "JSON Files (*.json);;All Files (*)", options=options)
-
+        logger.info(f"开始导入 {file_name} 动作文件")
         if file_name:
             with open(file_name, "r") as json_file:
                 data = json.load(json_file)
@@ -1024,13 +1037,15 @@ class MainWindow(QWidget, Ui_Form):
 
                     # 延时列
                     self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem(arm_action_delay_time))
+        logger.info("导入动作文件成功!")  
                     
     def export_data(self):
         """导出动作"""
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getSaveFileName(self, "Save Data to JSON", "", "JSON Files (*.json);;All Files (*)",
                                                    options=options)
-
+        logger.info("开始导出动作文件")
+        logger.debug(f"导出的配置文件的路径 {file_name}")
         if file_name:
             data = []
             for row in range(self.ActionTableWidget.rowCount()):
@@ -1070,6 +1085,7 @@ class MainWindow(QWidget, Ui_Form):
 
             with open(file_name, "w") as json_file:
                 json.dump(data, json_file, indent=4, ensure_ascii=False)
+                logger.info("导出配置文件成功!")
 
     def tale_action_thread(self):
         for row in range(self.ActionTableWidget.rowCount()):
@@ -1122,7 +1138,7 @@ class MainWindow(QWidget, Ui_Form):
             
         else:
             self.message_box.warning_message_box("请选择需要执行的动作!")
-            
+
     def run_action_loop(self):
         """循环执行动作"""
         # 获取循环动作循环执行的次数
@@ -1145,19 +1161,21 @@ class MainWindow(QWidget, Ui_Form):
             port = int(socket_info['target_port'])
             robot_arm_client = ClientSocket(host, port)
         except Exception as e:
-            print(str(e))
+            logger.error(str(e))
             self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 ！")
         return robot_arm_client
 
     def closeEvent(self, event):
         """用户触发窗口关闭事件，所有线程标志位为退出"""
         self.loop_flag = True
-        print("窗口关闭！")
+        logger.info("比邻星六轴机械臂上位机窗口关闭！")
         event.accept()
 
 if __name__ == '__main__':
+    logger.info("欢迎使用比邻星六轴机械臂!")
     app = QApplication(sys.argv)
     window = MainWindow()
     apply_stylesheet(app, theme='light_blue.xml')
     window.show()
+    logger.warning("系统初始化完成, 请在【连接配置】中填写机械臂连接配置信息后开始使用!")
     sys.exit(app.exec_())
