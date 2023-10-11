@@ -748,24 +748,123 @@ class MainWindow(QWidget, Ui_Form):
     
     def tool_rx_operate(self, action="add"):
         """末端工具坐标 Rx 增减函数"""
+        # 获取末端工具的坐标、姿态数值
+        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
+        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
+        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        old_rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
+        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
+        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        change_value = round(float(self.AngleStepEdit.text().strip()), 2)  # 步长值
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)  # 速度值
+        
+        # 根据按钮加减增减数值
         if action == "add":
-            print("增按钮")
+            new_rx_pose = old_rx_pose + change_value
+            self.RxAxisEdit.setText(str(new_rx_pose))  # 更新末端工具姿态 Rx
         else:
-            print("减按钮")
-    
+            new_rx_pose = old_rx_pose - change_value
+            self.RxAxisEdit.setText(str(new_rx_pose))  # 更新末端工具姿态 Rx
+            
+        # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
+        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, new_rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 2) for d in sol.q]
+        print("逆解关节角度 = ", degrade)
+        
+        # 更新关节控制界面中的角度值
+        self.update_joint_degrees_text(degrade)
+        
+        # 构造发送命令
+        command = json.dumps(
+                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+
+        # 发送命令
+        robot_arm_client = self.get_robot_arm_connector()
+        with robot_arm_client as rc:
+            rc.send(command.replace(' ', '').encode())
+            response = rc.recv(1024).decode('utf-8').strip()
+            self.TeachArmRunLogWindow.append(response)
+            
     def tool_ry_operate(self, action="add"):
         """末端工具坐标 Ry 增减函数"""
+        # 获取末端工具的坐标、姿态数值
+        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
+        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
+        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
+        old_ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
+        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        change_value = round(float(self.AngleStepEdit.text().strip()), 2)  # 步长值
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)  # 速度值
+        
+        # 根据按钮加减增减数值
         if action == "add":
-            print("增按钮")
+            new_ry_pose = old_ry_pose + change_value
+            self.RyAxisEdit.setText(str(new_ry_pose))  # 更新末端工具姿态 Ry
         else:
-            print("减按钮")
+            new_ry_pose = old_ry_pose - change_value
+            self.RyAxisEdit.setText(str(new_ry_pose))  # 更新末端工具姿态 Ry
+            
+        # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
+        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, new_ry_pose, rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 2) for d in sol.q]
+        print("逆解关节角度 = ", degrade)
+        
+        # 更新关节控制界面中的角度值
+        self.update_joint_degrees_text(degrade)
+        
+        # 构造发送命令
+        command = json.dumps(
+                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+
+        # 发送命令
+        robot_arm_client = self.get_robot_arm_connector()
+        with robot_arm_client as rc:
+            rc.send(command.replace(' ', '').encode())
+            response = rc.recv(1024).decode('utf-8').strip()
+            self.TeachArmRunLogWindow.append(response)
     
     def tool_rz_operate(self, action="add"):
         """末端工具坐标 Rz 增减函数"""
+        # 获取末端工具的坐标、姿态数值
+        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
+        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
+        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
+        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
+        old_rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        change_value = round(float(self.AngleStepEdit.text().strip()), 2)  # 步长值
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)  # 速度值
+        
+        # 根据按钮加减增减数值
         if action == "add":
-            print("增按钮")
+            new_rz_pose = old_rz_pose + change_value
+            self.RzAxisEdit.setText(str(new_rz_pose))  # 更新末端工具姿态 Ry
         else:
-            print("减按钮")
+            new_rz_pose = old_rz_pose - change_value
+            self.RzAxisEdit.setText(str(new_rz_pose))  # 更新末端工具姿态 Ry
+            
+        # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
+        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([new_rz_pose, ry_pose, rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 2) for d in sol.q]
+        print("逆解关节角度 = ", degrade)
+        
+        # 更新关节控制界面中的角度值
+        self.update_joint_degrees_text(degrade)
+        
+        # 构造发送命令
+        command = json.dumps(
+                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+
+        # 发送命令
+        robot_arm_client = self.get_robot_arm_connector()
+        with robot_arm_client as rc:
+            rc.send(command.replace(' ', '').encode())
+            response = rc.recv(1024).decode('utf-8').strip()
+            self.TeachArmRunLogWindow.append(response)
     
     # 示教控制回调函数编写
     def add_item(self):
