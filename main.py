@@ -1093,13 +1093,13 @@ class MainWindow(QWidget, Ui_Form):
             delay_time (int): 返回动作的执行耗时
         """
         with self.get_robot_arm_connector() as robot_client:
-            angle_1 = int(self.ActionTableWidget.item(row, 0).text())
-            angle_2 = int(self.ActionTableWidget.item(row, 1).text())
-            angle_3 = int(self.ActionTableWidget.item(row, 2).text())
-            angle_4 = int(self.ActionTableWidget.item(row, 3).text())
-            angle_5 = int(self.ActionTableWidget.item(row, 4).text())
-            angle_6 = int(self.ActionTableWidget.item(row, 5).text())
-            speed_percentage = int(self.ActionTableWidget.item(row, 6).text())
+            angle_1 = float(self.ActionTableWidget.item(row, 0).text())
+            angle_2 = float(self.ActionTableWidget.item(row, 1).text())
+            angle_3 = float(self.ActionTableWidget.item(row, 2).text())
+            angle_4 = float(self.ActionTableWidget.item(row, 3).text())
+            angle_5 = float(self.ActionTableWidget.item(row, 4).text())
+            angle_6 = float(self.ActionTableWidget.item(row, 5).text())
+            speed_percentage = float(self.ActionTableWidget.item(row, 6).text())
             delay_time = float(self.ActionTableWidget.item(row, 9).text())  # 执行动作需要的时间
             
             # 机械臂执行命令
