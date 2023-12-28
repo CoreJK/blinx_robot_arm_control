@@ -36,7 +36,16 @@ from common.blinx_robot_module import Mirobot
 
 # 日志模块
 from loguru import logger
-logger.add("./logs/record_{time}.log", level="INFO")
+
+# 项目根目录
+PROJECT_ROOT_PATH = Path(__file__).resolve(strict=True).parent
+
+# 配置文件路径
+LOG_FILE_PATH = PROJECT_ROOT_PATH / "logs/record_{time}.log"
+IP_PORT_INFO_FILE_PATH = PROJECT_ROOT_PATH / "config/Socket_Info"
+WIFI_INFO_FILE_PATH = PROJECT_ROOT_PATH / "config/WiFi_Info"
+logger.add(LOG_FILE_PATH, level="INFO")
+
 
 class MainWindow(QWidget, Ui_Form):
     """机械臂上位机控制窗口"""
@@ -45,7 +54,7 @@ class MainWindow(QWidget, Ui_Form):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("BLinx Robot Arm V1.0")
-        # todo 初始化机械臂模型
+        # 初始化机械臂模型
         self.blinx_robot_arm = Mirobot()
         
         # 获取操作系统的版本信息
@@ -146,35 +155,30 @@ class MainWindow(QWidget, Ui_Form):
     # 机械臂连接配置回调函数
     def reload_ip_port_history(self):
         """获取历史IP和Port填写记录"""
-        if self.os_name == "Windows":
-            ip_port_info_file = './config/Socket_Info.dat'
-        else:
-            ip_port_info_file = './config/Socket_Info'
-            
-        with Path(ip_port_info_file) as socket_file_info:
-            if socket_file_info.exists():
-                try:
-                    socket_info = shelve.open("./config/Socket_Info")
-                    self.TargetIpEdit.setText(socket_info["target_ip"])
-                    self.TargetPortEdit.setText(str(socket_info["target_port"]))
-                except KeyError:
-                    logger.error("IP 和 Port 未找到对应记录")
-            else:
-                self.TargetIpEdit.setText("")
-                self.TargetPortEdit.setText("")
+        try:
+            socket_info = shelve.open(str(IP_PORT_INFO_FILE_PATH))
+            self.TargetIpEdit.setText(socket_info["target_ip"])
+            self.TargetPortEdit.setText(str(socket_info["target_port"]))
+            socket_info.close()
+        except KeyError:
+            logger.warning("IP 和 Port 未找到对应记录, 请填写配置信息!")
+            self.TargetIpEdit.setText("")
+            self.TargetPortEdit.setText("")
 
     def submit_ip_port_info(self):
         """配置机械臂的通讯IP和端口"""
         ip = self.TargetIpEdit.text().strip()
         port = self.TargetPortEdit.text().strip()
+        
         # 保存 IP 和 Port 信息
-        with shelve.open('./config/Socket_Info') as connect_info:
-            if all([ip, port]):
-                connect_info["target_ip"] = ip
-                connect_info["target_port"] = int(port)
-                self.message_box.success_message_box(message="配置添加成功!")
-            else:
-                self.message_box.warning_message_box(message="IP 或 Port 号为空，请重新填写!")
+        if all([ip, port]):
+            socket_info = shelve.open(str(IP_PORT_INFO_FILE_PATH))
+            socket_info["target_ip"] = ip
+            socket_info["target_port"] = int(port)
+            self.message_box.success_message_box(message="配置添加成功!")
+            socket_info.close()
+        else:
+            self.message_box.warning_message_box(message="IP 或 Port 号为空，请重新填写!")
 
     def reset_ip_port_info(self):
         """重置 IP 和 Port 输入框内容"""
@@ -183,36 +187,31 @@ class MainWindow(QWidget, Ui_Form):
 
     # 机械臂 WiFi AP 模式配置回调函数
     def reload_ap_passwd_history(self):
-        """获取历史 WiFi 名称和 Passwd 记录"""
-        if self.os_name == "Windows":
-            ap_passwd_info_file = './config/WiFi_Info.dat'
-        else:
-            ap_passwd_info_file = './config/WiFi_Info'
-            
-        with Path(ap_passwd_info_file) as socket_file_info:
-            if socket_file_info.exists():
-                try:
-                    socket_info = shelve.open("./config/WiFi_Info")
-                    self.WiFiSsidEdit.setText(socket_info["SSID"])
-                    self.WiFiPasswdEdit.setText(socket_info["passwd"])
-                except KeyError:
-                    logger.error("WiFi 配置未找到历史记录")
-            else:
-                self.WiFiSsidEdit.setText("")
-                self.WiFiPasswdEdit.setText("")
+        """获取历史 WiFi 名称和 Passwd 记录"""            
+        try:
+            wifi_info = shelve.open(str(WIFI_INFO_FILE_PATH))
+            self.WiFiSsidEdit.setText(wifi_info["SSID"])
+            self.WiFiPasswdEdit.setText(wifi_info["passwd"])
+            wifi_info.close()
+        except KeyError:
+            logger.warning("WiFi 配置未找到历史记录,请填写配置信息!")
+            self.WiFiSsidEdit.setText("")
+            self.WiFiPasswdEdit.setText("")
 
     def submit_ap_passwd_info(self):
         """配置机械臂的通讯 WiFi 名称和 passwd"""
         ip = self.WiFiSsidEdit.text().strip()
         port = self.WiFiPasswdEdit.text().strip()
+        
         # 保存 IP 和 Port 信息
-        with shelve.open('./config/WiFi_Info') as connect_info:
-            if all([ip, port]):
-                connect_info["SSID"] = ip
-                connect_info["passwd"] = port
-                self.message_box.success_message_box(message="WiFi 配置添加成功!")
-            else:
-                self.message_box.warning_message_box(message="WiFi名称 或密码为空，请重新填写!")
+        if all([ip, port]):
+            wifi_info = shelve.open(str(WIFI_INFO_FILE_PATH))
+            wifi_info["SSID"] = ip
+            wifi_info["passwd"] = port
+            wifi_info.close()
+            self.message_box.success_message_box(message="WiFi 配置添加成功!")
+        else:
+            self.message_box.warning_message_box(message="WiFi名称 或密码为空，请重新填写!")
 
     def reset_ap_passwd_info(self):
         """重置 WiFi 名称和 passwd 输入框内容"""
@@ -1156,10 +1155,11 @@ class MainWindow(QWidget, Ui_Form):
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
         try:
-            socket_info = shelve.open("./config/Socket_Info")
+            socket_info = shelve.open(str(IP_PORT_INFO_FILE_PATH))
             host = socket_info['target_ip']
             port = int(socket_info['target_port'])
             robot_arm_client = ClientSocket(host, port)
+            socket_info.close()
         except Exception as e:
             logger.error(str(e))
             self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 ！")

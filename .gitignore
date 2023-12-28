@@ -12,6 +12,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+out/
 downloads/
 eggs/
 .eggs/
@@ -170,3 +171,5 @@ cython_debug/
 # vscode workspace
 .vscode/
 .vscode/settings.json
+need/
+*.whl
