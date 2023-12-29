@@ -34,7 +34,6 @@ class ClientSocket:
         self.port = port
         self.client_socket_list = []
 
-    @retry(stop_max_attempt_number=3, wait_fixed=1000)
     def new_connect(self):
         logger.info("正在尝试连接机械臂...")
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -285,17 +285,16 @@ class MainWindow(QWidget, Ui_Form):
         self.AngleFiveEdit.setText(str(q5))
         self.AngleSixEdit.setText(str(q6))
     
-    @retry(wait_fixed=2000)
+    @retry(stop_max_attempt_number=3, wait_fixed=1000)
     def check_arm_connect_state(self):
         """检查机械臂的连接状态"""
         
         # 初始化步长和速度值
         self.AngleStepEdit.setText(str(5))
         self.ArmSpeedEdit.setText(str(50))
-        
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rac:
-            try:
+        try:
+            robot_arm_client = self.get_robot_arm_connector()
+            with robot_arm_client as rac:
                 remote_address = rac.getpeername()
                 logger.info("机械臂连接成功!")
                 self.message_box.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
@@ -309,8 +308,8 @@ class MainWindow(QWidget, Ui_Form):
                 self.RobotArmLinkButton.setEnabled(False)
                 logger.warning("禁用连接机械臂按钮!")
 
-            except socket.error as e:
-                self.message_box.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
+        except socket.error as e:
+            self.message_box.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
 
     # 命令控制页面 json 发送与调试
     def send_json_command(self):
@@ -1091,6 +1090,19 @@ class MainWindow(QWidget, Ui_Form):
             delay_time = self.run_action(row)
             self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
             time.sleep(delay_time)  # 等待动作执行完成
+            type_of_tool = self.ActionTableWidget.cellWidget(row, 7).currentText()
+            tool_switch = self.ActionTableWidget.cellWidget(row, 8).currentText()
+            logger.debug(f"工具类型 {type_of_tool}")
+            logger.debug(f"开关类型 {tool_switch}")
+            # 末端工具动作
+            with self.get_robot_arm_connector() as robot_client:
+                if type_of_tool == "吸盘":
+                    tool_status = True if tool_switch == "开" else False
+                    json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
+                    logger.debug(json_command)
+                    str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+                    logger.debug(str_command)
+                    robot_client.send(str_command.encode('utf-8'))
     
     def run_all_action(self):
         """顺序执行示教动作"""
@@ -1115,6 +1127,8 @@ class MainWindow(QWidget, Ui_Form):
             angle_5 = float(self.ActionTableWidget.item(row, 4).text())
             angle_6 = float(self.ActionTableWidget.item(row, 5).text())
             speed_percentage = float(self.ActionTableWidget.item(row, 6).text())
+            type_of_tool = self.ActionTableWidget.cellWidget(row, 7).currentText()
+            tool_switch = self.ActionTableWidget.cellWidget(row, 8).currentText()
             delay_time = float(self.ActionTableWidget.item(row, 9).text())  # 执行动作需要的时间
             
             # 机械臂执行命令
@@ -1123,6 +1137,16 @@ class MainWindow(QWidget, Ui_Form):
                                             speed_percentage]}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
             robot_client.send(str_command.encode('utf-8'))
+            
+            # 末端工具动作
+            with self.get_robot_arm_connector() as robot_client:
+                logger.info("单次执行，开关控制")
+                if type_of_tool == "吸盘":
+                    tool_status = True if tool_switch == "开" else False
+                    json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
+                    str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+                    robot_client.send(str_command.encode('utf-8'))
+                    
         return delay_time
 
     def run_action_step(self):
@@ -1170,6 +1194,7 @@ class MainWindow(QWidget, Ui_Form):
         self.loop_flag = True
         logger.info("比邻星六轴机械臂上位机窗口关闭！")
         event.accept()
+
 
 if __name__ == '__main__':
     logger.info("欢迎使用比邻星六轴机械臂!")
