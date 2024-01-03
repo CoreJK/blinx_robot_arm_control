@@ -6,7 +6,7 @@ import sys
 import time
 from pathlib import Path
 from functools import partial
-from retrying import retry
+from queue import PriorityQueue
 
 # 正逆解相关模块
 import numpy as np
@@ -63,6 +63,7 @@ class MainWindow(QWidget, Ui_Form):
         
         # 开启 QT 线程池
         self.threadpool = QThreadPool()
+        self.command_queue = PriorityQueue()
 
         # 机械臂的查询循环控制位
         self.loop_flag = False
@@ -124,14 +125,15 @@ class MainWindow(QWidget, Ui_Form):
         self.SbInfoFreshButton.clicked.connect(self.get_sb_info)
 
         # 连接机械臂按钮回调函数绑定
-        self.RobotArmLinkButton.clicked.connect(self.check_arm_connect_state)
+        self.RobotArmLinkButton.clicked.connect(self.connect_to_robot_arm)
 
         # 命令控制页面回调函数绑定
         self.CommandSendButton.clicked.connect(self.send_json_command)
 
         # 复位和急停按钮绑定
         self.RobotArmResetButton.clicked.connect(self.reset_robot_arm)
-
+        self.RobotArmStopButton.clicked.connect(self.stop_robot_arm)
+        
         # 末端工具控制组回调函数绑定
         self.ArmClawOpenButton.clicked.connect(self.tool_open)
         self.ArmClawCloseButton.clicked.connect(self.tool_close)
@@ -224,52 +226,32 @@ class MainWindow(QWidget, Ui_Form):
         ports = list_ports.comports()
         self.SerialNumComboBox.addItems([f"{port.device}" for port in ports])
 
-    # 机械臂连接按钮回调函数
+    # 机械臂复位按钮回调函数
     def reset_robot_arm(self):
         """机械臂复位
         :param mode:
         """
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rac:
-            rac.send(b'{"command":"set_joint_Auto_zero"}\r\n')
-            rs_data = json.loads(rac.recv(1024).decode('utf-8').strip()).get("data")
-            if rs_data == "true":
-                self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
-                logger.warning("机械臂复位中!请注意手臂姿态")
-                
+        self.command_queue.put((1, '{"command":"set_joint_Auto_zero"}\r\n'.encode()))
+        self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
+        logger.warning("机械臂复位中!请注意手臂姿态")
+    
+    # 机械臂急停按钮回调函数
+    def stop_robot_arm(self):
+        """机械臂急停"""
+        self.loop_flag = True
+        self.command_queue = PriorityQueue()
+        # 恢复连接机械臂按钮
+        self.RobotArmLinkButton.setEnabled(True)
+        self.message_box.error_message_box("机械臂急停!")
+        self.loop_flag = False
+                            
     @logger.catch
-    @retry
     def get_angle_value(self):
-        """实时获取关节的角度值"""
-        with self.get_robot_arm_connector() as rac:
-            while not self.loop_flag:
-                try:
-                    time.sleep(1)
-                    rac.sendall(b'{"command":"get_joint_angle_all"}\r\n')  # 获取机械臂角度值 API
-                    rs_data = rac.recv(1024).decode('utf-8')
-                    rs_data_dict = json.loads(rs_data)
-                    
-                    # 只获取关节角度的回执
-                    if rs_data_dict["return"] == "get_joint_angle_all":
-                        logger.debug(rs_data_dict)
-                        # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签的角度值
-                        # 将角度值转换为列表
-                        rs_data_list = [round(float(data), 2) for data in rs_data_dict['data']]
-                        self.update_joint_degrees_text(rs_data_list)
-                        # 计算并更新机械臂的正运动解
-                        arm_pose_degrees = np.array(rs_data_list)
-                        translation_vector = self.blinx_robot_arm.fkine(arm_pose_degrees)
-                        x, y, z = translation_vector.t  # 平移向量
-                        Rz, Ry, Rx = map(lambda x: degrees(x), translation_vector.rpy())  # 旋转角
-                        self.XAxisEdit.setText(str(round(x, 2)))
-                        self.YAxisEdit.setText(str(round(y, 2)))
-                        self.ZAxisEdit.setText(str(round(z, 2)))
-                        self.RxAxisEdit.setText(str(round(Rx, 2)))
-                        self.RyAxisEdit.setText(str(round(Ry, 2)))
-                        self.RzAxisEdit.setText(str(round(Rz, 2)))
-                except (UnicodeError, json.decoder.JSONDecodeError) as e:
-                    # 等待其他指令完成操作，跳过获取机械臂角度值
-                    logger.info(str(e))
+        """实时获取关节的角度值"""        
+        while not self.loop_flag:
+            time.sleep(1)
+            self.command_queue.put((3, '{"command":"get_joint_angle_all"}\r\n'.encode()))
+                
 
     def update_joint_degrees_text(self, six_joint_degrees):
         """更新界面上的角度值, 并返回实时角度值
@@ -285,32 +267,51 @@ class MainWindow(QWidget, Ui_Form):
         self.AngleFiveEdit.setText(str(q5))
         self.AngleSixEdit.setText(str(q6))
     
-    @retry(stop_max_attempt_number=3, wait_fixed=1000)
-    def check_arm_connect_state(self):
-        """检查机械臂的连接状态"""
+    @logger.catch
+    def connect_to_robot_arm(self):
+        """连接机械臂"""
         
         # 初始化步长和速度值
         self.AngleStepEdit.setText(str(5))
         self.ArmSpeedEdit.setText(str(50))
+        
         try:
+            # 检查网络连接状态
             robot_arm_client = self.get_robot_arm_connector()
             with robot_arm_client as rac:
                 remote_address = rac.getpeername()
                 logger.info("机械臂连接成功!")
                 self.message_box.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
                 
-                # 连接没有问题后，运行后台线程
+            # 连接成功后，将连接机械臂按钮禁用，避免用户操作重复发起连接
+            if self.RobotArmLinkButton.isEnabled() and remote_address:
+                self.RobotArmLinkButton.setEnabled(False)
+                
+                # 启用实时获取机械臂角度线程
                 get_all_angle = Worker(self.get_angle_value)
                 self.threadpool.start(get_all_angle)
                 logger.info("开始后台获取机械臂角度")
                 
-                #  连接成功后，将连接机械臂按钮禁用，避免重复连接
-                self.RobotArmLinkButton.setEnabled(False)
+                # 启用轮询队列中所有命令的线程
+                command_sender_thread = Worker(self.command_sender)
+                self.threadpool.start(command_sender_thread)
+                logger.info("开启命令发送线程")
                 logger.warning("禁用连接机械臂按钮!")
-
-        except socket.error as e:
+                
+        except Exception as e:
+            # 连接失败后，将连接机械臂按钮启用
+            self.RobotArmLinkButton.setEnabled(True)
+            # 清空队列
+            self.command_queue = PriorityQueue()
+            # 关闭线程池
+            self.loop_flag = True
+            # 弹出错误提示框
+            logger.error(f"机械臂连接失败: {e}")
             self.message_box.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
-
+            # 恢复线程池的初始标志位
+            self.loop_flag = False
+            
+            
     # 命令控制页面 json 发送与调试
     def send_json_command(self):
         """json数据发送按钮"""
@@ -328,6 +329,44 @@ class MainWindow(QWidget, Ui_Form):
             else:
                 self.CommandArmRunLogWindow.append("机械臂命令执行失败!")
 
+    def command_sender(self):
+        """后台获取命令池命令，并发送的线程"""
+        with self.get_robot_arm_connector() as con:
+            while not self.loop_flag:
+                if not self.command_queue.empty():
+                    try:
+                        command_str = self.command_queue.get()
+                        logger.debug(f"获取到命令{command_str}")
+                        
+                        # 发送命令
+                        con.send(command_str[1])
+                        response = json.loads(con.recv(1024).decode('utf-8').strip())
+                        logger.debug(f"返回的信息: {response}")
+                        
+                        # todo 命令返回的信息放入另外一个队列
+                        # 解析机械臂角度获取返回的信息
+                        if response["return"] == "get_joint_angle_all":
+                            logger.debug(response)
+                            # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签的角度值
+                            # 将角度值转换为列表
+                            rs_data_list = [round(float(data), 2) for data in response['data']]
+                            self.update_joint_degrees_text(rs_data_list)
+                            # 计算并更新机械臂的正运动解
+                            arm_pose_degrees = np.array(rs_data_list)
+                            translation_vector = self.blinx_robot_arm.fkine(arm_pose_degrees)
+                            x, y, z = translation_vector.t  # 平移向量
+                            Rz, Ry, Rx = map(lambda x: degrees(x), translation_vector.rpy())  # 旋转角
+                            self.XAxisEdit.setText(str(round(x, 2)))
+                            self.YAxisEdit.setText(str(round(y, 2)))
+                            self.ZAxisEdit.setText(str(round(z, 2)))
+                            self.RxAxisEdit.setText(str(round(Rx, 2)))
+                            self.RyAxisEdit.setText(str(round(Ry, 2)))
+                            self.RzAxisEdit.setText(str(round(Rz, 2)))
+                    except Exception as e:
+                        logger.error(f"发送命令失败: {e}")
+                        self.message_box.error_message_box(message="发送命令失败!")
+                
+                
     # 机械臂关节控制回调函数
     def arm_one_add(self):
         """机械臂关节增加"""
@@ -342,13 +381,7 @@ class MainWindow(QWidget, Ui_Form):
             # 构造发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [1, degrade, speed_percentage]}) + '\r\n'
-
-            # 发送命令
-            robot_arm_client = self.get_robot_arm_connector()
-            with robot_arm_client as rc:
-                rc.send(command.replace(' ', '').encode())
-                response = rc.recv(1024).decode('utf-8').strip()
-                self.TeachArmRunLogWindow.append(response)
+            self.command_queue.put((3, command.encode()))
         else:
             degrade = 300
             self.AngleOneEdit.setText(str(degrade))
@@ -365,11 +398,7 @@ class MainWindow(QWidget, Ui_Form):
             # 发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [1, degrade, speed_percentage]}) + '\r\n'
-            robot_arm_client = self.get_robot_arm_connector()
-            with robot_arm_client as rc:
-                rc.send(command.replace(' ', '').encode())
-                response = rc.recv(1024).decode('utf-8').strip()
-                self.TeachArmRunLogWindow.append(response)
+            self.command_queue.put((3, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 1 角度不能为负！")
 
@@ -384,13 +413,8 @@ class MainWindow(QWidget, Ui_Form):
         # 构造发送命令
         command = json.dumps(
             {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
-
-        # 发送命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        self.command_queue.put((3, command.encode()))
+        
 
     def arm_two_sub(self):
         """机械臂关节角度减少"""
@@ -404,11 +428,7 @@ class MainWindow(QWidget, Ui_Form):
             # 发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
-            robot_arm_client = self.get_robot_arm_connector()
-            with robot_arm_client as rc:
-                rc.send(command.replace(' ', '').encode())
-                response = rc.recv(1024).decode('utf-8').strip()
-                self.TeachArmRunLogWindow.append(response)
+            self.command_queue.put((3, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 2 角度不能为负！")
 
@@ -425,11 +445,7 @@ class MainWindow(QWidget, Ui_Form):
             {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        self.command_queue.put((3, command.encode()))
 
     def arm_three_sub(self):
         """机械臂关节角度减少"""
@@ -442,11 +458,7 @@ class MainWindow(QWidget, Ui_Form):
             # 发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
-            robot_arm_client = self.get_robot_arm_connector()
-            with robot_arm_client as rc:
-                rc.send(command.replace(' ', '').encode())
-                response = rc.recv(1024).decode('utf-8').strip()
-                self.TeachArmRunLogWindow.append(response)
+            self.command_queue.put((3, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 3 角度不能为负！")
 
@@ -463,11 +475,7 @@ class MainWindow(QWidget, Ui_Form):
             {"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        self.command_queue.put((3, command.encode()))
 
     def arm_four_sub(self):
         """机械臂关节角度减少"""
@@ -480,11 +488,7 @@ class MainWindow(QWidget, Ui_Form):
             # 发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
-            robot_arm_client = self.get_robot_arm_connector()
-            with robot_arm_client as rc:
-                rc.send(command.replace(' ', '').encode())
-                response = rc.recv(1024).decode('utf-8').strip()
-                self.TeachArmRunLogWindow.append(response)
+            self.command_queue.put((3, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 4 角度不能为负！")
 
@@ -502,11 +506,7 @@ class MainWindow(QWidget, Ui_Form):
             {"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        self.command_queue.put((3, command.encode()))
 
     def arm_five_sub(self):
         """机械臂关节角度减少"""
@@ -519,11 +519,7 @@ class MainWindow(QWidget, Ui_Form):
             # 发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
-            robot_arm_client = self.get_robot_arm_connector()
-            with robot_arm_client as rc:
-                rc.send(command.replace(' ', '').encode())
-                response = rc.recv(1024).decode('utf-8').strip()
-                self.TeachArmRunLogWindow.append(response)
+            self.command_queue.put((3, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 5 角度不能为负！")
 
@@ -540,11 +536,7 @@ class MainWindow(QWidget, Ui_Form):
             {"command": "set_joint_angle_speed_percentage", "data": [6, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        self.command_queue.put((3, command.encode()))
 
     def arm_six_sub(self):
         """机械臂关节角度减少"""
@@ -557,11 +549,7 @@ class MainWindow(QWidget, Ui_Form):
             # 发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [6, degrade, speed_percentage]}) + '\r\n'
-            robot_arm_client = self.get_robot_arm_connector()
-            with robot_arm_client as rc:
-                rc.send(command.replace(' ', '').encode())
-                response = rc.recv(1024).decode('utf-8').strip()
-                self.TeachArmRunLogWindow.append(response)
+            self.command_queue.put((3, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 6 角度不能为负！")
 
@@ -615,11 +603,7 @@ class MainWindow(QWidget, Ui_Form):
         type_of_tool = self.ArmToolComboBox.currentText()
         if type_of_tool == "吸盘":
             command = json.dumps({"command":"set_robot_io_interface", "data": [0, True]}) + '\r\n'
-            robot_arm_client = self.get_robot_arm_connector()
-            with robot_arm_client as rc:
-                rc.send(command.replace(' ', '').encode())
-                response = rc.recv(1024).decode('utf-8').strip()
-                self.TeachArmRunLogWindow.append(response)
+            self.command_queue.put((1, command.encode()))
         else:
             self.message_box.warning_message_box("末端工具未选择吸盘!")
 
@@ -628,11 +612,7 @@ class MainWindow(QWidget, Ui_Form):
         type_of_tool = self.ArmToolComboBox.currentText()
         if type_of_tool == "吸盘":
             command = json.dumps({"command":"set_robot_io_interface", "data": [0, False]}) + '\r\n'
-            robot_arm_client = self.get_robot_arm_connector()
-            with robot_arm_client as rc:
-                rc.send(command.replace(' ', '').encode())
-                response = rc.recv(1024).decode('utf-8').strip()
-                self.TeachArmRunLogWindow.append(response)
+            self.command_queue.put((1, command.encode()))
         else:
             self.message_box.warning_message_box("末端工具未选择吸盘!")
 
@@ -674,11 +654,7 @@ class MainWindow(QWidget, Ui_Form):
                 {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
 
         # 发送命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        self.command_queue.put((3, command.encode()))
             
     def tool_y_operate(self, action="add"):
         """末端工具坐标 y 增减函数"""
@@ -718,11 +694,7 @@ class MainWindow(QWidget, Ui_Form):
                 {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
 
         # 发送命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        self.command_queue.put((3, command.encode()))
     
     def tool_z_operate(self, action="add"):
         """末端工具坐标 z 增减函数"""
@@ -762,11 +734,7 @@ class MainWindow(QWidget, Ui_Form):
                 {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
 
         # 发送命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        self.command_queue.put((3, command.encode()))
     
     def tool_rx_operate(self, action="add"):
         """末端工具坐标 Rx 增减函数"""
@@ -805,11 +773,7 @@ class MainWindow(QWidget, Ui_Form):
                 {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
 
         # 发送命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        self.command_queue.put((3, command.encode()))
             
     def tool_ry_operate(self, action="add"):
         """末端工具坐标 Ry 增减函数"""
@@ -848,11 +812,7 @@ class MainWindow(QWidget, Ui_Form):
                 {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
 
         # 发送命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        self.command_queue.put((3, command.encode()))
     
     def tool_rz_operate(self, action="add"):
         """末端工具坐标 Rz 增减函数"""
@@ -891,11 +851,7 @@ class MainWindow(QWidget, Ui_Form):
                 {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
 
         # 发送命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rc:
-            rc.send(command.replace(' ', '').encode())
-            response = rc.recv(1024).decode('utf-8').strip()
-            self.TeachArmRunLogWindow.append(response)
+        self.command_queue.put((3, command.encode()))
     
     # 示教控制回调函数编写
     def add_item(self):
@@ -1090,19 +1046,6 @@ class MainWindow(QWidget, Ui_Form):
             delay_time = self.run_action(row)
             self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
             time.sleep(delay_time)  # 等待动作执行完成
-            type_of_tool = self.ActionTableWidget.cellWidget(row, 7).currentText()
-            tool_switch = self.ActionTableWidget.cellWidget(row, 8).currentText()
-            logger.debug(f"工具类型 {type_of_tool}")
-            logger.debug(f"开关类型 {tool_switch}")
-            # 末端工具动作
-            with self.get_robot_arm_connector() as robot_client:
-                if type_of_tool == "吸盘":
-                    tool_status = True if tool_switch == "开" else False
-                    json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
-                    logger.debug(json_command)
-                    str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
-                    logger.debug(str_command)
-                    robot_client.send(str_command.encode('utf-8'))
     
     def run_all_action(self):
         """顺序执行示教动作"""
@@ -1119,33 +1062,31 @@ class MainWindow(QWidget, Ui_Form):
         Returns:
             delay_time (int): 返回动作的执行耗时
         """
-        with self.get_robot_arm_connector() as robot_client:
-            angle_1 = float(self.ActionTableWidget.item(row, 0).text())
-            angle_2 = float(self.ActionTableWidget.item(row, 1).text())
-            angle_3 = float(self.ActionTableWidget.item(row, 2).text())
-            angle_4 = float(self.ActionTableWidget.item(row, 3).text())
-            angle_5 = float(self.ActionTableWidget.item(row, 4).text())
-            angle_6 = float(self.ActionTableWidget.item(row, 5).text())
-            speed_percentage = float(self.ActionTableWidget.item(row, 6).text())
-            type_of_tool = self.ActionTableWidget.cellWidget(row, 7).currentText()
-            tool_switch = self.ActionTableWidget.cellWidget(row, 8).currentText()
-            delay_time = float(self.ActionTableWidget.item(row, 9).text())  # 执行动作需要的时间
-            
-            # 机械臂执行命令
-            json_command = {"command": "set_joint_angle_all_time",
-                                    "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, delay_time,
-                                            speed_percentage]}
+        angle_1 = float(self.ActionTableWidget.item(row, 0).text())
+        angle_2 = float(self.ActionTableWidget.item(row, 1).text())
+        angle_3 = float(self.ActionTableWidget.item(row, 2).text())
+        angle_4 = float(self.ActionTableWidget.item(row, 3).text())
+        angle_5 = float(self.ActionTableWidget.item(row, 4).text())
+        angle_6 = float(self.ActionTableWidget.item(row, 5).text())
+        speed_percentage = float(self.ActionTableWidget.item(row, 6).text())
+        type_of_tool = self.ActionTableWidget.cellWidget(row, 7).currentText()
+        tool_switch = self.ActionTableWidget.cellWidget(row, 8).currentText()
+        delay_time = float(self.ActionTableWidget.item(row, 9).text())  # 执行动作需要的时间
+        
+        # 机械臂执行命令
+        json_command = {"command": "set_joint_angle_all_time",
+                                "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, delay_time,
+                                        speed_percentage]}
+        str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+        self.command_queue.put((2, str_command.encode()))
+        
+        # 末端工具动作
+        logger.info("单次执行，开关控制")
+        if type_of_tool == "吸盘":
+            tool_status = True if tool_switch == "开" else False
+            json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
-            robot_client.send(str_command.encode('utf-8'))
-            
-            # 末端工具动作
-            with self.get_robot_arm_connector() as robot_client:
-                logger.info("单次执行，开关控制")
-                if type_of_tool == "吸盘":
-                    tool_status = True if tool_switch == "开" else False
-                    json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
-                    str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
-                    robot_client.send(str_command.encode('utf-8'))
+            self.command_queue.put((1, str_command.encode()))
                     
         return delay_time
 
