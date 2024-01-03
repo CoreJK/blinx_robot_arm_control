@@ -30,6 +30,7 @@ from common.socket_client import ClientSocket, Worker
 
 # 机械臂MDH模型
 from common.blinx_robot_module import Mirobot
+from common.check_tools import check_robot_arm_connection
 
 # 调试 segment 异常时，解除改注释
 # import faulthandler;faulthandler.enable()
@@ -67,6 +68,7 @@ class MainWindow(QWidget, Ui_Form):
 
         # 机械臂的查询循环控制位
         self.loop_flag = False
+        self.robot_arm_is_connected = False
 
         # 初始化消息提示窗口
         self.message_box = BlinxMessageBox(self)
@@ -132,6 +134,8 @@ class MainWindow(QWidget, Ui_Form):
 
         # 复位和急停按钮绑定
         self.RobotArmResetButton.clicked.connect(self.reset_robot_arm)
+        # 禁用急停按钮
+        self.RobotArmStopButton.setEnabled(False)
         self.RobotArmStopButton.clicked.connect(self.stop_robot_arm)
         
         # 末端工具控制组回调函数绑定
@@ -227,6 +231,7 @@ class MainWindow(QWidget, Ui_Form):
         self.SerialNumComboBox.addItems([f"{port.device}" for port in ports])
 
     # 机械臂复位按钮回调函数
+    @check_robot_arm_connection
     def reset_robot_arm(self):
         """机械臂复位
         :param mode:
@@ -236,14 +241,22 @@ class MainWindow(QWidget, Ui_Form):
         logger.warning("机械臂复位中!请注意手臂姿态")
     
     # 机械臂急停按钮回调函数
+    @check_robot_arm_connection
     def stop_robot_arm(self):
         """机械臂急停"""
+        # 线程标志设置为停止
         self.loop_flag = True
+        # 清空队列中的命令
         self.command_queue = PriorityQueue()
         # 恢复连接机械臂按钮
+        self.RobotArmLinkButton.setText("连接机械臂")
         self.RobotArmLinkButton.setEnabled(True)
+        # 禁用急停按钮
+        self.RobotArmStopButton.setEnabled(False)
+        
         self.message_box.error_message_box("机械臂急停!")
-        self.loop_flag = False
+        self.loop_flag = False  # 恢复线程池的初始标志位
+        self.robot_arm_is_connected = False # 机械臂连接标志位设置为 False
                             
     @logger.catch
     def get_angle_value(self):
@@ -283,9 +296,14 @@ class MainWindow(QWidget, Ui_Form):
                 logger.info("机械臂连接成功!")
                 self.message_box.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
                 
-            # 连接成功后，将连接机械臂按钮禁用，避免用户操作重复发起连接
             if self.RobotArmLinkButton.isEnabled() and remote_address:
+                # 机械臂连接成功标志
+                self.RobotArmLinkButton.setText("已连接")
+                self.robot_arm_is_connected = True
+                # 连接成功后，将连接机械臂按钮禁用，避免用户操作重复发起连接
                 self.RobotArmLinkButton.setEnabled(False)
+                # 启用急停按钮
+                self.RobotArmStopButton.setEnabled(True)
                 
                 # 启用实时获取机械臂角度线程
                 get_all_angle = Worker(self.get_angle_value)
@@ -313,6 +331,7 @@ class MainWindow(QWidget, Ui_Form):
             
             
     # 命令控制页面 json 发送与调试
+    @check_robot_arm_connection
     def send_json_command(self):
         """json数据发送按钮"""
         json_data = self.CommandEditWindow.toPlainText() + '\r\n'
@@ -328,7 +347,8 @@ class MainWindow(QWidget, Ui_Form):
                 self.CommandArmRunLogWindow.append("机械臂执行指令中...")
             else:
                 self.CommandArmRunLogWindow.append("机械臂命令执行失败!")
-
+    
+    @check_robot_arm_connection
     def command_sender(self):
         """后台获取命令池命令，并发送的线程"""
         with self.get_robot_arm_connector() as con:
@@ -336,17 +356,16 @@ class MainWindow(QWidget, Ui_Form):
                 if not self.command_queue.empty():
                     try:
                         command_str = self.command_queue.get()
-                        logger.debug(f"获取到命令{command_str}")
+                        logger.debug(f"发送命令：{command_str[1].decode('utf-8').strip()}")
                         
                         # 发送命令
                         con.send(command_str[1])
                         response = json.loads(con.recv(1024).decode('utf-8').strip())
-                        logger.debug(f"返回的信息: {response}")
+                        logger.debug(f"返回信息: {response}")
                         
                         # todo 命令返回的信息放入另外一个队列
                         # 解析机械臂角度获取返回的信息
                         if response["return"] == "get_joint_angle_all":
-                            logger.debug(response)
                             # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签的角度值
                             # 将角度值转换为列表
                             rs_data_list = [round(float(data), 2) for data in response['data']]
@@ -368,6 +387,7 @@ class MainWindow(QWidget, Ui_Form):
                 
                 
     # 机械臂关节控制回调函数
+    @check_robot_arm_connection
     def arm_one_add(self):
         """机械臂关节增加"""
         old_degrade = round(float(self.AngleOneEdit.text().strip()), 2)
@@ -387,6 +407,7 @@ class MainWindow(QWidget, Ui_Form):
             self.AngleOneEdit.setText(str(degrade))
             self.message_box.warning_message_box(message="关节 1 最大角度值为 300 度！")
 
+    @check_robot_arm_connection
     def arm_one_sub(self):
         """机械臂关节角度减少"""
         old_degrade = round(float(self.AngleOneEdit.text().strip()), 2)
@@ -402,6 +423,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box(message="关节 1 角度不能为负！")
 
+    @check_robot_arm_connection
     def arm_two_add(self):
         """机械臂关节增加"""
         old_degrade = round(float(self.AngleTwoEdit.text().strip()), 2)
@@ -415,7 +437,7 @@ class MainWindow(QWidget, Ui_Form):
             {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
         self.command_queue.put((3, command.encode()))
         
-
+    @check_robot_arm_connection
     def arm_two_sub(self):
         """机械臂关节角度减少"""
         # 获取机械臂当前的角度(手臂未提供该接口)
@@ -432,6 +454,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box(message="关节 2 角度不能为负！")
 
+    @check_robot_arm_connection
     def arm_three_add(self):
         """机械臂关节增加"""
         old_degrade = round(float(self.AngleThreeEdit.text().strip()), 2)
@@ -447,6 +470,7 @@ class MainWindow(QWidget, Ui_Form):
         # 发送命令
         self.command_queue.put((3, command.encode()))
 
+    @check_robot_arm_connection
     def arm_three_sub(self):
         """机械臂关节角度减少"""
         old_degrade = round(float(self.AngleThreeEdit.text().strip()), 2)
@@ -462,6 +486,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box(message="关节 3 角度不能为负！")
 
+    @check_robot_arm_connection
     def arm_four_add(self):
         """机械臂关节增加"""
         old_degrade = round(float(self.AngleFourEdit.text().strip()), 2)
@@ -476,7 +501,8 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((3, command.encode()))
-
+    
+    @check_robot_arm_connection    
     def arm_four_sub(self):
         """机械臂关节角度减少"""
         old_degrade = round(float(self.AngleFourEdit.text().strip()), 2)
@@ -491,7 +517,8 @@ class MainWindow(QWidget, Ui_Form):
             self.command_queue.put((3, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 4 角度不能为负！")
-
+    
+    @check_robot_arm_connection
     def arm_five_add(self):
         """机械臂关节增加"""
         old_degrade = round(float(self.AngleFiveEdit.text().strip()), 2)
@@ -507,7 +534,8 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((3, command.encode()))
-
+    
+    @check_robot_arm_connection
     def arm_five_sub(self):
         """机械臂关节角度减少"""
         old_degrade = round(float(self.AngleFiveEdit.text().strip()), 2)
@@ -522,7 +550,8 @@ class MainWindow(QWidget, Ui_Form):
             self.command_queue.put((3, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 5 角度不能为负！")
-
+    
+    @check_robot_arm_connection
     def arm_six_add(self):
         """机械臂关节增加"""
         old_degrade = round(float(self.AngleSixEdit.text().strip()), 2)
@@ -537,7 +566,8 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((3, command.encode()))
-
+    
+    @check_robot_arm_connection
     def arm_six_sub(self):
         """机械臂关节角度减少"""
         old_degrade = round(float(self.AngleSixEdit.text().strip()), 2)
@@ -553,6 +583,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box(message="关节 6 角度不能为负！")
 
+    @check_robot_arm_connection
     def arm_angle_step_add(self):
         """机械臂关节步长增加"""
         old_degrade = int(self.AngleStepEdit.text().strip())
@@ -561,7 +592,8 @@ class MainWindow(QWidget, Ui_Form):
             self.AngleStepEdit.setText(str(degrade))
         else:
             self.message_box.warning_message_box(message="步长不能超过 20")
-
+    
+    @check_robot_arm_connection
     def arm_angle_step_sub(self):
         """机械臂关节步长减少"""
         old_degrade = int(self.AngleStepEdit.text().strip())
@@ -570,7 +602,8 @@ class MainWindow(QWidget, Ui_Form):
             self.AngleStepEdit.setText(str(degrade))
         else:
             self.message_box.warning_message_box(message="步长不能为负!")
-
+    
+    @check_robot_arm_connection
     def arm_speed_percentage_add(self):
         """关节运动速度百分比增加"""
         speed_percentage_edit = self.ArmSpeedEdit.text()
@@ -583,7 +616,8 @@ class MainWindow(QWidget, Ui_Form):
                 self.message_box.warning_message_box(message=f"关节速度范围 50 ~ 100")
         else:
             self.message_box.error_message_box(message="请输入整数字符!")
-
+    
+    @check_robot_arm_connection
     def arm_speed_percentage_sub(self):
         """关节运动速度百分比减少"""
         speed_percentage_edit = self.ArmSpeedEdit.text()
@@ -598,6 +632,7 @@ class MainWindow(QWidget, Ui_Form):
             self.message_box.error_message_box(message="请输入整数字符!")
 
     # 末端工具控制回调函数
+    @check_robot_arm_connection
     def tool_open(self):
         """吸盘工具开"""
         type_of_tool = self.ArmToolComboBox.currentText()
@@ -607,6 +642,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box("末端工具未选择吸盘!")
 
+    @check_robot_arm_connection
     def tool_close(self):
         """吸盘工具关"""
         type_of_tool = self.ArmToolComboBox.currentText()
@@ -616,6 +652,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box("末端工具未选择吸盘!")
 
+    @check_robot_arm_connection
     def tool_x_operate(self, action="add"):
         """末端工具坐标 x 增减函数"""
         # 获取末端工具的坐标
@@ -655,7 +692,8 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((3, command.encode()))
-            
+
+    @check_robot_arm_connection
     def tool_y_operate(self, action="add"):
         """末端工具坐标 y 增减函数"""
        # 获取末端工具的坐标
@@ -695,7 +733,8 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((3, command.encode()))
-    
+
+    @check_robot_arm_connection
     def tool_z_operate(self, action="add"):
         """末端工具坐标 z 增减函数"""
         # 获取末端工具的坐标
@@ -735,7 +774,8 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((3, command.encode()))
-    
+
+    @check_robot_arm_connection
     def tool_rx_operate(self, action="add"):
         """末端工具坐标 Rx 增减函数"""
         # 获取末端工具的坐标
@@ -774,7 +814,8 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((3, command.encode()))
-            
+    
+    @check_robot_arm_connection           
     def tool_ry_operate(self, action="add"):
         """末端工具坐标 Ry 增减函数"""
         # 获取末端工具的坐标
@@ -814,6 +855,7 @@ class MainWindow(QWidget, Ui_Form):
         # 发送命令
         self.command_queue.put((3, command.encode()))
     
+    @check_robot_arm_connection    
     def tool_rz_operate(self, action="add"):
         """末端工具坐标 Rz 增减函数"""
         # 获取末端工具的坐标、姿态数值
@@ -854,6 +896,7 @@ class MainWindow(QWidget, Ui_Form):
         self.command_queue.put((3, command.encode()))
     
     # 示教控制回调函数编写
+    @check_robot_arm_connection
     def add_item(self):
         """示教控制添加一行动作"""
         # 获取所有的关节角度数值
@@ -893,6 +936,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box(message="角度值不能为空!")
 
+    @check_robot_arm_connection
     def remove_item(self):
         """示教控制删除一行动作"""
         selected_rows = self.ActionTableWidget.selectionModel().selectedRows()
@@ -1047,6 +1091,7 @@ class MainWindow(QWidget, Ui_Form):
             self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
             time.sleep(delay_time)  # 等待动作执行完成
     
+    @check_robot_arm_connection
     def run_all_action(self):
         """顺序执行示教动作"""
         self.TeachArmRunLogWindow.append('【顺序执行】开始')
@@ -1090,6 +1135,7 @@ class MainWindow(QWidget, Ui_Form):
                     
         return delay_time
 
+    @check_robot_arm_connection
     def run_action_step(self):
         """单次执行选定的动作"""
         # 获取到选定的动作
@@ -1103,6 +1149,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box("请选择需要执行的动作!")
 
+    @check_robot_arm_connection
     def run_action_loop(self):
         """循环执行动作"""
         # 获取循环动作循环执行的次数
@@ -1135,6 +1182,7 @@ class MainWindow(QWidget, Ui_Form):
         self.loop_flag = True
         logger.info("比邻星六轴机械臂上位机窗口关闭！")
         event.accept()
+
 
 
 if __name__ == '__main__':
