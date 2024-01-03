@@ -681,16 +681,14 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([new_x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        logger.debug(f"ikine = {degrade}")
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
+        degrade.append(speed_percentage)
         
         # 构造发送命令
-        command = json.dumps(
-                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
 
-        # 发送命令
         self.command_queue.put((3, command.encode()))
 
     @check_robot_arm_connection
@@ -722,14 +720,13 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, new_y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        logger.debug(f"ikine = {degrade}")
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
+        degrade.append(speed_percentage)
         
         # 构造发送命令
-        command = json.dumps(
-                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
 
         # 发送命令
         self.command_queue.put((3, command.encode()))
@@ -767,10 +764,11 @@ class MainWindow(QWidget, Ui_Form):
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
+        degrade.append(speed_percentage)
         
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+                {"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
 
         # 发送命令
         self.command_queue.put((3, command.encode()))
@@ -807,10 +805,11 @@ class MainWindow(QWidget, Ui_Form):
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
+        degrade.append(speed_percentage)
         
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+                {"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
 
         # 发送命令
         self.command_queue.put((3, command.encode()))
@@ -847,10 +846,11 @@ class MainWindow(QWidget, Ui_Form):
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
+        degrade.append(speed_percentage)
         
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+                {"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
 
         # 发送命令
         self.command_queue.put((3, command.encode()))
@@ -887,10 +887,12 @@ class MainWindow(QWidget, Ui_Form):
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
+        # 更新完关节角度值后，发送命令
+        degrade.append(speed_percentage)
         
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_all_speed_percentage", "data": degrade.append(speed_percentage)}) + '\r\n'
+                {"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
 
         # 发送命令
         self.command_queue.put((3, command.encode()))

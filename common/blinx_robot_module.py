@@ -10,21 +10,21 @@ class Mirobot(DHRobot):
 
     def __init__(self):
         L0 = RevoluteMDH(
-            d=127,
-            qlim=[radians(-100), radians(100)])
+            d=143.5,
+            qlim=[radians(-165), radians(165)])
         L1 = RevoluteMDH(
-            a=29.69, alpha=-pi/2, offset=-pi/2,
-            qlim=[radians(-60), radians(90)])
+            a=59.50, alpha=-pi/2, offset=-pi/2,
+            qlim=[radians(-90), radians(90)])
         L2 = RevoluteMDH(
-            a=108, qlim=[radians(-180), radians(50)])
+            a=160.72, qlim=[radians(-60), radians(60)])
         L3 = RevoluteMDH(
-            d=168.98, a=20, alpha=-pi/2,
-            qlim=[radians(-180), radians(180)])
+            d=238.67, a=59.50, alpha=-pi/2,
+            qlim=[radians(-150), radians(170)])
         L4 = RevoluteMDH(
             alpha=pi/2, offset=pi/2,
-            qlim=[radians(-180), radians(40)])
+            qlim=[radians(-30), radians(210)])
         L5 = RevoluteMDH(
-            d=-24.8, alpha=pi/2,
+            d=-70.5, alpha=pi/2,
             qlim=[radians(-180), radians(180)])
         super().__init__(
             [L0, L1, L2, L3, L4, L5],
