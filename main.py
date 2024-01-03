@@ -610,7 +610,7 @@ class MainWindow(QWidget, Ui_Form):
         if speed_percentage_edit is not None and speed_percentage_edit.isdigit():
             old_speed_percentage = int(speed_percentage_edit.strip())
             new_speed_percentage = old_speed_percentage + 5
-            if 50 <= new_speed_percentage <= 100:
+            if 0 <= new_speed_percentage <= 100:
                 self.ArmSpeedEdit.setText(str(new_speed_percentage))
             else:
                 self.message_box.warning_message_box(message=f"关节速度范围 50 ~ 100")
@@ -624,10 +624,10 @@ class MainWindow(QWidget, Ui_Form):
         if speed_percentage_edit is not None and speed_percentage_edit.isdigit():
             old_speed_percentage = int(speed_percentage_edit.strip())
             new_speed_percentage = old_speed_percentage - 5
-            if new_speed_percentage >= 50:
+            if new_speed_percentage >= 0:
                 self.ArmSpeedEdit.setText(str(new_speed_percentage))
             else:
-                self.message_box.warning_message_box(message=f"关节最低速度为 50 ，速度不能为负!")
+                self.message_box.warning_message_box(message=f"速度不能为负!")
         else:
             self.message_box.error_message_box(message="请输入整数字符!")
 
