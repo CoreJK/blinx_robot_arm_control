@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
-    <diagram name="第 1 页" id="UpfD0Sz0CBNI1ClnR2mp">
-        <mxGraphModel dx="1295" dy="574" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <diagram name="上位机业务逻辑" id="UpfD0Sz0CBNI1ClnR2mp">
+        <mxGraphModel dx="255" dy="153" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -18,17 +18,17 @@
                 <mxCell id="FCqXL8VjYoRTm37Blg7O-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="FCqXL8VjYoRTm37Blg7O-2" target="FCqXL8VjYoRTm37Blg7O-4" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="FCqXL8VjYoRTm37Blg7O-26" value="后入先出" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="FCqXL8VjYoRTm37Blg7O-19" vertex="1" connectable="0">
+                <mxCell id="FCqXL8VjYoRTm37Blg7O-26" value="根据优先级选择任务" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="FCqXL8VjYoRTm37Blg7O-19" vertex="1" connectable="0">
                     <mxGeometry x="0.0231" y="-1" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="FCqXL8VjYoRTm37Blg7O-42" value="4" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="FCqXL8VjYoRTm37Blg7O-19" vertex="1" connectable="0">
                     <mxGeometry x="-0.3141" y="-2" relative="1" as="geometry">
-                        <mxPoint as="offset"/>
+                        <mxPoint x="19" as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="FCqXL8VjYoRTm37Blg7O-2" value="任务&lt;br&gt;队列" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                <mxCell id="FCqXL8VjYoRTm37Blg7O-2" value="优先级&lt;br&gt;任务&lt;br&gt;队列" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="640" y="250" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="FCqXL8VjYoRTm37Blg7O-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="FCqXL8VjYoRTm37Blg7O-3" target="FCqXL8VjYoRTm37Blg7O-24" edge="1">
@@ -154,9 +154,14 @@
                 <mxCell id="2" value="机械臂连接成功" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="1100" y="10" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="9" value="Text" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-                    <mxGeometry x="875" y="470" width="130" height="110" as="geometry"/>
-                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="42nF0i_4XvLgerm_fPLs" name="SDK业务逻辑">
+        <mxGraphModel dx="1301" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
             </root>
         </mxGraphModel>
     </diagram>

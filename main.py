@@ -1,12 +1,12 @@
 import json
 import platform
 import shelve
-import socket
 import sys
 import time
 from pathlib import Path
 from functools import partial
 from queue import PriorityQueue
+from retrying import retry
 
 # 正逆解相关模块
 import numpy as np
@@ -348,7 +348,7 @@ class MainWindow(QWidget, Ui_Form):
             else:
                 self.CommandArmRunLogWindow.append("机械臂命令执行失败!")
     
-    @check_robot_arm_connection
+    
     def command_sender(self):
         """后台获取命令池命令，并发送的线程"""
         with self.get_robot_arm_connector() as con:
@@ -356,10 +356,12 @@ class MainWindow(QWidget, Ui_Form):
                 if not self.command_queue.empty():
                     try:
                         command_str = self.command_queue.get()
-                        logger.debug(f"发送命令：{command_str[1].decode('utf-8').strip()}")
                         
                         # 发送命令
                         con.send(command_str[1])
+                        logger.debug(f"发送命令：{command_str[1].decode().strip()}")
+                        
+                        # 接收命令返回的信息
                         response = json.loads(con.recv(1024).decode('utf-8').strip())
                         logger.debug(f"返回信息: {response}")
                         
@@ -401,7 +403,7 @@ class MainWindow(QWidget, Ui_Form):
             # 构造发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [1, degrade, speed_percentage]}) + '\r\n'
-            self.command_queue.put((3, command.encode()))
+            self.command_queue.put((1.5, command.encode()))
         else:
             degrade = 300
             self.AngleOneEdit.setText(str(degrade))
@@ -419,7 +421,7 @@ class MainWindow(QWidget, Ui_Form):
             # 发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [1, degrade, speed_percentage]}) + '\r\n'
-            self.command_queue.put((3, command.encode()))
+            self.command_queue.put((1.5, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 1 角度不能为负！")
 
@@ -435,7 +437,7 @@ class MainWindow(QWidget, Ui_Form):
         # 构造发送命令
         command = json.dumps(
             {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
-        self.command_queue.put((3, command.encode()))
+        self.command_queue.put((1.5, command.encode()))
         
     @check_robot_arm_connection
     def arm_two_sub(self):
@@ -450,7 +452,7 @@ class MainWindow(QWidget, Ui_Form):
             # 发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
-            self.command_queue.put((3, command.encode()))
+            self.command_queue.put((1.5, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 2 角度不能为负！")
 
@@ -468,7 +470,7 @@ class MainWindow(QWidget, Ui_Form):
             {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
-        self.command_queue.put((3, command.encode()))
+        self.command_queue.put((1.5, command.encode()))
 
     @check_robot_arm_connection
     def arm_three_sub(self):
@@ -482,7 +484,7 @@ class MainWindow(QWidget, Ui_Form):
             # 发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
-            self.command_queue.put((3, command.encode()))
+            self.command_queue.put((1.5, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 3 角度不能为负！")
 
@@ -500,7 +502,7 @@ class MainWindow(QWidget, Ui_Form):
             {"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
-        self.command_queue.put((3, command.encode()))
+        self.command_queue.put((1.5, command.encode()))
     
     @check_robot_arm_connection    
     def arm_four_sub(self):
@@ -512,9 +514,8 @@ class MainWindow(QWidget, Ui_Form):
         if 0 <= degrade:
             self.AngleFourEdit.setText(str(degrade))
             # 发送命令
-            command = json.dumps(
-                {"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
-            self.command_queue.put((3, command.encode()))
+            command = json.dumps({"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
+            self.command_queue.put((1.5, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 4 角度不能为负！")
     
@@ -529,11 +530,10 @@ class MainWindow(QWidget, Ui_Form):
             self.AngleFiveEdit.setText(str(degrade))  # 更新关节角度值
 
         # 构造发送命令
-        command = json.dumps(
-            {"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
-        self.command_queue.put((3, command.encode()))
+        self.command_queue.put((1.5, command.encode()))
     
     @check_robot_arm_connection
     def arm_five_sub(self):
@@ -547,7 +547,7 @@ class MainWindow(QWidget, Ui_Form):
             # 发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
-            self.command_queue.put((3, command.encode()))
+            self.command_queue.put((1.5, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 5 角度不能为负！")
     
@@ -565,7 +565,7 @@ class MainWindow(QWidget, Ui_Form):
             {"command": "set_joint_angle_speed_percentage", "data": [6, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
-        self.command_queue.put((3, command.encode()))
+        self.command_queue.put((1.5, command.encode()))
     
     @check_robot_arm_connection
     def arm_six_sub(self):
@@ -579,7 +579,7 @@ class MainWindow(QWidget, Ui_Form):
             # 发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [6, degrade, speed_percentage]}) + '\r\n'
-            self.command_queue.put((3, command.encode()))
+            self.command_queue.put((1.5, command.encode()))
         else:
             self.message_box.warning_message_box(message="关节 6 角度不能为负！")
 
@@ -684,13 +684,12 @@ class MainWindow(QWidget, Ui_Form):
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
-        degrade.append(speed_percentage)
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
-        command = json.dumps({"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
-
-        self.command_queue.put((3, command.encode()))
-
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
+        self.command_queue.put((2, command.encode('utf-8')))
+        
     @check_robot_arm_connection
     def tool_y_operate(self, action="add"):
         """末端工具坐标 y 增减函数"""
@@ -723,13 +722,13 @@ class MainWindow(QWidget, Ui_Form):
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
-        degrade.append(speed_percentage)
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
-        command = json.dumps({"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
-        self.command_queue.put((3, command.encode()))
+        self.command_queue.put((2, command.encode()))
 
     @check_robot_arm_connection
     def tool_z_operate(self, action="add"):
@@ -764,14 +763,14 @@ class MainWindow(QWidget, Ui_Form):
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
-        degrade.append(speed_percentage)
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
+                {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
-        self.command_queue.put((3, command.encode()))
+        self.command_queue.put((2, command.encode()))
 
     @check_robot_arm_connection
     def tool_rx_operate(self, action="add"):
@@ -805,14 +804,13 @@ class MainWindow(QWidget, Ui_Form):
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
-        degrade.append(speed_percentage)
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
-        command = json.dumps(
-                {"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
-        self.command_queue.put((3, command.encode()))
+        self.command_queue.put((2, command.encode()))
     
     @check_robot_arm_connection           
     def tool_ry_operate(self, action="add"):
@@ -846,14 +844,14 @@ class MainWindow(QWidget, Ui_Form):
         
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
-        degrade.append(speed_percentage)
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
+                {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
-        self.command_queue.put((3, command.encode()))
+        self.command_queue.put((2, command.encode()))
     
     @check_robot_arm_connection    
     def tool_rz_operate(self, action="add"):
@@ -888,14 +886,14 @@ class MainWindow(QWidget, Ui_Form):
         # 更新关节控制界面中的角度值
         self.update_joint_degrees_text(degrade)
         # 更新完关节角度值后，发送命令
-        degrade.append(speed_percentage)
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_all_speed_percentage", "data": degrade}) + '\r\n'
+                {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
-        self.command_queue.put((3, command.encode()))
+        self.command_queue.put((2, command.encode()))
     
     # 示教控制回调函数编写
     @check_robot_arm_connection
@@ -1166,6 +1164,8 @@ class MainWindow(QWidget, Ui_Form):
         """右键复制粘贴菜单"""
         self.context_menu.exec_(self.ActionTableWidget.mapToGlobal(pos))
 
+    @retry(stop_max_attempt_number=3, wait_fixed=1000)
+    @logger.catch
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
         try:

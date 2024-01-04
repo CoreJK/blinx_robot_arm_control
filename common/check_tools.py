@@ -1,3 +1,4 @@
+from functools import wraps
 
 def check_robot_arm_connection(func):
     """
@@ -13,6 +14,7 @@ def check_robot_arm_connection(func):
         None
 
     """
+    @wraps(func)
     def wrapper(self, *args, **kwargs):
         if not self.robot_arm_is_connected:
             self.message_box.warning_message_box("机械臂未连接！")

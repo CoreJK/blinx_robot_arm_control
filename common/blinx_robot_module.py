@@ -11,26 +11,40 @@ class Mirobot(DHRobot):
     def __init__(self):
         L0 = RevoluteMDH(
             d=143.5,
-            qlim=[radians(-165), radians(165)])
+            qlim=[radians(-165), radians(165)],
+            )
         L1 = RevoluteMDH(
-            a=59.50, alpha=-pi/2, offset=-pi/2,
-            qlim=[radians(-90), radians(90)])
+            a=59.50, 
+            alpha=-pi/2, 
+            offset=-pi/2,
+            qlim=[radians(-90), radians(90)],
+            )
         L2 = RevoluteMDH(
-            a=160.72, qlim=[radians(-60), radians(60)])
+            a=160.72,
+            qlim=[radians(-60), radians(60)],
+            )
         L3 = RevoluteMDH(
-            d=238.67, a=59.50, alpha=-pi/2,
-            qlim=[radians(-150), radians(170)])
+            d=238.67, 
+            a=59.50,
+            alpha=-pi/2,
+            qlim=[radians(-150), radians(170)],
+            )
         L4 = RevoluteMDH(
-            alpha=pi/2, offset=pi/2,
-            qlim=[radians(-30), radians(210)])
+            alpha=pi/2, 
+            offset=pi/2,
+            qlim=[radians(-30), radians(210)],
+            )
         L5 = RevoluteMDH(
-            d=-70.5, alpha=pi/2,
+            d=-70.5, 
+            alpha=pi/2,
             qlim=[radians(-180), radians(180)])
+        
         super().__init__(
             [L0, L1, L2, L3, L4, L5],
             name="mirobot",
             manufacturer="BLinx"
         )
+        
         self._MYCONFIG = np.array([1, 2, 3, 4, 5, 6])
         self.qr = np.array([0, radians(90), radians(90), 0, 0, 0])
         self.qz = np.zeros(6)
@@ -47,12 +61,12 @@ if __name__ == "__main__":
     print(mirobot)
 
     # 机械臂正运动解
-    q1 = radians(-15)
-    q2 = radians(-10)
-    q3 = radians(15)
-    q4 = radians(10)
-    q5 = radians(-5)
-    q6 = radians(-5)
+    q1 = radians(150)
+    q2 = radians(70)
+    q3 = radians(45)
+    q4 = radians(150)
+    q5 = radians(10)
+    q6 = radians(0)
     print("机械臂关节角度 = ", [round(degrees(i), 2) for i in [q1, q2, q3, q4, q5, q6]])
     arm_pose_degree = np.array([q1, q2, q3, q4, q5, q6])
     translation_vector = mirobot.fkine(arm_pose_degree)
