@@ -48,6 +48,17 @@ What things you need to install the software and how to install them.
 Give examples
 ```
 
+### MDH 参数
+
+| 关节 | alpha | a | d | theta |
+| ---- | -- | -- | -- | -- |
+| 1 | 0 | 0 | 39.1 | 0 |
+| 2 | -pi / 2 | 0 | 0 | -pi / 2 |
+| 3 | 0 | 160.72 | 0 | 0 |
+| 4 | -pi / 2 | 0 | 238.7 | 0 |
+| 5 | pi / 2 | 0 | 0 | -pi / 2 |
+| 6 | pi / 2 | 0 | -70.5 | 0 |
+
 ### Installing
 
 A step by step series of examples that tell you how to get a development env running.

@@ -10,43 +10,51 @@ class Mirobot(DHRobot):
 
     def __init__(self):
         L0 = RevoluteMDH(
-            d=143.5,
+            alpha=0,
+            a=0,
+            d=39.1,
             qlim=[radians(-165), radians(165)],
             )
         L1 = RevoluteMDH(
-            a=59.50, 
             alpha=-pi/2, 
+            a=0,
+            d=0, 
             offset=-pi/2,
             qlim=[radians(-90), radians(90)],
             )
         L2 = RevoluteMDH(
+            alpha=0,
             a=160.72,
+            d=0,
             qlim=[radians(-60), radians(60)],
             )
         L3 = RevoluteMDH(
-            d=238.67, 
-            a=59.50,
             alpha=-pi/2,
+            a=0,
+            d=238.67,
             qlim=[radians(-150), radians(170)],
             )
         L4 = RevoluteMDH(
             alpha=pi/2, 
+            a=0,
+            d=0,
             offset=pi/2,
             qlim=[radians(-30), radians(210)],
             )
         L5 = RevoluteMDH(
-            d=-70.5, 
             alpha=pi/2,
+            a=0,
+            d=-70.5, 
             qlim=[radians(-180), radians(180)])
         
         super().__init__(
             [L0, L1, L2, L3, L4, L5],
-            name="mirobot",
-            manufacturer="BLinx"
+            name="Blinx_six_arm_robot",
+            manufacturer="RenWeiMing"
         )
         
         self._MYCONFIG = np.array([1, 2, 3, 4, 5, 6])
-        self.qr = np.array([0, radians(90), radians(90), 0, 0, 0])
+        self.qr = np.array([radians(150), radians(70), radians(45), radians(150), radians(10), 0])
         self.qz = np.zeros(6)
         self.addconfiguration("qr", self.qr)
         self.addconfiguration("qz", self.qz)
