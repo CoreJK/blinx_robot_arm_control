@@ -320,7 +320,7 @@ class MainWindow(QWidget, Ui_Form):
             # 连接失败后，将连接机械臂按钮启用
             self.RobotArmLinkButton.setEnabled(True)
             # 清空队列
-            self.command_queue = PriorityQueue()
+            self.command_queue = PriorityQueue(maxsize=100)
             # 关闭线程池
             self.loop_flag = True
             # 弹出错误提示框
@@ -681,20 +681,13 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([new_x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        # todo 分别给六个角度补偿值，条件是值为负时，补偿的值为: 150, 70, 45, 150, 10, 0
-        compensation_values = [150, 70, 45, 150, 10, 0]
-        # 日志打印出补偿前的角度值
-        logger.debug(f"补偿前的角度值: {degrade}")
-        degrade_compensated = [d + c if d < 0 else d for d, c in zip(degrade, compensation_values)]
-        # 日志打印出补偿后的角度值
-        logger.debug(f"补偿后的角度值: {degrade_compensated}")
         
         # 更新关节控制界面中的角度值
-        self.update_joint_degrees_text(degrade_compensated)
-        degrade_compensated.extend([0, speed_percentage])
+        self.update_joint_degrees_text(degrade)
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
-        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade_compensated}).replace(' ', "") + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
         self.command_queue.put((2, command.encode('utf-8')))
         
     @check_robot_arm_connection
@@ -726,18 +719,13 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, new_y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        # todo 分别给六个角度补偿值，条件是值为负时，补偿的值为: 150, 70, 45, 150, 10, 0
-        compensation_values = [165, 70, 45, 150, 10, 0]
-        logger.debug(f"补偿前的角度值: {degrade}")
-        degrade_compensated = [d + c if d < 0 else d for d, c in zip(degrade, compensation_values)]
-        logger.debug(f"补偿后的角度值: {degrade_compensated}")
         
         # 更新关节控制界面中的角度值
-        self.update_joint_degrees_text(degrade_compensated)
-        degrade_compensated.extend([0, speed_percentage])
+        self.update_joint_degrees_text(degrade)
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
-        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade_compensated}).replace(' ', "") + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
         self.command_queue.put((2, command.encode()))
@@ -771,19 +759,14 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, y_coordinate, new_z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        # todo 分别给六个角度补偿值，条件是值为负时，补偿的值为: 150, 70, 45, 150, 10, 0
-        compensation_values = [150, 70, 45, 150, 10, 0]
-        logger.debug(f"补偿前的角度值: {degrade}")
-        degrade_compensated = [d + c if d < 0 else d for d, c in zip(degrade, compensation_values)]
-        logger.debug(f"补偿后的角度值: {degrade_compensated}")
         
         # 更新关节控制界面中的角度值
-        self.update_joint_degrees_text(degrade_compensated)
-        degrade_compensated.extend([0, speed_percentage])
+        self.update_joint_degrees_text(degrade)
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_all_time", "data": degrade_compensated}).replace(' ', "") + '\r\n'
+                {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
         self.command_queue.put((2, command.encode()))
@@ -816,18 +799,13 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, new_rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        # todo 分别给六个角度补偿值，条件是值为负时，补偿的值为: 150, 70, 45, 150, 10, 0
-        logger.debug(f"补偿前的角度值: {degrade}")
-        compensation_values = [150, 70, 45, 150, 10, 0]
-        degrade_compensated = [d + c if d < 0 else d for d, c in zip(degrade, compensation_values)]
-        logger.debug(f"补偿后的角度值: {degrade_compensated}")
         
         # 更新关节控制界面中的角度值
-        self.update_joint_degrees_text(degrade_compensated)
-        degrade_compensated.extend([0, speed_percentage])
+        self.update_joint_degrees_text(degrade)
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
-        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade_compensated}).replace(' ', "") + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
         self.command_queue.put((2, command.encode()))
@@ -860,19 +838,14 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, new_ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        # todo 分别给六个角度补偿值，条件是值为负时，补偿的值为: 150, 70, 45, 150, 10, 0
-        logger.debug(f"补偿前的角度值: {degrade}")
-        compensation_values = [150, 70, 45, 150, 10, 0]
-        degrade_compensated = [d + c if d < 0 else d for d, c in zip(degrade, compensation_values)]
-        logger.debug(f"补偿后的角度值: {degrade_compensated}")
         
         # 更新关节控制界面中的角度值
-        self.update_joint_degrees_text(degrade_compensated)
-        degrade_compensated.extend([0, speed_percentage])
+        self.update_joint_degrees_text(degrade)
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_all_time", "data": degrade_compensated}).replace(' ', "") + '\r\n'
+                {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
         self.command_queue.put((2, command.encode()))
@@ -906,20 +879,14 @@ class MainWindow(QWidget, Ui_Form):
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
         
-        # todo 分别给六个角度补偿值，条件是值为负时，补偿的值为: 150, 70, 45, 150, 10, 0
-        logger.debug(f"补偿前的角度值: {degrade}")
-        compensation_values = [150, 70, 45, 150, 10, 0]
-        degrade_compensated = [d + c if d < 0 else d for d, c in zip(degrade, compensation_values)]
-        logger.debug(f"补偿后的角度值: {degrade_compensated}")
-        
         # 更新关节控制界面中的角度值
-        self.update_joint_degrees_text(degrade_compensated)
+        self.update_joint_degrees_text(degrade)
         # 更新完关节角度值后，发送命令
-        degrade_compensated.extend([0, speed_percentage])
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_all_time", "data": degrade_compensated}).replace(' ', "") + '\r\n'
+                {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
         self.command_queue.put((2, command.encode()))
