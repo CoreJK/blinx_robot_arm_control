@@ -16,37 +16,37 @@ class Mirobot(DHRobot):
             qlim=[radians(-165), radians(165)],
             )
         L2 = RevoluteMDH(
-            alpha=pi/2, 
+            alpha=-pi/2, 
             a=0,
-            d=0.0595, 
-            offset=pi/2,
+            d=0, 
+            offset=-pi/2,
             qlim=[radians(-90), radians(90)],
             )
         L3 = RevoluteMDH(
             alpha=0,
             a=0.16072,
             d=0,
-            offset=-pi/2,
+            # offset=-pi/2,
             qlim=[radians(-60), radians(60)],
             )
         L4 = RevoluteMDH(
-            alpha=pi/2,
-            a=0.2387,
-            d=0,
-            offset=pi/2,
+            alpha=-pi/2,
+            a=0,
+            d=0.23837,
+            # offset=pi/2,
             qlim=[radians(-150), radians(170)],
             )
         L5 = RevoluteMDH(
             alpha=pi/2, 
             a=0,
             d=0,
-            offset=pi,
+            offset=pi/2,
             qlim=[radians(-30), radians(210)],
             )
         L6 = RevoluteMDH(
             alpha=pi/2,
             a=0,
-            d=0.07079, 
+            d=-0.07079, 
             qlim=[radians(-90), radians(180)])
         
         super().__init__(
@@ -57,7 +57,7 @@ class Mirobot(DHRobot):
         
         self._MYCONFIG = np.array([1, 2, 3, 4, 5, 6])
         self.qr = np.array([radians(150), radians(70), radians(45), radians(150), radians(10), radians(0)])
-        self.qz = np.zeros(6)
+        self.qz = np.array([radians(10), radians(0), radians(0), radians(0), radians(0), radians(0)])
         self.addconfiguration("qr", self.qr)
         self.addconfiguration("qz", self.qz)
 
@@ -71,11 +71,11 @@ if __name__ == "__main__":
     print(mirobot)
 
     # 机械臂正运动解
-    q1 = radians(150)
-    q2 = radians(70)
-    q3 = radians(45)
-    q4 = radians(150)
-    q5 = radians(10)
+    q1 = radians(5)
+    q2 = radians(0)
+    q3 = radians(0)
+    q4 = radians(0)
+    q5 = radians(0)
     q6 = radians(0)
     print("机械臂关节角度 = ", [round(degrees(i), 2) for i in [q1, q2, q3, q4, q5, q6]])
     arm_pose_degree = np.array([q1, q2, q3, q4, q5, q6])
@@ -112,12 +112,11 @@ if __name__ == "__main__":
     
     # 统计出逆解数据列表数据中，指定数据出现的次数
     # 指定的数据为 [150.0, 70.0, 45.0, 150.0, 10.0, 0.0]
-    
-    # 机械臂画图
     rs_ik  # Assuming rs_ik is the inverse solution data list
     specified_data = [150.0, 70.0, 45.0, 150.0, 10.0, 0.0]
-
     occurrences = rs_ik.count(specified_data)
     print("Occurrences:", occurrences)
+    
+    # 机械臂画图
     mirobot.plot(mirobot.qz, block=True)
     
