@@ -57,7 +57,7 @@ class Mirobot(DHRobot):
         
         self._MYCONFIG = np.array([1, 2, 3, 4, 5, 6])
         self.qr = np.array([radians(150), radians(70), radians(45), radians(150), radians(10), radians(0)])
-        self.qz = np.array([radians(10), radians(0), radians(0), radians(0), radians(0), radians(0)])
+        self.qz = np.array([radians(0), radians(0), radians(0), radians(0), radians(0), radians(0)])
         self.addconfiguration("qr", self.qr)
         self.addconfiguration("qz", self.qz)
 
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     print(mirobot)
 
     # 机械臂正运动解
-    q1 = radians(5)
+    q1 = radians(0)
     q2 = radians(0)
     q3 = radians(0)
     q4 = radians(0)
@@ -93,10 +93,10 @@ if __name__ == "__main__":
     print("Ry = ", round(Ry, 2))
     print("Rx = ", round(Rx, 2))
     print("")
-    
+
     # 机器人逆运动解
     # 给出符合逆解条件的末端坐标 T 值
-    
+
     print("机械臂逆解结果")
     rs_ik = []
     for i, _ in enumerate(range(10)):
@@ -109,14 +109,13 @@ if __name__ == "__main__":
 
         print(f"第{i + 1}次：", list(map(get_value, sol.q)))
         rs_ik.append(list(map(get_value, sol.q)))
-    
+
     # 统计出逆解数据列表数据中，指定数据出现的次数
     # 指定的数据为 [150.0, 70.0, 45.0, 150.0, 10.0, 0.0]
-    rs_ik  # Assuming rs_ik is the inverse solution data list
     specified_data = [150.0, 70.0, 45.0, 150.0, 10.0, 0.0]
     occurrences = rs_ik.count(specified_data)
     print("Occurrences:", occurrences)
-    
+
     # 机械臂画图
-    mirobot.plot(mirobot.qz, block=True)
+    mirobot.teach(mirobot.qz, block=True)
     

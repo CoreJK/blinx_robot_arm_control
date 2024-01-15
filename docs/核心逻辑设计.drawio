@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram name="上位机业务逻辑" id="UpfD0Sz0CBNI1ClnR2mp">
-        <mxGraphModel dx="1121" dy="610" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="542" dy="260" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -85,7 +85,7 @@
                 </mxCell>
                 <mxCell id="FCqXL8VjYoRTm37Blg7O-40" value="2" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="FCqXL8VjYoRTm37Blg7O-16" vertex="1" connectable="0">
                     <mxGeometry x="-0.0278" y="1" relative="1" as="geometry">
-                        <mxPoint as="offset"/>
+                        <mxPoint x="28" y="-1" as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="FCqXL8VjYoRTm37Blg7O-6" value="构造命令" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
