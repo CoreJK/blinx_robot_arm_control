@@ -54,8 +54,8 @@ class Mirobot(DHRobot):
         )
         
         self._MYCONFIG = np.array([1, 2, 3, 4, 5, 6])
-        self.qr = np.array([radians(140), radians(70), radians(45), radians(150), radians(10), radians(0)])
-        self.qz = np.array([radians(0), radians(0), radians(0), radians(0), radians(0), radians(0)])
+        self.qr = np.radians([140, 70, 45, 150, 10, 0])
+        self.qz = np.radians([0, 0, 0, 0, 0, 0])
         self.addconfiguration("qr", self.qr)
         self.addconfiguration("qz", self.qz)
 
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     print(mirobot)
 
     # 机械臂正运动解
-    q1 = radians(19.5)
+    q1 = radians(0)
     q2 = radians(0)
     q3 = radians(0)
     q4 = radians(0)

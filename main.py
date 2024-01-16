@@ -55,8 +55,27 @@ class MainWindow(QWidget, Ui_Form):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("BLinx Robot Arm V1.0")
+        
         # 初始化机械臂模型
         self.blinx_robot_arm = Mirobot()
+        
+        # 角度初始值
+        self.q1 = 0.0
+        self.q2 = 0.0
+        self.q3 = 0.0
+        self.q4 = 0.0
+        self.q5 = 0.0
+        self.q6 = 0.0
+        
+        # 末端工具坐标初始值
+        self.X = 0.238
+        self.Y = 0.0
+        self.Z = 0.233
+        
+        # 末端工具姿态初始值
+        self.rx = 0.0
+        self.ry = -0.0
+        self.rz = 0.0
         
         # 获取操作系统的版本信息
         self.os_name = platform.system()
@@ -270,20 +289,34 @@ class MainWindow(QWidget, Ui_Form):
             self.command_queue.put((3, '{"command":"get_joint_angle_all"}\r\n'.encode()))
                 
 
-    def update_joint_degrees_text(self, six_joint_degrees):
+    def update_joint_degrees_text(self):
         """更新界面上的角度值, 并返回实时角度值
 
         Args:
             rs_data_dict (_dict_): 与机械臂通讯获取到的机械臂角度值
         """
-        q1, q2, q3, q4, q5, q6 = map(lambda x: round(x, 2), six_joint_degrees)
-        logger.debug(f"显示的角度值: {[q1, q2, q3, q4, q5, q6]}")
-        self.AngleOneEdit.setText(str(q1))
-        self.AngleTwoEdit.setText(str(q2))
-        self.AngleThreeEdit.setText(str(q3))
-        self.AngleFourEdit.setText(str(q4))
-        self.AngleFiveEdit.setText(str(q5))
-        self.AngleSixEdit.setText(str(q6))
+        display_q1 = str(round(self.q1, 2))
+        display_q2 = str(round(self.q2, 2))
+        display_q3 = str(round(self.q3, 2))
+        display_q4 = str(round(self.q4, 2))
+        display_q5 = str(round(self.q5, 2))
+        display_q6 = str(round(self.q6, 2))
+        self.AngleOneEdit.setText(display_q1)
+        self.AngleTwoEdit.setText(display_q2)
+        self.AngleThreeEdit.setText(display_q3)
+        self.AngleFourEdit.setText(display_q4)
+        self.AngleFiveEdit.setText(display_q5)
+        self.AngleSixEdit.setText(display_q6)
+        logger.debug(f"显示的角度值: {[display_q1, display_q2, display_q3, display_q4, display_q5, display_q6]}")
+    
+    def update_arm_pose_text(self):
+        """更新界面上机械臂末端工具的坐标和姿态值"""
+        self.XAxisEdit.setText(str(round(self.X, 3)))
+        self.YAxisEdit.setText(str(round(self.Y, 3)))
+        self.ZAxisEdit.setText(str(round(self.Z, 3)))
+        self.RxAxisEdit.setText(str(round(self.rx, 3)))
+        self.RyAxisEdit.setText(str(round(self.ry, 3)))
+        self.RzAxisEdit.setText(str(round(self.rz, 3)))
     
     @logger.catch
     def connect_to_robot_arm(self):
@@ -373,38 +406,31 @@ class MainWindow(QWidget, Ui_Form):
                         # todo 命令返回的信息放入另外一个队列
                         # 解析机械臂角度获取返回的信息
                         if response["return"] == "get_joint_angle_all":
+                            angle_data_list = response['data']
+                            self.q1, self.q2, self.q3, self.q4, self.q5, self.q6 = angle_data_list
                             # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签的角度值
-                            # 将角度值转换为列表
-                            rs_data_list = response['data']
-                            self.update_joint_degrees_text(rs_data_list)
+                            self.update_joint_degrees_text()
                             
                             # 计算并更新机械臂的正运动解
-                            arm_pose_degrees = np.radians(rs_data_list)
-                            
-                            translation_vector = self.blinx_robot_arm.fkine(arm_pose_degrees)
-                            x, y, z = translation_vector.t  # 平移向量
-                            Rz, Ry, Rx = translation_vector.rpy(unit='deg')  # 旋转角
-                            self.XAxisEdit.setText(str(round(x, 3)))
-                            self.YAxisEdit.setText(str(round(y, 3)))
-                            self.ZAxisEdit.setText(str(round(z, 3)))
-                            self.RxAxisEdit.setText(str(round(Rx, 3)))
-                            self.RyAxisEdit.setText(str(round(Ry, 3)))
-                            self.RzAxisEdit.setText(str(round(Rz, 3)))
+                            arm_joint_radians = np.radians(angle_data_list)
+                            translation_vector = self.blinx_robot_arm.fkine(arm_joint_radians)
+                            self.X, self.Y, self.Z = translation_vector.t  # 末端坐标
+                            self.rz, self.ry, self.rx = translation_vector.rpy(unit='deg')  # 末端姿态
+                            self.update_arm_pose_text()
                     except Exception as e:
                         logger.error(f"发送命令失败: {e}")
                         self.message_box.error_message_box(message="发送命令失败!")
-                
+                        self.command_queue = PriorityQueue(maxsize=100)
+
                 
     # 机械臂关节控制回调函数
     @check_robot_arm_connection
     def arm_one_add(self):
         """机械臂关节增加"""
-        old_degrade = round(float(self.AngleOneEdit.text().strip()), 2)
-        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q1
+        increase_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
-        # 每个关节的最大限位值不同
-        self.AngleOneEdit.setText(str(degrade))  # 更新关节角度值
 
         # 构造发送命令
         command = json.dumps(
@@ -415,12 +441,11 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection
     def arm_one_sub(self):
         """机械臂关节角度减少"""
-        old_degrade = round(float(self.AngleOneEdit.text().strip()), 2)
-        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q1
+        decrease_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         
-        self.AngleOneEdit.setText(str(degrade))
         # 发送命令
         command = json.dumps(
         {"command": "set_joint_angle_speed_percentage", "data": [1, degrade , speed_percentage]}) + '\r\n'
@@ -429,9 +454,9 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection
     def arm_two_add(self):
         """机械臂关节增加"""
-        old_degrade = round(float(self.AngleTwoEdit.text().strip()), 2)
-        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q2
+        increase_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         self.AngleTwoEdit.setText(str(degrade))  # 更新关节角度值
         
@@ -444,9 +469,9 @@ class MainWindow(QWidget, Ui_Form):
     def arm_two_sub(self):
         """机械臂关节角度减少"""
         # 获取机械臂当前的角度(手臂未提供该接口)
-        old_degrade = round(float(self.AngleTwoEdit.text().strip()), 2)
-        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q2
+        decrease_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         
         self.AngleTwoEdit.setText(str(degrade))
@@ -458,9 +483,9 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection
     def arm_three_add(self):
         """机械臂关节增加"""
-        old_degrade = round(float(self.AngleThreeEdit.text().strip()), 2)
-        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q3
+        increase_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         self.AngleThreeEdit.setText(str(degrade))  # 更新关节角度值
 
@@ -474,9 +499,9 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection
     def arm_three_sub(self):
         """机械臂关节角度减少"""
-        old_degrade = round(float(self.AngleThreeEdit.text().strip()), 2)
-        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q3
+        decrease_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         self.AngleThreeEdit.setText(str(degrade))
         # 发送命令
@@ -487,9 +512,9 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection
     def arm_four_add(self):
         """机械臂关节增加"""
-        old_degrade = round(float(self.AngleFourEdit.text().strip()), 2)
-        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q4
+        increase_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         self.AngleFourEdit.setText(str(degrade))  # 更新关节角度值
         
@@ -503,9 +528,9 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection    
     def arm_four_sub(self):
         """机械臂关节角度减少"""
-        old_degrade = round(float(self.AngleFourEdit.text().strip()), 2)
-        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q4
+        decrease_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         
         self.AngleFourEdit.setText(str(degrade))
@@ -516,9 +541,9 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection
     def arm_five_add(self):
         """机械臂关节增加"""
-        old_degrade = round(float(self.AngleFiveEdit.text().strip()), 2)
-        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q5
+        increase_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         
         self.AngleFiveEdit.setText(str(degrade))  # 更新关节角度值
@@ -532,9 +557,9 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection
     def arm_five_sub(self):
         """机械臂关节角度减少"""
-        old_degrade = round(float(self.AngleFiveEdit.text().strip()), 2)
-        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q5
+        decrease_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         
         self.AngleFiveEdit.setText(str(degrade))
@@ -546,9 +571,9 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection
     def arm_six_add(self):
         """机械臂关节增加"""
-        old_degrade = round(float(self.AngleSixEdit.text().strip()), 2)
-        increase_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q6
+        increase_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade + increase_degrade
         
         self.AngleSixEdit.setText(str(degrade))  # 更新关节角度值
@@ -563,9 +588,9 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection
     def arm_six_sub(self):
         """机械臂关节角度减少"""
-        old_degrade = round(float(self.AngleSixEdit.text().strip()), 2)
-        decrease_degrade = round(float(self.AngleStepEdit.text().strip()), 2)
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)
+        old_degrade = self.q6
+        decrease_degrade = float(self.AngleStepEdit.text().strip())
+        speed_percentage = float(self.ArmSpeedEdit.text().strip())
         degrade = old_degrade - decrease_degrade
         
         self.AngleSixEdit.setText(str(degrade))
@@ -648,14 +673,14 @@ class MainWindow(QWidget, Ui_Form):
     def tool_x_operate(self, action="add"):
         """末端工具坐标 x 增减函数"""
         # 获取末端工具的坐标
-        old_x_coordinate = round(float(self.XAxisEdit.text().strip()), 3)
-        y_coordinate = round(float(self.YAxisEdit.text().strip()), 3)
-        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 3)
+        old_x_coordinate = self.X
+        y_coordinate = self.Y
+        z_coordinate = self.Z
         
         # 获取末端工具的姿态
-        rx_pose = round(float(self.RxAxisEdit.text().strip()), 3)
-        ry_pose = round(float(self.RyAxisEdit.text().strip()), 3)
-        rz_pose = round(float(self.RzAxisEdit.text().strip()), 3)
+        rx_pose = self.rx
+        ry_pose = self.ry
+        rz_pose = self.rz
         
         change_value = round(float(self.CoordinateStepEdit.text().strip()), 3)  # 步长值
         speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 3)  # 速度值
@@ -683,14 +708,14 @@ class MainWindow(QWidget, Ui_Form):
     def tool_y_operate(self, action="add"):
         """末端工具坐标 y 增减函数"""
        # 获取末端工具的坐标
-        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
-        old_y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
-        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        x_coordinate = self.X
+        old_y_coordinate = self.Y
+        z_coordinate = self.Z
         
         # 获取末端工具的姿态
-        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
-        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
-        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        rx_pose = self.rx
+        ry_pose = self.ry
+        rz_pose = self.rz
         
         change_value = round(float(self.CoordinateStepEdit.text().strip()), 2)  # 步长值
         speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)  # 速度值
@@ -720,14 +745,14 @@ class MainWindow(QWidget, Ui_Form):
     def tool_z_operate(self, action="add"):
         """末端工具坐标 z 增减函数"""
         # 获取末端工具的坐标
-        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
-        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
-        old_z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        x_coordinate = self.X
+        y_coordinate = self.Y
+        old_z_coordinate = self.Z
         
         # 获取末端工具的姿态
-        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
-        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
-        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        rx_pose = self.rx
+        ry_pose = self.ry
+        rz_pose = self.rz
         
         change_value = round(float(self.CoordinateStepEdit.text().strip()), 2)  # 步长值
         speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)  # 速度值

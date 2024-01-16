@@ -23,7 +23,7 @@ class TestMirobot(unittest.TestCase):
     def generate_joint_angles_data(self):
         num_joints = 6
         angle_range = [[0, 140], [0, 70], [0, 45], [0, 150], [0, 10], [0, 180]]
-        step_size = 1
+        step_size = 0.1
         joint_angles = self.generate_joint_angles(num_joints, angle_range, step_size)
         return joint_angles
 
@@ -44,6 +44,10 @@ class TestMirobot(unittest.TestCase):
             R, P, Y = translation_vector.rpy(unit='deg')
             print("x: ", round(x, 3), "y: ", round(y, 3), "z: ", round(z, 3))
             print("R: ", round(R, 3), "P: ", round(P, 3), "Y: ", round(Y, 3))
+            # 用 x, y, z, R, P, Y 数据生成新的 DataFrame 对象
+            endfactor_pose = pd.DataFrame([[x, y, z, R, P, Y]], columns=['x', 'y', 'z', 'R', 'P', 'Y'])
+            # 用于测试逆解
+
 
 
 if __name__ == '__main__':
