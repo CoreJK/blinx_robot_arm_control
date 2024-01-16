@@ -375,24 +375,21 @@ class MainWindow(QWidget, Ui_Form):
                         if response["return"] == "get_joint_angle_all":
                             # 实时更新 AngleOneEdit ~ AngleOneSixEdit 标签的角度值
                             # 将角度值转换为列表
-                            rs_data_list = [round(float(data), 2) for data in response['data']]
-                            
-                            # todo: 给得到的角度进行误差校正，矫正值为：[150, 70, 45, 150, 10, 0]
-                            compensation_values = [149.9, 69.9, 44.9, 149.9, 9.9, 0]  # 取决于机械臂的限位感应，有些不能完全等于 0
-                            degrade_compensated = [d - c  for d, c in zip(rs_data_list, compensation_values)]
-                            self.update_joint_degrees_text(degrade_compensated)
+                            rs_data_list = response['data']
+                            self.update_joint_degrees_text(rs_data_list)
                             
                             # 计算并更新机械臂的正运动解
-                            arm_pose_degrees = np.array(degrade_compensated)
+                            arm_pose_degrees = np.radians(rs_data_list)
+                            
                             translation_vector = self.blinx_robot_arm.fkine(arm_pose_degrees)
                             x, y, z = translation_vector.t  # 平移向量
-                            Rz, Ry, Rx = map(lambda x: degrees(x), translation_vector.rpy())  # 旋转角
-                            self.XAxisEdit.setText(str(round(x, 2)))
-                            self.YAxisEdit.setText(str(round(y, 2)))
-                            self.ZAxisEdit.setText(str(round(z, 2)))
-                            self.RxAxisEdit.setText(str(round(Rx, 2)))
-                            self.RyAxisEdit.setText(str(round(Ry, 2)))
-                            self.RzAxisEdit.setText(str(round(Rz, 2)))
+                            Rz, Ry, Rx = translation_vector.rpy(unit='deg')  # 旋转角
+                            self.XAxisEdit.setText(str(round(x, 3)))
+                            self.YAxisEdit.setText(str(round(y, 3)))
+                            self.ZAxisEdit.setText(str(round(z, 3)))
+                            self.RxAxisEdit.setText(str(round(Rx, 3)))
+                            self.RyAxisEdit.setText(str(round(Ry, 3)))
+                            self.RzAxisEdit.setText(str(round(Rz, 3)))
                     except Exception as e:
                         logger.error(f"发送命令失败: {e}")
                         self.message_box.error_message_box(message="发送命令失败!")
@@ -411,7 +408,7 @@ class MainWindow(QWidget, Ui_Form):
 
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_speed_percentage", "data": [1, degrade + 150, speed_percentage]}) + '\r\n'
+                {"command": "set_joint_angle_speed_percentage", "data": [1, degrade , speed_percentage]}) + '\r\n'
         self.command_queue.put((1.5, command.encode()))
         
 
@@ -426,7 +423,7 @@ class MainWindow(QWidget, Ui_Form):
         self.AngleOneEdit.setText(str(degrade))
         # 发送命令
         command = json.dumps(
-        {"command": "set_joint_angle_speed_percentage", "data": [1, degrade + 150, speed_percentage]}) + '\r\n'
+        {"command": "set_joint_angle_speed_percentage", "data": [1, degrade , speed_percentage]}) + '\r\n'
         self.command_queue.put((1.5, command.encode()))
 
     @check_robot_arm_connection
@@ -440,7 +437,7 @@ class MainWindow(QWidget, Ui_Form):
         
         # 构造发送命令
         command = json.dumps(
-            {"command": "set_joint_angle_speed_percentage", "data": [2, degrade + 70, speed_percentage]}) + '\r\n'
+            {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
         self.command_queue.put((1.5, command.encode()))
         
     @check_robot_arm_connection
@@ -455,7 +452,7 @@ class MainWindow(QWidget, Ui_Form):
         self.AngleTwoEdit.setText(str(degrade))
         # 发送命令
         command = json.dumps(
-        {"command": "set_joint_angle_speed_percentage", "data": [2, degrade + 70, speed_percentage]}) + '\r\n'
+        {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
         self.command_queue.put((1.5, command.encode()))
 
     @check_robot_arm_connection
@@ -469,7 +466,7 @@ class MainWindow(QWidget, Ui_Form):
 
         # 构造发送命令
         command = json.dumps(
-            {"command": "set_joint_angle_speed_percentage", "data": [3, degrade + 45, speed_percentage]}) + '\r\n'
+            {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
         self.command_queue.put((1.5, command.encode()))
@@ -484,7 +481,7 @@ class MainWindow(QWidget, Ui_Form):
         self.AngleThreeEdit.setText(str(degrade))
         # 发送命令
         command = json.dumps(
-        {"command": "set_joint_angle_speed_percentage", "data": [3, degrade + 45, speed_percentage]}) + '\r\n'
+        {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
         self.command_queue.put((1.5, command.encode()))
 
     @check_robot_arm_connection
@@ -498,7 +495,7 @@ class MainWindow(QWidget, Ui_Form):
         
         # 构造发送命令
         command = json.dumps(
-            {"command": "set_joint_angle_speed_percentage", "data": [4, degrade + 150, speed_percentage]}) + '\r\n'
+            {"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
         self.command_queue.put((1.5, command.encode()))
@@ -513,7 +510,7 @@ class MainWindow(QWidget, Ui_Form):
         
         self.AngleFourEdit.setText(str(degrade))
         # 发送命令
-        command = json.dumps({"command": "set_joint_angle_speed_percentage", "data": [4, degrade + 150, speed_percentage]}) + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
         self.command_queue.put((1.5, command.encode()))
     
     @check_robot_arm_connection
@@ -527,7 +524,7 @@ class MainWindow(QWidget, Ui_Form):
         self.AngleFiveEdit.setText(str(degrade))  # 更新关节角度值
 
         # 构造发送命令
-        command = json.dumps({"command": "set_joint_angle_speed_percentage", "data": [5, degrade + 10, speed_percentage]}) + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
 
         # 发送命令
         self.command_queue.put((1.5, command.encode()))
@@ -543,7 +540,7 @@ class MainWindow(QWidget, Ui_Form):
         self.AngleFiveEdit.setText(str(degrade))
         # 发送命令
         command = json.dumps(
-            {"command": "set_joint_angle_speed_percentage", "data": [5, degrade + 10, speed_percentage]}) + '\r\n'
+            {"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
         self.command_queue.put((1.5, command.encode()))
     
     @check_robot_arm_connection
@@ -651,17 +648,17 @@ class MainWindow(QWidget, Ui_Form):
     def tool_x_operate(self, action="add"):
         """末端工具坐标 x 增减函数"""
         # 获取末端工具的坐标
-        old_x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
-        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
-        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        old_x_coordinate = round(float(self.XAxisEdit.text().strip()), 3)
+        y_coordinate = round(float(self.YAxisEdit.text().strip()), 3)
+        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 3)
         
         # 获取末端工具的姿态
-        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
-        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
-        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        rx_pose = round(float(self.RxAxisEdit.text().strip()), 3)
+        ry_pose = round(float(self.RyAxisEdit.text().strip()), 3)
+        rz_pose = round(float(self.RzAxisEdit.text().strip()), 3)
         
-        change_value = round(float(self.CoordinateStepEdit.text().strip()), 2)  # 步长值
-        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 2)  # 速度值
+        change_value = round(float(self.CoordinateStepEdit.text().strip()), 3)  # 步长值
+        speed_percentage = round(float(self.ArmSpeedEdit.text().strip()), 3)  # 速度值
         
         # 根据按钮加减增减数值
         if action == "add":
@@ -676,18 +673,10 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([new_x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        
-        # todo 分别给六个角度补偿值，条件是值为负时，补偿的值为: 150, 70, 45, 150, 10, 0
-        compensation_values = [150, 70, 45, 150, 10, 0]
-        # 日志打印出补偿前的角度值
-        logger.debug(f"逆解角度值: {degrade}")
-        degrade_compensated = [d + c for d, c in zip(degrade, compensation_values)]
-        # 日志打印出补偿后的角度值
-        logger.debug(f"补偿后的角度值: {degrade_compensated}")
-        degrade_compensated.extend([0, speed_percentage])
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
-        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade_compensated}).replace(' ', "") + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
         self.command_queue.put((2, command.encode('utf-8')))
         
     @check_robot_arm_connection
@@ -719,18 +708,10 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, new_y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        
-        # todo 分别给六个角度补偿值，条件是值为负时，补偿的值为: 150, 70, 45, 150, 10, 0
-        compensation_values = [150, 70, 45, 150, 10, 0]
-        # 日志打印出补偿前的角度值
-        logger.debug(f"坐标控制，显示的角度值: {degrade}")
-        degrade_compensated = [d + c for d, c in zip(degrade, compensation_values)]
-        # 日志打印出补偿后的角度值
-        logger.debug(f"坐标控制，真实的角度值: {degrade_compensated}")
-        degrade_compensated.extend([0, speed_percentage])
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
-        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade_compensated}).replace(' ', "") + '\r\n'
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
         self.command_queue.put((2, command.encode()))
@@ -764,19 +745,11 @@ class MainWindow(QWidget, Ui_Form):
         R_T = SE3([x_coordinate, y_coordinate, new_z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         degrade = [round(degrees(d), 2) for d in sol.q]
-        
-        # todo 分别给六个角度补偿值，条件是值为负时，补偿的值为: 150, 70, 45, 150, 10, 0
-        compensation_values = [150, 70, 45, 150, 10, 0]
-        # 日志打印出补偿前的角度值
-        logger.debug(f"坐标控制，显示的角度值: {degrade}")
-        degrade_compensated = [d + c for d, c in zip(degrade, compensation_values)]
-        # 日志打印出补偿后的角度值
-        logger.debug(f"坐标控制，真实的角度值: {degrade_compensated}")
-        degrade_compensated.extend([0, speed_percentage])
+        degrade.extend([0, speed_percentage])
         
         # 构造发送命令
         command = json.dumps(
-                {"command": "set_joint_angle_all_time", "data": degrade_compensated}).replace(' ', "") + '\r\n'
+                {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
         # 发送命令
         self.command_queue.put((2, command.encode()))

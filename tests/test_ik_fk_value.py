@@ -22,7 +22,7 @@ class TestMirobot(unittest.TestCase):
     
     def generate_joint_angles_data(self):
         num_joints = 6
-        angle_range = [[0, 165], [0, 90], [0, 60], [0, 170], [0, 210], [0, 180]]
+        angle_range = [[0, 140], [0, 70], [0, 45], [0, 150], [0, 10], [0, 180]]
         step_size = 1
         joint_angles = self.generate_joint_angles(num_joints, angle_range, step_size)
         return joint_angles
@@ -38,9 +38,12 @@ class TestMirobot(unittest.TestCase):
         for i in range(df.shape[0]):
             joint_angles = np.array(df.iloc[i].values)
             # 通过末端位姿计算角度
-            # translation_vector = self.robot.fkine(joint_angles)
+            translation_vector = self.robot.fkine(joint_angles)
             print("joint_angles: ", joint_angles)
-
+            x, y, z = translation_vector.t
+            R, P, Y = translation_vector.rpy(unit='deg')
+            print("x: ", round(x, 3), "y: ", round(y, 3), "z: ", round(z, 3))
+            print("R: ", round(R, 3), "P: ", round(P, 3), "Y: ", round(Y, 3))
 
 
 if __name__ == '__main__':
