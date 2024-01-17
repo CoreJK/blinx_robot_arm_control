@@ -940,12 +940,12 @@ class MainWindow(QWidget, Ui_Form):
         
         row_position = self.ActionTableWidget.rowCount()
         self.ActionTableWidget.insertRow(row_position)
-        self.ActionTableWidget.setItem(row_position, 0, QTableWidgetItem(str(self.q1)))
-        self.ActionTableWidget.setItem(row_position, 1, QTableWidgetItem(str(self.q2)))
-        self.ActionTableWidget.setItem(row_position, 2, QTableWidgetItem(str(self.q3)))
-        self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(str(self.q4)))
-        self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(str(self.q5)))
-        self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(str(self.q6)))
+        self.ActionTableWidget.setItem(row_position, 0, QTableWidgetItem(str(round(self.q1, 2))))
+        self.ActionTableWidget.setItem(row_position, 1, QTableWidgetItem(str(round(self.q2, 2))))
+        self.ActionTableWidget.setItem(row_position, 2, QTableWidgetItem(str(round(self.q3, 2))))
+        self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(str(round(self.q4, 2))))
+        self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(str(round(self.q5, 2))))
+        self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(str(round(self.q6, 2))))
         self.ActionTableWidget.setItem(row_position, 6, QTableWidgetItem(speed_percentage))
 
         # 工具列添加下拉选择框
@@ -1203,7 +1203,7 @@ class MainWindow(QWidget, Ui_Form):
             socket_info.close()
         except Exception as e:
             logger.error(str(e))
-            self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 ！")
+            self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
         return robot_arm_client
 
     def closeEvent(self, event):
