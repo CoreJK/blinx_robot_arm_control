@@ -935,42 +935,33 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection
     def add_item(self):
         """示教控制添加一行动作"""
-        # 获取所有的关节角度数值
-        angle_1 = self.AngleOneEdit.text()
-        angle_2 = self.AngleTwoEdit.text()
-        angle_3 = self.AngleThreeEdit.text()
-        angle_4 = self.AngleFourEdit.text()
-        angle_5 = self.AngleFiveEdit.text()
-        angle_6 = self.AngleSixEdit.text()
         speed_percentage = self.ArmSpeedEdit.text()  # 速度值，暂定百分比
         type_of_tool = self.ArmToolComboBox.currentText()  # 获取末端工具类型
+        
+        row_position = self.ActionTableWidget.rowCount()
+        self.ActionTableWidget.insertRow(row_position)
+        self.ActionTableWidget.setItem(row_position, 0, QTableWidgetItem(str(self.q1)))
+        self.ActionTableWidget.setItem(row_position, 1, QTableWidgetItem(str(self.q2)))
+        self.ActionTableWidget.setItem(row_position, 2, QTableWidgetItem(str(self.q3)))
+        self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(str(self.q4)))
+        self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(str(self.q5)))
+        self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(str(self.q6)))
+        self.ActionTableWidget.setItem(row_position, 6, QTableWidgetItem(speed_percentage))
 
-        if all([angle_1, angle_2, angle_3, angle_4, angle_5, angle_6]):
-            row_position = self.ActionTableWidget.rowCount()
-            self.ActionTableWidget.insertRow(row_position)
-            self.ActionTableWidget.setItem(row_position, 0, QTableWidgetItem(angle_1))
-            self.ActionTableWidget.setItem(row_position, 1, QTableWidgetItem(angle_2))
-            self.ActionTableWidget.setItem(row_position, 2, QTableWidgetItem(angle_3))
-            self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(angle_4))
-            self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(angle_5))
-            self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(angle_6))
-            self.ActionTableWidget.setItem(row_position, 6, QTableWidgetItem(speed_percentage))
+        # 工具列添加下拉选择框
+        arm_tool_combobox = QComboBox()
+        arm_tool_combobox.setModel(self.ArmToolOptions)
+        arm_tool_combobox.setCurrentText(type_of_tool)
+        self.ActionTableWidget.setCellWidget(row_position, 7, arm_tool_combobox)
 
-            # 工具列添加下拉选择框
-            arm_tool_combobox = QComboBox()
-            arm_tool_combobox.setModel(self.ArmToolOptions)
-            arm_tool_combobox.setCurrentText(type_of_tool)
-            self.ActionTableWidget.setCellWidget(row_position, 7, arm_tool_combobox)
-
-            # 开关列添加下拉选择框
-            arm_tool_control = QComboBox()
-            arm_tool_control.addItems(["", "关", "开"])
-            self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control)
-            
-            # 默认延时给 1 s
-            self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem("1"))
-        else:
-            self.message_box.warning_message_box(message="角度值不能为空!")
+        # 开关列添加下拉选择框
+        arm_tool_control = QComboBox()
+        arm_tool_control.addItems(["", "关", "开"])
+        self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control)
+        
+        # 默认延时给 1 s
+        self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem("1"))
+        
 
     @check_robot_arm_connection
     def remove_item(self):
