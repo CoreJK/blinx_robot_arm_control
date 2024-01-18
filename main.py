@@ -1147,7 +1147,7 @@ class MainWindow(QWidget, Ui_Form):
         
         # 机械臂执行命令
         json_command = {"command": "set_joint_angle_all_time",
-                                "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, delay_time,
+                                "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, 0,
                                         speed_percentage]}
         str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
         self.command_queue.put((2, str_command.encode()))
