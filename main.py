@@ -109,8 +109,10 @@ class MainWindow(QWidget, Ui_Form):
         self.context_menu = QMenu(self)
         self.copy_action = self.context_menu.addAction("复制动作")
         self.paste_action = self.context_menu.addAction("粘贴动作")
+        self.insert_row_action = self.context_menu.addAction("插入动作")
         self.copy_action.triggered.connect(self.copy_selected_row)
         self.paste_action.triggered.connect(self.paste_row)
+        self.insert_row_action.triggered.connect(self.insert_row)
         self.ActionTableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ActionTableWidget.customContextMenuRequested.connect(self.show_context_menu)
 
@@ -1090,7 +1092,43 @@ class MainWindow(QWidget, Ui_Form):
                     self.ActionTableWidget.setCellWidget(row_position, col, arm_tool_control)
                 else:
                     self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(value))
-
+                    
+    def insert_row(self):
+        """在当前行下插入一行"""
+        selected_row = self.ActionTableWidget.currentRow()
+        if selected_row >= 0:
+            row_position = selected_row + 1
+            self.ActionTableWidget.insertRow(row_position)
+            for col in range(self.ActionTableWidget.columnCount()):
+                if col == 0:
+                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q1, 2))))
+                elif col == 1:
+                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q2, 2))))
+                elif col == 2:
+                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q3, 2))))
+                elif col == 3:
+                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q4, 2))))
+                elif col == 4:
+                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q5, 2))))
+                elif col == 5:
+                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q6, 2))))
+                elif col == 6:
+                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(self.ArmSpeedEdit.text())))
+                elif col == 7:  
+                    # 工具列、开关列需要获取下拉框的选中值
+                    # 工具列添加下拉选择框
+                    arm_tool_combobox = QComboBox()
+                    arm_tool_combobox.setModel(self.ArmToolOptions)
+                    arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
+                    self.ActionTableWidget.setCellWidget(row_position, col, arm_tool_combobox)
+                elif col == 8:
+                    # 开关列添加下拉选择框
+                    arm_tool_control = QComboBox()
+                    arm_tool_control.addItems(["", "关", "开"])
+                    self.ActionTableWidget.setCellWidget(row_position, col, arm_tool_control)
+                elif col == 9:
+                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(self.ArmDelayTimeEdit.text())))
+                    
     def import_data(self):
         """导入动作"""
         options = QFileDialog.Options()
