@@ -95,7 +95,8 @@ class MainWindow(QWidget, Ui_Form):
         # 示教控制页面回调函数绑定
         self.ActionAddButton.clicked.connect(self.add_item)
         self.ActionDeleteButton.clicked.connect(self.remove_item)
-        self.ActionUpdateButton.clicked.connect(self.update_item)
+        self.ActionUpdateRowButton.clicked.connect(self.update_row)
+        self.ActionUpdateColButton.clicked.connect(self.update_column)
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
         self.ActionRunButton.clicked.connect(self.run_all_action)
@@ -132,6 +133,8 @@ class MainWindow(QWidget, Ui_Form):
         self.AngleSixSubButton.clicked.connect(partial(self.arm_six_control, -180, 180, increase=False))
         self.ArmSpeedUpButton.clicked.connect(self.arm_speed_percentage_add)
         self.ArmSpeedDecButton.clicked.connect(self.arm_speed_percentage_sub)
+        self.ArmDelayTimeAddButton.clicked.connect(self.arm_delay_time_add)
+        self.ArmDelayTimeSubButton.clicked.connect(self.arm_delay_time_sub)
 
         # 机械臂连接配置页面回调函数绑定
         self.reload_ip_port_history()  # 加载上一次的配置
@@ -623,6 +626,34 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.error_message_box(message="请输入整数字符!")
 
+    @check_robot_arm_connection
+    def arm_delay_time_add(self):
+        """机械臂延时时间增加"""
+        delay_time_edit = self.ArmDelayTimeEdit.text()
+        if delay_time_edit is not None and delay_time_edit.isdigit():
+            old_delay_time = int(delay_time_edit.strip())
+            new_delay_time = old_delay_time + 1
+            if new_delay_time <= 100:
+                self.ArmDelayTimeEdit.setText(str(new_delay_time))
+            else:
+                self.message_box.warning_message_box(message=f"延时时间不能超过 100s")
+        else:
+            self.message_box.error_message_box(message="请输入整数字符!")
+            
+    @check_robot_arm_connection
+    def arm_delay_time_sub(self):
+        """机械臂延时时间减少"""
+        delay_time_edit = self.ArmDelayTimeEdit.text()
+        if delay_time_edit is not None and delay_time_edit.isdigit():
+            old_delay_time = int(delay_time_edit.strip())
+            new_delay_time = old_delay_time - 1
+            if new_delay_time >= 0:
+                self.ArmDelayTimeEdit.setText(str(new_delay_time))
+            else:
+                self.message_box.warning_message_box(message=f"延时时间不能为负!")
+        else:
+            self.message_box.error_message_box(message="请输入整数字符!")
+    
     # 末端工具控制回调函数
     @check_robot_arm_connection
     def tool_open(self):
@@ -922,6 +953,7 @@ class MainWindow(QWidget, Ui_Form):
         self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(str(round(self.q5, 2))))
         self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(str(round(self.q6, 2))))
         self.ActionTableWidget.setItem(row_position, 6, QTableWidgetItem(speed_percentage))
+        
 
         # 工具列添加下拉选择框
         arm_tool_combobox = QComboBox()
@@ -935,7 +967,7 @@ class MainWindow(QWidget, Ui_Form):
         self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control)
         
         # 默认延时给 1 s
-        self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem("1"))
+        self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem(str(self.ArmDelayTimeEdit.text())))
         
 
     @check_robot_arm_connection
@@ -953,7 +985,7 @@ class MainWindow(QWidget, Ui_Form):
                 self.ActionTableWidget.removeRow(row.row())
 
     @check_robot_arm_connection
-    def update_item(self):
+    def update_row(self):
         """示教控制更新指定行的动作"""
         selected_rows = self.ActionTableWidget.selectionModel().selectedRows()
         if selected_rows:
@@ -979,7 +1011,48 @@ class MainWindow(QWidget, Ui_Form):
                         arm_tool_combobox.setModel(self.ArmToolOptions)
                         arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
                         self.ActionTableWidget.setCellWidget(row.row(), col, arm_tool_combobox)
-                
+        else:
+            self.message_box.warning_message_box(message="请选择需要更新的行! \n点击表格左侧行号即可选中行")
+    
+    # 更新指定列的动作
+    @check_robot_arm_connection
+    def update_column(self):
+        """更新选中的列"""
+        selected_columns = self.ActionTableWidget.selectionModel().selectedColumns()
+        if selected_columns:
+            for col in selected_columns:
+                column_number = col.column()
+                for row in range(self.ActionTableWidget.rowCount()):
+                    # 更新指定列的角度值
+                    if column_number == 0:
+                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q1, 2))))
+                    elif column_number == 1:
+                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q2, 2))))
+                    elif column_number == 2:
+                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q3, 2))))
+                    elif column_number == 3:
+                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q4, 2))))
+                    elif column_number == 4:
+                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q5, 2))))
+                    elif column_number == 5:
+                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q6, 2))))
+                    elif column_number == 6:
+                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(self.ArmSpeedEdit.text())))
+                    elif column_number == 7:
+                        arm_tool_combobox = QComboBox()
+                        arm_tool_combobox.setModel(self.ArmToolOptions)
+                        arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
+                        self.ActionTableWidget.setCellWidget(row, column_number, arm_tool_combobox)
+                    elif column_number == 8:
+                        arm_tool_control = QComboBox()
+                        arm_tool_control.addItems(["", "关", "开"])
+                        self.ActionTableWidget.setCellWidget(row, column_number, arm_tool_control)
+                    elif column_number == 9:
+                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(self.ArmDelayTimeEdit.text())))
+                        
+                    
+        else:
+            self.message_box.warning_message_box(message="请选择需要更新的列! \n点击表格上方列名即可选中列")
     
     def copy_selected_row(self):
         """复制选择行"""

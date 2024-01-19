@@ -263,7 +263,7 @@
     <widget class="QPushButton" name="ActionAddButton">
      <property name="geometry">
       <rect>
-       <x>710</x>
+       <x>619</x>
        <y>410</y>
        <width>91</width>
        <height>23</height>
@@ -299,17 +299,17 @@
       <string>单次执行</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="ActionUpdateButton">
+    <widget class="QPushButton" name="ActionUpdateRowButton">
      <property name="geometry">
       <rect>
-       <x>820</x>
+       <x>729</x>
        <y>410</y>
        <width>91</width>
        <height>23</height>
       </rect>
      </property>
      <property name="text">
-      <string>更新动作</string>
+      <string>更新行</string>
      </property>
     </widget>
     <widget class="QPushButton" name="ActionLoopRunButton">
@@ -372,6 +372,19 @@
        <width>891</width>
        <height>101</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ActionUpdateColButton">
+     <property name="geometry">
+      <rect>
+       <x>828</x>
+       <y>410</y>
+       <width>91</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>更新列</string>
      </property>
     </widget>
    </widget>
@@ -1495,6 +1508,58 @@
     </property>
     <property name="text">
      <string>0</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ArmDelayTimeEdit">
+    <property name="geometry">
+     <rect>
+      <x>122</x>
+      <y>361</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ArmDelayTimeSubButton">
+    <property name="geometry">
+     <rect>
+      <x>62</x>
+      <y>361</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ArmDelayTimeLabel">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>365</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>延时</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ArmDelayTimeAddButton">
+    <property name="geometry">
+     <rect>
+      <x>197</x>
+      <y>361</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+</string>
     </property>
    </widget>
   </widget>
