@@ -117,18 +117,18 @@ class MainWindow(QWidget, Ui_Form):
         # 实例化机械臂关节控制回调函数绑定
         self.AngleStepAddButton.clicked.connect(self.arm_angle_step_add)
         self.AngleStepSubButton.clicked.connect(self.arm_angle_step_sub)
-        self.AngleOneAddButton.clicked.connect(self.arm_one_add)
-        self.AngleOneSubButton.clicked.connect(self.arm_one_sub)
-        self.AngleTwoAddButton.clicked.connect(self.arm_two_add)
-        self.AngleTwoSubButton.clicked.connect(self.arm_two_sub)
-        self.AngleThreeAddButton.clicked.connect(self.arm_three_add)
-        self.AngleThreeSubButton.clicked.connect(self.arm_three_sub)
-        self.AngleFourAddButton.clicked.connect(self.arm_four_add)
-        self.AngleFourSubButton.clicked.connect(self.arm_four_sub)
-        self.AngleFiveAddButton.clicked.connect(self.arm_five_add)
-        self.AngleFiveSubButton.clicked.connect(self.arm_five_sub)
-        self.AngleSixAddButton.clicked.connect(self.arm_six_add)
-        self.AngleSixSubButton.clicked.connect(self.arm_six_sub)
+        self.AngleOneAddButton.clicked.connect(partial(self.arm_one_control, -140, 140, increase=True))
+        self.AngleOneSubButton.clicked.connect(partial(self.arm_one_control, -140, 140, increase=False))
+        self.AngleTwoAddButton.clicked.connect(partial(self.arm_two_control, -70, 70, increase=True))
+        self.AngleTwoSubButton.clicked.connect(partial(self.arm_two_control, -70, 70, increase=False))
+        self.AngleThreeAddButton.clicked.connect(partial(self.arm_three_control, -60, 45, increase=True))
+        self.AngleThreeSubButton.clicked.connect(partial(self.arm_three_control, -60, 45, increase=False))
+        self.AngleFourAddButton.clicked.connect(partial(self.arm_four_control, -150, 150, increase=True))
+        self.AngleFourSubButton.clicked.connect(partial(self.arm_four_control, -150, 150, increase=False))
+        self.AngleFiveAddButton.clicked.connect(partial(self.arm_five_control, -180, 10, increase=True))
+        self.AngleFiveSubButton.clicked.connect(partial(self.arm_five_control, -180, 10, increase=False))
+        self.AngleSixAddButton.clicked.connect(partial(self.arm_six_control, -180, 180, increase=True))
+        self.AngleSixSubButton.clicked.connect(partial(self.arm_six_control, -180, 180, increase=False))
         self.ArmSpeedUpButton.clicked.connect(self.arm_speed_percentage_add)
         self.ArmSpeedDecButton.clicked.connect(self.arm_speed_percentage_sub)
 
@@ -425,179 +425,152 @@ class MainWindow(QWidget, Ui_Form):
                 
     # 机械臂关节控制回调函数
     @check_robot_arm_connection
-    def arm_one_add(self):
-        """机械臂关节增加"""
+    def arm_one_control(self, min_degrade=-140, max_degrade=140, increase=True):
+        """机械臂关节控制"""
         old_degrade = self.q1
-        increase_degrade = float(self.AngleStepEdit.text().strip())
+        step_degrade = float(self.AngleStepEdit.text().strip())
         speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade + increase_degrade
 
-        # 构造发送命令
-        command = json.dumps(
-                {"command": "set_joint_angle_speed_percentage", "data": [1, degrade , speed_percentage]}) + '\r\n'
-        self.command_queue.put((1.5, command.encode()))
-        
+        if increase:
+            degrade = old_degrade + step_degrade
+        else:
+            degrade = old_degrade - step_degrade
+
+        if degrade < min_degrade or degrade > max_degrade:
+            self.message_box.error_message_box(message=f"关节角度超出范围: {min_degrade} ~ {max_degrade}")
+        else:
+            # 使用线性回归方程限制关节角度
+            degrade = np.clip(degrade, min_degrade, max_degrade)
+
+            # 构造发送命令
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [1, degrade, speed_percentage]}) + '\r\n'
+            self.command_queue.put((1.5, command.encode()))
 
     @check_robot_arm_connection
-    def arm_one_sub(self):
-        """机械臂关节角度减少"""
-        old_degrade = self.q1
-        decrease_degrade = float(self.AngleStepEdit.text().strip())
-        speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade - decrease_degrade
-        
-        # 发送命令
-        command = json.dumps(
-        {"command": "set_joint_angle_speed_percentage", "data": [1, degrade , speed_percentage]}) + '\r\n'
-        self.command_queue.put((1.5, command.encode()))
-
-    @check_robot_arm_connection
-    def arm_two_add(self):
-        """机械臂关节增加"""
+    def arm_two_control(self, min_degrade=-70, max_degrade=70, increase=True):
+        """机械臂关节控制"""
         old_degrade = self.q2
-        increase_degrade = float(self.AngleStepEdit.text().strip())
+        step_degrade = float(self.AngleStepEdit.text().strip())
         speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade + increase_degrade
+
+        if increase:
+            degrade = old_degrade + step_degrade
+        else:
+            degrade = old_degrade - step_degrade
+
         self.AngleTwoEdit.setText(str(degrade))  # 更新关节角度值
-        
-        # 构造发送命令
-        command = json.dumps(
-            {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
-        self.command_queue.put((1.5, command.encode()))
-        
-    @check_robot_arm_connection
-    def arm_two_sub(self):
-        """机械臂关节角度减少"""
-        # 获取机械臂当前的角度(手臂未提供该接口)
-        old_degrade = self.q2
-        decrease_degrade = float(self.AngleStepEdit.text().strip())
-        speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade - decrease_degrade
-        
-        self.AngleTwoEdit.setText(str(degrade))
-        # 发送命令
-        command = json.dumps(
-        {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
-        self.command_queue.put((1.5, command.encode()))
 
+        if degrade < min_degrade or degrade > max_degrade:
+            self.message_box.error_message_box(message=f"关节角度超出范围: {min_degrade} ~ {max_degrade}")
+        else:
+            # 使用线性回归方程限制关节角度
+            degrade = np.clip(degrade, min_degrade, max_degrade)
+
+            # 构造发送命令
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
+            self.command_queue.put((1.5, command.encode()))
+    
     @check_robot_arm_connection
-    def arm_three_add(self):
-        """机械臂关节增加"""
+    def arm_three_control(self, min_degrade=-60, max_degrade=45, increase=True):
+        """机械臂关节控制"""
         old_degrade = self.q3
-        increase_degrade = float(self.AngleStepEdit.text().strip())
+        step_degrade = float(self.AngleStepEdit.text().strip())
         speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade + increase_degrade
+
+        if increase:
+            degrade = old_degrade + step_degrade
+        else:
+            degrade = old_degrade - step_degrade
+
         self.AngleThreeEdit.setText(str(degrade))  # 更新关节角度值
 
-        # 构造发送命令
-        command = json.dumps(
-            {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
+        if degrade < min_degrade or degrade > max_degrade:
+            self.message_box.error_message_box(message=f"关节角度超出范围: {min_degrade} ~ {max_degrade}")
+        else:
+            # 使用线性回归方程限制关节角度
+            degrade = np.clip(degrade, min_degrade, max_degrade)
 
-        # 发送命令
-        self.command_queue.put((1.5, command.encode()))
-
-    @check_robot_arm_connection
-    def arm_three_sub(self):
-        """机械臂关节角度减少"""
-        old_degrade = self.q3
-        decrease_degrade = float(self.AngleStepEdit.text().strip())
-        speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade - decrease_degrade
-        self.AngleThreeEdit.setText(str(degrade))
-        # 发送命令
-        command = json.dumps(
-        {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
-        self.command_queue.put((1.5, command.encode()))
+            # 构造发送命令
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
+            self.command_queue.put((1.5, command.encode()))
 
     @check_robot_arm_connection
-    def arm_four_add(self):
-        """机械臂关节增加"""
+    def arm_four_control(self, min_degrade=-150, max_degrade=150, increase=True):
+        """机械臂关节控制"""
         old_degrade = self.q4
-        increase_degrade = float(self.AngleStepEdit.text().strip())
+        step_degrade = float(self.AngleStepEdit.text().strip())
         speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade + increase_degrade
+
+        if increase:
+            degrade = old_degrade + step_degrade
+        else:
+            degrade = old_degrade - step_degrade
+
         self.AngleFourEdit.setText(str(degrade))  # 更新关节角度值
-        
-        # 构造发送命令
-        command = json.dumps(
-            {"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
 
-        # 发送命令
-        self.command_queue.put((1.5, command.encode()))
-    
-    @check_robot_arm_connection    
-    def arm_four_sub(self):
-        """机械臂关节角度减少"""
-        old_degrade = self.q4
-        decrease_degrade = float(self.AngleStepEdit.text().strip())
-        speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade - decrease_degrade
-        
-        self.AngleFourEdit.setText(str(degrade))
-        # 发送命令
-        command = json.dumps({"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
-        self.command_queue.put((1.5, command.encode()))
-    
+        if degrade < min_degrade or degrade > max_degrade:
+            self.message_box.error_message_box(message=f"关节角度超出范围: {min_degrade} ~ {max_degrade}")
+        else:
+            # 使用线性回归方程限制关节角度
+            degrade = np.clip(degrade, min_degrade, max_degrade)
+
+            # 构造发送命令
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
+            self.command_queue.put((1.5, command.encode()))
+
     @check_robot_arm_connection
-    def arm_five_add(self):
-        """机械臂关节增加"""
+    def arm_five_control(self, min_degrade=-180, max_degrade=10, increase=True):
+        """机械臂关节控制"""
         old_degrade = self.q5
-        increase_degrade = float(self.AngleStepEdit.text().strip())
+        step_degrade = float(self.AngleStepEdit.text().strip())
         speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade + increase_degrade
-        
+
+        if increase:
+            degrade = old_degrade + step_degrade
+        else:
+            degrade = old_degrade - step_degrade
+
         self.AngleFiveEdit.setText(str(degrade))  # 更新关节角度值
 
-        # 构造发送命令
-        command = json.dumps({"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
+        if degrade < min_degrade or degrade > max_degrade:
+            self.message_box.error_message_box(message=f"关节角度超出范围: {min_degrade} ~ {max_degrade}")
+        else:
+            # 使用线性回归方程限制关节角度
+            degrade = np.clip(degrade, min_degrade, max_degrade)
 
-        # 发送命令
-        self.command_queue.put((1.5, command.encode()))
-    
+            # 构造发送命令
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
+            self.command_queue.put((1.5, command.encode()))
+
     @check_robot_arm_connection
-    def arm_five_sub(self):
-        """机械臂关节角度减少"""
-        old_degrade = self.q5
-        decrease_degrade = float(self.AngleStepEdit.text().strip())
-        speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade - decrease_degrade
-        
-        self.AngleFiveEdit.setText(str(degrade))
-        # 发送命令
-        command = json.dumps(
-            {"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
-        self.command_queue.put((1.5, command.encode()))
-    
-    @check_robot_arm_connection
-    def arm_six_add(self):
-        """机械臂关节增加"""
+    def arm_six_control(self, min_degrade=-180, max_degrade=180, increase=True):
+        """机械臂关节控制"""
         old_degrade = self.q6
-        increase_degrade = float(self.AngleStepEdit.text().strip())
+        step_degrade = float(self.AngleStepEdit.text().strip())
         speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade + increase_degrade
-        
+
+        if increase:
+            degrade = old_degrade + step_degrade
+        else:
+            degrade = old_degrade - step_degrade
+
         self.AngleSixEdit.setText(str(degrade))  # 更新关节角度值
 
-        # 构造发送命令
-        command = json.dumps(
-            {"command": "set_joint_angle_speed_percentage", "data": [6, degrade, speed_percentage]}) + '\r\n'
+        if degrade < min_degrade or degrade > max_degrade:
+            self.message_box.error_message_box(message=f"关节角度超出范围: {min_degrade} ~ {max_degrade}")
+        else:
+            # 使用线性回归方程限制关节角度
+            degrade = np.clip(degrade, min_degrade, max_degrade)
 
-        # 发送命令
-        self.command_queue.put((1.5, command.encode()))
-    
-    @check_robot_arm_connection
-    def arm_six_sub(self):
-        """机械臂关节角度减少"""
-        old_degrade = self.q6
-        decrease_degrade = float(self.AngleStepEdit.text().strip())
-        speed_percentage = float(self.ArmSpeedEdit.text().strip())
-        degrade = old_degrade - decrease_degrade
-        
-        self.AngleSixEdit.setText(str(degrade))
-        # 发送命令
-        command = json.dumps(
-            {"command": "set_joint_angle_speed_percentage", "data": [6, degrade, speed_percentage]}) + '\r\n'
-        self.command_queue.put((1.5, command.encode()))
+            # 构造发送命令
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [6, degrade, speed_percentage]}) + '\r\n'
+            self.command_queue.put((1.5, command.encode()))
         
 
     @check_robot_arm_connection
