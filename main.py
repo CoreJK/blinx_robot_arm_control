@@ -95,6 +95,7 @@ class MainWindow(QWidget, Ui_Form):
         # 示教控制页面回调函数绑定
         self.ActionAddButton.clicked.connect(self.add_item)
         self.ActionDeleteButton.clicked.connect(self.remove_item)
+        self.ActionUpdateButton.clicked.connect(self.update_item)
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
         self.ActionRunButton.clicked.connect(self.run_all_action)
@@ -417,6 +418,7 @@ class MainWindow(QWidget, Ui_Form):
                             self.X, self.Y, self.Z = translation_vector.t  # 末端坐标
                             self.rz, self.ry, self.rx = translation_vector.rpy(unit='deg')  # 末端姿态
                             self.update_arm_pose_text()
+                            
                     except Exception as e:
                         logger.error(f"发送命令失败: {e}")
                         self.message_box.error_message_box(message="发送命令失败!")
@@ -950,6 +952,40 @@ class MainWindow(QWidget, Ui_Form):
             for row in reversed(selected_rows):
                 self.ActionTableWidget.removeRow(row.row())
 
+    @check_robot_arm_connection
+    def update_item(self):
+        """示教控制更新指定行的动作"""
+        selected_rows = self.ActionTableWidget.selectionModel().selectedRows()
+        if selected_rows:
+            for row in selected_rows:
+                for col in range(self.ActionTableWidget.columnCount()):
+                    if col == 0:
+                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q1, 2))))
+                    elif col == 1:
+                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q2, 2))))
+                    elif col == 2:
+                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q3, 2))))
+                    elif col == 3:
+                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q4, 2))))
+                    elif col == 4:
+                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q5, 2))))
+                    elif col == 5:
+                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q6, 2))))
+                    elif col == 6:
+                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(self.ArmSpeedEdit.text())))
+                    elif col == 7:
+                        # 更新工具列
+                        arm_tool_combobox = QComboBox()
+                        arm_tool_combobox.setModel(self.ArmToolOptions)
+                        arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
+                        self.ActionTableWidget.setCellWidget(row.row(), col, arm_tool_combobox)
+                    elif col == 8:
+                        # 更新开关列
+                        arm_tool_control = QComboBox()
+                        arm_tool_control.addItems(["", "关", "开"])
+                        self.ActionTableWidget.setCellWidget(row.row(), col, arm_tool_control)
+                
+    
     def copy_selected_row(self):
         """复制选择行"""
         selected_row = self.ActionTableWidget.currentRow()
