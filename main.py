@@ -979,11 +979,6 @@ class MainWindow(QWidget, Ui_Form):
                         arm_tool_combobox.setModel(self.ArmToolOptions)
                         arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
                         self.ActionTableWidget.setCellWidget(row.row(), col, arm_tool_combobox)
-                    elif col == 8:
-                        # 更新开关列
-                        arm_tool_control = QComboBox()
-                        arm_tool_control.addItems(["", "关", "开"])
-                        self.ActionTableWidget.setCellWidget(row.row(), col, arm_tool_control)
                 
     
     def copy_selected_row(self):
