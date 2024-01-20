@@ -274,7 +274,7 @@ class MainWindow(QWidget, Ui_Form):
     @check_robot_arm_connection
     def reset_to_zero(self):
         """机械臂复位到零点"""
-        self.command_queue.put((1, '{"command":"set_joint_angle_all_time","data":[0.0,0.0,0.0,0.0,0.0,0.0,0,80]}\r\n'.encode()))
+        self.command_queue.put((1, '{"command":"set_joint_angle_all_time","data":[0.0,0.0,0.0,0.0,0.0,0.0,0,35]}\r\n'.encode()))
         self.message_box.warning_message_box("机械臂回到初始角度中!\n请注意手臂姿态")
         logger.warning("机械臂回到初始角度中!")
         
