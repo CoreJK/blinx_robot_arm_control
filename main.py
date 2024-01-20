@@ -465,11 +465,16 @@ class MainWindow(QWidget, Ui_Form):
         else:
             # 使用线性回归方程限制关节角度
             degrade = np.clip(degrade, min_degrade, max_degrade)
-
+            
             # 构造发送命令
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [1, degrade, speed_percentage]}) + '\r\n'
             self.command_queue.put((1.5, command.encode()))
+            
+            #  录制操作激活时
+            if self.RecordActivateButton.isChecked():
+                self.add_item()
+                
 
     @check_robot_arm_connection
     def arm_two_control(self, min_degrade=-70, max_degrade=70, increase=True):
@@ -495,6 +500,10 @@ class MainWindow(QWidget, Ui_Form):
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
             self.command_queue.put((1.5, command.encode()))
+            
+            #  录制操作激活时
+            if self.RecordActivateButton.isChecked():
+                self.add_item()
     
     @check_robot_arm_connection
     def arm_three_control(self, min_degrade=-60, max_degrade=45, increase=True):
@@ -520,6 +529,10 @@ class MainWindow(QWidget, Ui_Form):
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [3, degrade, speed_percentage]}) + '\r\n'
             self.command_queue.put((1.5, command.encode()))
+            
+            #  录制操作激活时
+            if self.RecordActivateButton.isChecked():
+                self.add_item()
 
     @check_robot_arm_connection
     def arm_four_control(self, min_degrade=-150, max_degrade=150, increase=True):
@@ -545,6 +558,10 @@ class MainWindow(QWidget, Ui_Form):
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [4, degrade, speed_percentage]}) + '\r\n'
             self.command_queue.put((1.5, command.encode()))
+            
+            #  录制操作激活时
+            if self.RecordActivateButton.isChecked():
+                self.add_item()
 
     @check_robot_arm_connection
     def arm_five_control(self, min_degrade=-180, max_degrade=10, increase=True):
@@ -570,6 +587,10 @@ class MainWindow(QWidget, Ui_Form):
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [5, degrade, speed_percentage]}) + '\r\n'
             self.command_queue.put((1.5, command.encode()))
+            
+            #  录制操作激活时
+            if self.RecordActivateButton.isChecked():
+                self.add_item()
 
     @check_robot_arm_connection
     def arm_six_control(self, min_degrade=-180, max_degrade=180, increase=True):
@@ -595,6 +616,10 @@ class MainWindow(QWidget, Ui_Form):
             command = json.dumps(
                 {"command": "set_joint_angle_speed_percentage", "data": [6, degrade, speed_percentage]}) + '\r\n'
             self.command_queue.put((1.5, command.encode()))
+            
+            #  录制操作激活时
+            if self.RecordActivateButton.isChecked():
+                self.add_item()
         
 
     @check_robot_arm_connection
@@ -729,6 +754,10 @@ class MainWindow(QWidget, Ui_Form):
         command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
         self.command_queue.put((2, command.encode('utf-8')))
         
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
+        
     @check_robot_arm_connection
     def tool_y_operate(self, action="add"):
         """末端工具坐标 y 增减函数"""
@@ -765,6 +794,10 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((2, command.encode()))
+        
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
 
     @check_robot_arm_connection
     def tool_z_operate(self, action="add"):
@@ -803,6 +836,10 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((2, command.encode()))
+        
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
 
     @check_robot_arm_connection
     def tool_coordinate_step_add(self):
@@ -859,6 +896,10 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((2, command.encode()))
+        
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
     
     @check_robot_arm_connection           
     def tool_ry_operate(self, action="add"):
@@ -898,7 +939,11 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((2, command.encode()))
-    
+        
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
+            
     @check_robot_arm_connection    
     def tool_rz_operate(self, action="add"):
         """末端工具坐标 Rz 增减函数"""
@@ -937,6 +982,10 @@ class MainWindow(QWidget, Ui_Form):
 
         # 发送命令
         self.command_queue.put((2, command.encode()))
+        
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
     
     @check_robot_arm_connection
     def tool_pose_step_add(self):

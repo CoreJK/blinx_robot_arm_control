@@ -387,6 +387,35 @@
       <string>更新列</string>
      </property>
     </widget>
+    <widget class="QRadioButton" name="RecordActivateButton">
+     <property name="geometry">
+      <rect>
+       <x>245</x>
+       <y>4</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>录制操作</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="RecordDeActivateButton">
+     <property name="geometry">
+      <rect>
+       <x>357</x>
+       <y>8</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>普通操作</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="SettingPage">
     <attribute name="title">
