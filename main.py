@@ -107,11 +107,13 @@ class MainWindow(QWidget, Ui_Form):
 
         # 示教控制添加右键的上下文菜单
         self.context_menu = QMenu(self)
-        self.copy_action = self.context_menu.addAction("复制动作")
-        self.paste_action = self.context_menu.addAction("粘贴动作")
-        self.insert_row_action = self.context_menu.addAction("插入动作")
+        self.copy_action = self.context_menu.addAction("复制一行")
+        self.paste_action = self.context_menu.addAction("粘贴一行")
+        self.updata_action = self.context_menu.addAction("更新单元格")
+        self.insert_row_action = self.context_menu.addAction("插入一行")
         self.copy_action.triggered.connect(self.copy_selected_row)
         self.paste_action.triggered.connect(self.paste_row)
+        self.updata_action.triggered.connect(self.update_cell)
         self.insert_row_action.triggered.connect(self.insert_row)
         self.ActionTableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ActionTableWidget.customContextMenuRequested.connect(self.show_context_menu)
@@ -293,8 +295,16 @@ class MainWindow(QWidget, Ui_Form):
         while not self.loop_flag:
             time.sleep(1)
             self.command_queue.put((3, '{"command":"get_joint_angle_all"}\r\n'.encode()))
-                
+    
+    # 一些 qt 界面的常用的抽象操作                
+    def update_table_cell(self, row, col, value):
+        """更新表格指定位置的项"""
+        self.ActionTableWidget.setItem(row, col, QTableWidgetItem(str(value)))
 
+    def update_table_cell_widget(self, row, col, widget):
+        """更新表格指定位置的小部件"""
+        self.ActionTableWidget.setCellWidget(row, col, widget)
+    
     def update_joint_degrees_text(self):
         """更新界面上的角度值, 并返回实时角度值
 
@@ -968,9 +978,8 @@ class MainWindow(QWidget, Ui_Form):
         arm_tool_control.addItems(["", "关", "开"])
         self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control)
         
-        # 默认延时给 1 s
+        # 获取延时长短
         self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem(str(self.ArmDelayTimeEdit.text())))
-        
 
     @check_robot_arm_connection
     def remove_item(self):
@@ -994,29 +1003,27 @@ class MainWindow(QWidget, Ui_Form):
             for row in selected_rows:
                 for col in range(self.ActionTableWidget.columnCount()):
                     if col == 0:
-                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q1, 2))))
+                        self.update_table_cell(row.row(), col, round(self.q1, 2))
                     elif col == 1:
-                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q2, 2))))
+                        self.update_table_cell(row.row(), col, round(self.q2, 2))
                     elif col == 2:
-                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q3, 2))))
+                        self.update_table_cell(row.row(), col, round(self.q3, 2))
                     elif col == 3:
-                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q4, 2))))
+                        self.update_table_cell(row.row(), col, round(self.q4, 2))
                     elif col == 4:
-                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q5, 2))))
+                        self.update_table_cell(row.row(), col, round(self.q5, 2))
                     elif col == 5:
-                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(round(self.q6, 2))))
+                        self.update_table_cell(row.row(), col, round(self.q6, 2))
                     elif col == 6:
-                        self.ActionTableWidget.setItem(row.row(), col, QTableWidgetItem(str(self.ArmSpeedEdit.text())))
+                        self.update_table_cell(row.row(), col, self.ArmSpeedEdit.text())
                     elif col == 7:
-                        # 更新工具列
                         arm_tool_combobox = QComboBox()
                         arm_tool_combobox.setModel(self.ArmToolOptions)
                         arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
-                        self.ActionTableWidget.setCellWidget(row.row(), col, arm_tool_combobox)
+                        self.update_table_cell_widget(row.row(), col, arm_tool_combobox)
         else:
             self.message_box.warning_message_box(message="请选择需要更新的行! \n点击表格左侧行号即可选中行")
-    
-    # 更新指定列的动作
+
     @check_robot_arm_connection
     def update_column(self):
         """更新选中的列"""
@@ -1025,34 +1032,31 @@ class MainWindow(QWidget, Ui_Form):
             for col in selected_columns:
                 column_number = col.column()
                 for row in range(self.ActionTableWidget.rowCount()):
-                    # 更新指定列的角度值
                     if column_number == 0:
-                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q1, 2))))
+                        self.update_table_cell(row, column_number, round(self.q1, 2))
                     elif column_number == 1:
-                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q2, 2))))
+                        self.update_table_cell(row, column_number, round(self.q2, 2))
                     elif column_number == 2:
-                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q3, 2))))
+                        self.update_table_cell(row, column_number, round(self.q3, 2))
                     elif column_number == 3:
-                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q4, 2))))
+                        self.update_table_cell(row, column_number, round(self.q4, 2))
                     elif column_number == 4:
-                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q5, 2))))
+                        self.update_table_cell(row, column_number, round(self.q5, 2))
                     elif column_number == 5:
-                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(round(self.q6, 2))))
+                        self.update_table_cell(row, column_number, round(self.q6, 2))
                     elif column_number == 6:
-                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(self.ArmSpeedEdit.text())))
+                        self.update_table_cell(row, column_number, self.ArmSpeedEdit.text())
                     elif column_number == 7:
                         arm_tool_combobox = QComboBox()
                         arm_tool_combobox.setModel(self.ArmToolOptions)
                         arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
-                        self.ActionTableWidget.setCellWidget(row, column_number, arm_tool_combobox)
+                        self.update_table_cell_widget(row, column_number, arm_tool_combobox)
                     elif column_number == 8:
                         arm_tool_control = QComboBox()
                         arm_tool_control.addItems(["", "关", "开"])
-                        self.ActionTableWidget.setCellWidget(row, column_number, arm_tool_control)
+                        self.update_table_cell_widget(row, column_number, arm_tool_control)
                     elif column_number == 9:
-                        self.ActionTableWidget.setItem(row, column_number, QTableWidgetItem(str(self.ArmDelayTimeEdit.text())))
-                        
-                    
+                        self.update_table_cell(row, column_number, self.ArmDelayTimeEdit.text())
         else:
             self.message_box.warning_message_box(message="请选择需要更新的列! \n点击表格上方列名即可选中列")
     
@@ -1083,16 +1087,51 @@ class MainWindow(QWidget, Ui_Form):
                     arm_tool_combobox = QComboBox()
                     arm_tool_combobox.setModel(self.ArmToolOptions)
                     arm_tool_combobox.setCurrentText(value)
-                    self.ActionTableWidget.setCellWidget(row_position, col, arm_tool_combobox)
+                    self.update_table_cell_widget(row_position, col, arm_tool_combobox)
                 elif col == 8:
                     # 开关列添加下拉选择框
                     arm_tool_control = QComboBox()
                     arm_tool_control.addItems(["", "关", "开"])
                     arm_tool_control.setCurrentText(value)
-                    self.ActionTableWidget.setCellWidget(row_position, col, arm_tool_control)
+                    self.update_table_cell_widget(row_position, col, arm_tool_control)
                 else:
-                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(value))
-                    
+                    self.update_table_cell(row_position, col, value)
+    
+    def update_cell(self):
+        """更新选中的单元格"""
+        # 获取选中的单元格
+        selected_items = self.ActionTableWidget.selectedItems()
+        if selected_items:
+            selected_row = selected_items[0].row()
+            sellected_col = selected_items[0].column()
+            if sellected_col == 0:
+                self.update_table_cell(selected_row, sellected_col, round(self.q1, 2))
+            elif sellected_col == 1:
+                self.update_table_cell(selected_row, sellected_col, round(self.q2, 2))
+            elif sellected_col == 2:
+                self.update_table_cell(selected_row, sellected_col, round(self.q3, 2))
+            elif sellected_col == 3:
+                self.update_table_cell(selected_row, sellected_col, round(self.q4, 2))
+            elif sellected_col == 4:
+                self.update_table_cell(selected_row, sellected_col, round(self.q5, 2))
+            elif sellected_col == 5:
+                self.update_table_cell(selected_row, sellected_col, round(self.q6, 2))
+            elif sellected_col == 6:
+                self.update_table_cell(selected_row, sellected_col, self.ArmSpeedEdit.text())
+            elif sellected_col == 7:
+                arm_tool_combobox = QComboBox()
+                arm_tool_combobox.setModel(self.ArmToolOptions)
+                arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
+                self.update_table_cell_widget(selected_row, sellected_col, arm_tool_combobox)
+            elif sellected_col == 8:
+                arm_tool_control = QComboBox()
+                arm_tool_control.addItems(["", "关", "开"])
+                self.update_table_cell_widget(selected_row, sellected_col, arm_tool_control)
+            elif sellected_col == 9:
+                self.update_table_cell(selected_row, sellected_col, self.ArmDelayTimeEdit.text())
+        else:
+            self.message_box.warning_message_box(message="请选择需要更新的单元格! \n点击表格即可选中单元格")
+    
     def insert_row(self):
         """在当前行下插入一行"""
         selected_row = self.ActionTableWidget.currentRow()
@@ -1101,33 +1140,33 @@ class MainWindow(QWidget, Ui_Form):
             self.ActionTableWidget.insertRow(row_position)
             for col in range(self.ActionTableWidget.columnCount()):
                 if col == 0:
-                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q1, 2))))
+                    self.update_table_cell(row_position, col, round(self.q1, 2))
                 elif col == 1:
-                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q2, 2))))
+                    self.update_table_cell(row_position, col, round(self.q2, 2))
                 elif col == 2:
-                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q3, 2))))
+                    self.update_table_cell(row_position, col, round(self.q3, 2))
                 elif col == 3:
-                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q4, 2))))
+                    self.update_table_cell(row_position, col, round(self.q4, 2))
                 elif col == 4:
-                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q5, 2))))
+                    self.update_table_cell(row_position, col, round(self.q5, 2))
                 elif col == 5:
-                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(round(self.q6, 2))))
+                    self.update_table_cell(row_position, col, round(self.q6, 2))
                 elif col == 6:
-                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(self.ArmSpeedEdit.text())))
+                    self.update_table_cell(row_position, col, self.ArmSpeedEdit.text())
                 elif col == 7:  
                     # 工具列、开关列需要获取下拉框的选中值
                     # 工具列添加下拉选择框
                     arm_tool_combobox = QComboBox()
                     arm_tool_combobox.setModel(self.ArmToolOptions)
                     arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
-                    self.ActionTableWidget.setCellWidget(row_position, col, arm_tool_combobox)
+                    self.update_table_cell_widget(row_position, col, arm_tool_combobox)
                 elif col == 8:
                     # 开关列添加下拉选择框
                     arm_tool_control = QComboBox()
                     arm_tool_control.addItems(["", "关", "开"])
-                    self.ActionTableWidget.setCellWidget(row_position, col, arm_tool_control)
+                    self.update_table_cell_widget(row_position, col, arm_tool_control)
                 elif col == 9:
-                    self.ActionTableWidget.setItem(row_position, col, QTableWidgetItem(str(self.ArmDelayTimeEdit.text())))
+                    self.update_table_cell(row_position, col, self.ArmDelayTimeEdit.text())
                     
     def import_data(self):
         """导入动作"""
@@ -1155,28 +1194,28 @@ class MainWindow(QWidget, Ui_Form):
 
                     row_position = self.ActionTableWidget.rowCount()
                     self.ActionTableWidget.insertRow(row_position)
-                    self.ActionTableWidget.setItem(row_position, 0, QTableWidgetItem(angle_1))
-                    self.ActionTableWidget.setItem(row_position, 1, QTableWidgetItem(angle_2))
-                    self.ActionTableWidget.setItem(row_position, 2, QTableWidgetItem(angle_3))
-                    self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(angle_4))
-                    self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(angle_5))
-                    self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(angle_6))
-                    self.ActionTableWidget.setItem(row_position, 6, QTableWidgetItem(speed_percentage))
+                    self.update_table_cell(row_position, 0, angle_1)
+                    self.update_table_cell(row_position, 1, angle_2)
+                    self.update_table_cell(row_position, 2, angle_3)
+                    self.update_table_cell(row_position, 3, angle_4)
+                    self.update_table_cell(row_position, 4, angle_5)
+                    self.update_table_cell(row_position, 5, angle_6)
+                    self.update_table_cell(row_position, 6, speed_percentage)
 
                     # 工具列
                     arm_tool_combobox = QComboBox()
                     arm_tool_combobox.setModel(self.ArmToolOptions)
                     arm_tool_combobox.setCurrentText(arm_tool_option)
-                    self.ActionTableWidget.setCellWidget(row_position, 7, arm_tool_combobox)
+                    self.update_table_cell_widget(row_position, 7, arm_tool_combobox)
 
                     # 开关列
                     arm_tool_control_combobox = QComboBox()
                     arm_tool_control_combobox.addItems(["", "关", "开"])
                     arm_tool_control_combobox.setCurrentText(arm_tool_control)
-                    self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control_combobox)
+                    self.update_table_cell_widget(row_position, 8, arm_tool_control_combobox)
 
                     # 延时列
-                    self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem(arm_action_delay_time))
+                    self.update_table_cell(row_position, 9, arm_action_delay_time)
         logger.info("导入动作文件成功!")  
                     
     def export_data(self):
