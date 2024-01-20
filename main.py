@@ -285,7 +285,7 @@ class MainWindow(QWidget, Ui_Form):
         # 线程标志设置为停止
         self.loop_flag = True
         # 清空队列中的命令
-        self.command_queue = PriorityQueue()
+        self.command_queue.queue.clear()
         # 恢复连接机械臂按钮
         self.RobotArmLinkButton.setText("连接机械臂")
         self.RobotArmLinkButton.setEnabled(True)
