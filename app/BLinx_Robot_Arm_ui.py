@@ -477,10 +477,10 @@ class Ui_Form(object):
         self.ApStepEdit.setReadOnly(False)
         self.RobotArmResetButton = QPushButton(Form)
         self.RobotArmResetButton.setObjectName(u"RobotArmResetButton")
-        self.RobotArmResetButton.setGeometry(QRect(1276, 530, 111, 101))
+        self.RobotArmResetButton.setGeometry(QRect(1280, 533, 111, 51))
         self.RobotArmStopButton = QPushButton(Form)
         self.RobotArmStopButton.setObjectName(u"RobotArmStopButton")
-        self.RobotArmStopButton.setGeometry(QRect(1410, 531, 111, 101))
+        self.RobotArmStopButton.setGeometry(QRect(1403, 531, 121, 111))
         self.CompanyTitleLable = QLabel(Form)
         self.CompanyTitleLable.setObjectName(u"CompanyTitleLable")
         self.CompanyTitleLable.setGeometry(QRect(42, 8, 281, 51))
@@ -490,6 +490,9 @@ class Ui_Form(object):
         self.line.setGeometry(QRect(0, 57, 1521, 20))
         self.line.setFrameShape(QFrame.HLine)
         self.line.setFrameShadow(QFrame.Sunken)
+        self.RobotArmZeroButton = QPushButton(Form)
+        self.RobotArmZeroButton.setObjectName(u"RobotArmZeroButton")
+        self.RobotArmZeroButton.setGeometry(QRect(1280, 593, 111, 51))
 
         self.retranslateUi(Form)
 
@@ -652,5 +655,6 @@ class Ui_Form(object):
         self.RobotArmResetButton.setText(QCoreApplication.translate("Form", u"\u590d\u4f4d", None))
         self.RobotArmStopButton.setText(QCoreApplication.translate("Form", u"\u6025\u505c", None))
         self.CompanyTitleLable.setText("")
+        self.RobotArmZeroButton.setText(QCoreApplication.translate("Form", u"\u5f52\u96f6", None))
     # retranslateUi
 

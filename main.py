@@ -161,8 +161,8 @@ class MainWindow(QWidget, Ui_Form):
 
         # 复位和急停按钮绑定
         self.RobotArmResetButton.clicked.connect(self.reset_robot_arm)
-        # 禁用急停按钮
-        self.RobotArmStopButton.setEnabled(False)
+        self.RobotArmZeroButton.clicked.connect(self.reset_to_zero)
+        self.RobotArmStopButton.setEnabled(False) # 禁用急停按钮
         self.RobotArmStopButton.clicked.connect(self.stop_robot_arm)
         
         # 末端工具控制组回调函数绑定
@@ -270,7 +270,14 @@ class MainWindow(QWidget, Ui_Form):
         self.command_queue.put((1, '{"command":"set_joint_Auto_zero"}\r\n'.encode()))
         self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
         logger.warning("机械臂复位中!请注意手臂姿态")
-    
+        
+    @check_robot_arm_connection
+    def reset_to_zero(self):
+        """机械臂复位到零点"""
+        self.command_queue.put((1, '{"command":"set_joint_angle_all_time","data":[0.0,0.0,0.0,0.0,0.0,0.0,0,80]}\r\n'.encode()))
+        self.message_box.warning_message_box("机械臂回到初始角度中!\n请注意手臂姿态")
+        logger.warning("机械臂回到初始角度中!")
+        
     # 机械臂急停按钮回调函数
     @check_robot_arm_connection
     def stop_robot_arm(self):

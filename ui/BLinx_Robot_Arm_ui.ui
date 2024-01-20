@@ -1799,10 +1799,10 @@
   <widget class="QPushButton" name="RobotArmResetButton">
    <property name="geometry">
     <rect>
-     <x>1276</x>
-     <y>530</y>
+     <x>1280</x>
+     <y>533</y>
      <width>111</width>
-     <height>101</height>
+     <height>51</height>
     </rect>
    </property>
    <property name="text">
@@ -1812,10 +1812,10 @@
   <widget class="QPushButton" name="RobotArmStopButton">
    <property name="geometry">
     <rect>
-     <x>1410</x>
+     <x>1403</x>
      <y>531</y>
-     <width>111</width>
-     <height>101</height>
+     <width>121</width>
+     <height>111</height>
     </rect>
    </property>
    <property name="text">
@@ -1849,6 +1849,19 @@
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="RobotArmZeroButton">
+   <property name="geometry">
+    <rect>
+     <x>1280</x>
+     <y>593</y>
+     <width>111</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>归零</string>
    </property>
   </widget>
  </widget>

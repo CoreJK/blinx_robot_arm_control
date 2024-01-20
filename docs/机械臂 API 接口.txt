@@ -1,0 +1,10 @@
+{"command":"set_joint_angle","data":[1,50]}\r\n
+{"command":"set_joint_angle_speed","data":[1,50,40]}\r\n
+{"command":"set_joint_angle_speed_percentage","data":[1,50,80]}\r\n
+{"command":"set_joint_Auto_zero"}\r\n
+{"command":"set_joint_angle_all_time","data":[50,50,50,50,50,50,5,80]}\r\n
+
+{"command":"get_joint_angle_all"}\r\n
+
+{"command":"set_robot_io_interface","data":[0,true]}\r\n
+{"command":"set_robot_io_interface","data":[0,false]}\r\n
