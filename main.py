@@ -107,8 +107,8 @@ class MainWindow(QWidget, Ui_Form):
 
         # 示教控制添加右键的上下文菜单
         self.context_menu = QMenu(self)
-        self.copy_action = self.context_menu.addAction("复制一行")
-        self.paste_action = self.context_menu.addAction("粘贴一行")
+        self.copy_action = self.context_menu.addAction("复制")
+        self.paste_action = self.context_menu.addAction("粘贴")
         self.updata_action = self.context_menu.addAction("更新单元格")
         self.insert_row_action = self.context_menu.addAction("插入一行")
         self.copy_action.triggered.connect(self.copy_selected_row)
@@ -341,13 +341,18 @@ class MainWindow(QWidget, Ui_Form):
         self.RyAxisEdit.setText(str(round(self.ry, 3)))
         self.RzAxisEdit.setText(str(round(self.rz, 3)))
     
+    def initialize_values(self):
+        """初始化步长和速度值"""
+        self.AngleStepEdit.setText(str(5))
+        self.ArmSpeedEdit.setText(str(50))
+        self.CoordinateStepEdit.setText(str(0.01))
+        self.ApStepEdit.setText(str(10))
+    
     @logger.catch
     def connect_to_robot_arm(self):
         """连接机械臂"""
         
-        # 初始化步长和速度值
-        self.AngleStepEdit.setText(str(5))
-        self.ArmSpeedEdit.setText(str(50))
+        self.initialize_values()
         
         try:
             # 检查网络连接状态
