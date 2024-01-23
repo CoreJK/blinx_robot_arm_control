@@ -1328,6 +1328,9 @@ class MainWindow(QWidget, Ui_Form):
                 logger.info("导出配置文件成功!")
 
     def tale_action_thread(self):
+        # todo 获取开始与结束行
+        # todo 如果开始与结束行不为空，且没有超出当前行数，则执行指定行的动作
+        # todo 如果开始与结束行为空，则按顺序从头执行所有动作
         for row in range(self.ActionTableWidget.rowCount()):
             delay_time = self.run_action(row)
             self.TeachArmRunLogWindow.append(f"机械臂正在执行第 {row + 1} 个动作")
