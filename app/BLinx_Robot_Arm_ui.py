@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGroupBox,
     QHeaderView, QLabel, QLineEdit, QPushButton,
     QRadioButton, QSizePolicy, QTabWidget, QTableWidget,
     QTableWidgetItem, QTextBrowser, QTextEdit, QWidget)
-import blinx_logo_rc
+import app.blinx_logo_rc as blinx_logo_rc
 
 class Ui_Form(object):
     def setupUi(self, Form):

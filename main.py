@@ -193,10 +193,13 @@ class MainWindow(QWidget, Ui_Form):
     def reload_ip_port_history(self):
         """获取历史IP和Port填写记录"""
         try:
-            socket_info = shelve.open(str(IP_PORT_INFO_FILE_PATH))
-            self.TargetIpEdit.setText(socket_info["target_ip"])
-            self.TargetPortEdit.setText(str(socket_info["target_port"]))
-            socket_info.close()
+            if IP_PORT_INFO_FILE_PATH.parent.exists() is False:
+                IP_PORT_INFO_FILE_PATH.parent.mkdir(parents=True)
+            else:
+                socket_info = shelve.open(str(IP_PORT_INFO_FILE_PATH))
+                self.TargetIpEdit.setText(socket_info["target_ip"])
+                self.TargetPortEdit.setText(str(socket_info["target_port"]))
+                socket_info.close()
         except KeyError:
             logger.warning("IP 和 Port 未找到对应记录, 请填写配置信息!")
             self.TargetIpEdit.setText("")
@@ -228,10 +231,13 @@ class MainWindow(QWidget, Ui_Form):
     def reload_ap_passwd_history(self):
         """获取历史 WiFi 名称和 Passwd 记录"""            
         try:
-            wifi_info = shelve.open(str(WIFI_INFO_FILE_PATH))
-            self.WiFiSsidEdit.setText(wifi_info["SSID"])
-            self.WiFiPasswdEdit.setText(wifi_info["passwd"])
-            wifi_info.close()
+            if WIFI_INFO_FILE_PATH.parent.exists() is False:
+                WIFI_INFO_FILE_PATH.parent.mkdir(parents=True)
+            else:
+                wifi_info = shelve.open(str(WIFI_INFO_FILE_PATH))
+                self.WiFiSsidEdit.setText(wifi_info["SSID"])
+                self.WiFiPasswdEdit.setText(wifi_info["passwd"])
+                wifi_info.close()
         except KeyError:
             logger.warning("WiFi 配置未找到历史记录,请填写配置信息!")
             self.WiFiSsidEdit.setText("")
