@@ -1,6 +1,6 @@
 import socket
 
-from PySide2.QtCore import QRunnable, Slot
+from PySide6.QtCore import QRunnable, Slot
 from loguru import logger
 from retrying import retry
 

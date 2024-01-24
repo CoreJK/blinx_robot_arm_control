@@ -15,8 +15,8 @@ from spatialmath import SE3
 from spatialmath.base import rpy2tr
 
 # UI 相关模块
-from PySide2.QtCore import Qt, QThreadPool
-from PySide2.QtWidgets import (QApplication, QComboBox, QFileDialog, QMenu,
+from PySide6.QtCore import Qt, QThreadPool, Slot
+from PySide6.QtWidgets import (QApplication, QComboBox, QFileDialog, QMenu,
                                QTableWidgetItem, QWidget)
 from qt_material import apply_stylesheet
 
@@ -202,6 +202,7 @@ class MainWindow(QWidget, Ui_Form):
             self.TargetIpEdit.setText("")
             self.TargetPortEdit.setText("")
 
+    @Slot()
     def submit_ip_port_info(self):
         """配置机械臂的通讯IP和端口"""
         ip = self.TargetIpEdit.text().strip()
@@ -217,6 +218,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box(message="IP 或 Port 号为空，请重新填写!")
 
+    @Slot()
     def reset_ip_port_info(self):
         """重置 IP 和 Port 输入框内容"""
         self.TargetIpEdit.clear()
@@ -235,6 +237,7 @@ class MainWindow(QWidget, Ui_Form):
             self.WiFiSsidEdit.setText("")
             self.WiFiPasswdEdit.setText("")
 
+    @Slot()
     def submit_ap_passwd_info(self):
         """配置机械臂的通讯 WiFi 名称和 passwd"""
         ip = self.WiFiSsidEdit.text().strip()
@@ -250,12 +253,14 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box(message="WiFi名称 或密码为空，请重新填写!")
 
+    @Slot()
     def reset_ap_passwd_info(self):
         """重置 WiFi 名称和 passwd 输入框内容"""
         self.WiFiSsidEdit.clear()
         self.WiFiPasswdEdit.clear()
 
     # todo: 机械臂串口连接配置回调函数
+    @Slot()
     def get_sb_info(self):
         """获取系统当前的串口信息并更新下拉框"""
         ports = list_ports.comports()
@@ -263,6 +268,7 @@ class MainWindow(QWidget, Ui_Form):
 
     # 机械臂复位按钮回调函数
     @check_robot_arm_connection
+    @Slot()
     def reset_robot_arm(self):
         """机械臂复位
         :param mode:
@@ -272,6 +278,7 @@ class MainWindow(QWidget, Ui_Form):
         logger.warning("机械臂复位中!请注意手臂姿态")
         
     @check_robot_arm_connection
+    @Slot()
     def reset_to_zero(self):
         """机械臂复位到零点"""
         self.command_queue.put((1, '{"command":"set_joint_angle_all_time","data":[0.0,0.0,0.0,0.0,0.0,0.0,0,35]}\r\n'.encode()))
@@ -280,6 +287,7 @@ class MainWindow(QWidget, Ui_Form):
         
     # 机械臂急停按钮回调函数
     @check_robot_arm_connection
+    @Slot()
     def stop_robot_arm(self):
         """机械臂急停"""
         # 线程标志设置为停止
@@ -349,6 +357,7 @@ class MainWindow(QWidget, Ui_Form):
         self.ApStepEdit.setText(str(10))
     
     @logger.catch
+    @Slot()
     def connect_to_robot_arm(self):
         """连接机械臂"""
         
@@ -398,6 +407,7 @@ class MainWindow(QWidget, Ui_Form):
             
     # 命令控制页面 json 发送与调试
     @check_robot_arm_connection
+    @Slot()
     def send_json_command(self):
         """json数据发送按钮"""
         json_data = self.CommandEditWindow.toPlainText() + '\r\n'
@@ -454,6 +464,7 @@ class MainWindow(QWidget, Ui_Form):
                 
     # 机械臂关节控制回调函数
     @check_robot_arm_connection
+    @Slot()
     def arm_one_control(self, min_degrade=-140, max_degrade=140, increase=True):
         """机械臂关节控制"""
         old_degrade = self.q1
@@ -482,6 +493,7 @@ class MainWindow(QWidget, Ui_Form):
                 
 
     @check_robot_arm_connection
+    @Slot()
     def arm_two_control(self, min_degrade=-70, max_degrade=70, increase=True):
         """机械臂关节控制"""
         old_degrade = self.q2
@@ -511,6 +523,7 @@ class MainWindow(QWidget, Ui_Form):
                 self.add_item()
     
     @check_robot_arm_connection
+    @Slot()
     def arm_three_control(self, min_degrade=-60, max_degrade=45, increase=True):
         """机械臂关节控制"""
         old_degrade = self.q3
@@ -540,6 +553,7 @@ class MainWindow(QWidget, Ui_Form):
                 self.add_item()
 
     @check_robot_arm_connection
+    @Slot()
     def arm_four_control(self, min_degrade=-150, max_degrade=150, increase=True):
         """机械臂关节控制"""
         old_degrade = self.q4
@@ -569,6 +583,7 @@ class MainWindow(QWidget, Ui_Form):
                 self.add_item()
 
     @check_robot_arm_connection
+    @Slot()
     def arm_five_control(self, min_degrade=-180, max_degrade=10, increase=True):
         """机械臂关节控制"""
         old_degrade = self.q5
@@ -598,6 +613,7 @@ class MainWindow(QWidget, Ui_Form):
                 self.add_item()
 
     @check_robot_arm_connection
+    @Slot()
     def arm_six_control(self, min_degrade=-180, max_degrade=180, increase=True):
         """机械臂关节控制"""
         old_degrade = self.q6
@@ -628,6 +644,7 @@ class MainWindow(QWidget, Ui_Form):
         
 
     @check_robot_arm_connection
+    @Slot()
     def arm_angle_step_add(self):
         """机械臂关节步长增加"""
         old_degrade = int(self.AngleStepEdit.text().strip())
@@ -638,6 +655,7 @@ class MainWindow(QWidget, Ui_Form):
             self.message_box.warning_message_box(message="步长不能超过 20")
     
     @check_robot_arm_connection
+    @Slot()
     def arm_angle_step_sub(self):
         """机械臂关节步长减少"""
         old_degrade = int(self.AngleStepEdit.text().strip())
@@ -648,6 +666,7 @@ class MainWindow(QWidget, Ui_Form):
             self.message_box.warning_message_box(message="步长不能为负!")
     
     @check_robot_arm_connection
+    @Slot()
     def arm_speed_percentage_add(self):
         """关节运动速度百分比增加"""
         speed_percentage_edit = self.ArmSpeedEdit.text()
@@ -662,6 +681,7 @@ class MainWindow(QWidget, Ui_Form):
             self.message_box.error_message_box(message="请输入整数字符!")
     
     @check_robot_arm_connection
+    @Slot()
     def arm_speed_percentage_sub(self):
         """关节运动速度百分比减少"""
         speed_percentage_edit = self.ArmSpeedEdit.text()
@@ -705,6 +725,7 @@ class MainWindow(QWidget, Ui_Form):
     
     # 末端工具控制回调函数
     @check_robot_arm_connection
+    @Slot()
     def tool_open(self):
         """吸盘工具开"""
         type_of_tool = self.ArmToolComboBox.currentText()
@@ -715,6 +736,7 @@ class MainWindow(QWidget, Ui_Form):
             self.message_box.warning_message_box("末端工具未选择吸盘!")
 
     @check_robot_arm_connection
+    @Slot()
     def tool_close(self):
         """吸盘工具关"""
         type_of_tool = self.ArmToolComboBox.currentText()
@@ -725,6 +747,7 @@ class MainWindow(QWidget, Ui_Form):
             self.message_box.warning_message_box("末端工具未选择吸盘!")
 
     @check_robot_arm_connection
+    @Slot()
     def tool_x_operate(self, action="add"):
         """末端工具坐标 x 增减函数"""
         # 获取末端工具的坐标
@@ -764,6 +787,7 @@ class MainWindow(QWidget, Ui_Form):
             self.add_item()
         
     @check_robot_arm_connection
+    @Slot()
     def tool_y_operate(self, action="add"):
         """末端工具坐标 y 增减函数"""
        # 获取末端工具的坐标
@@ -805,6 +829,7 @@ class MainWindow(QWidget, Ui_Form):
             self.add_item()
 
     @check_robot_arm_connection
+    @Slot()
     def tool_z_operate(self, action="add"):
         """末端工具坐标 z 增减函数"""
         # 获取末端工具的坐标
@@ -847,6 +872,7 @@ class MainWindow(QWidget, Ui_Form):
             self.add_item()
 
     @check_robot_arm_connection
+    @Slot()
     def tool_coordinate_step_add(self):
         """末端工具坐标步长增加"""
         # 获取末端工具 edit 的值
@@ -856,6 +882,7 @@ class MainWindow(QWidget, Ui_Form):
         self.CoordinateStepEdit.setText(str(now_coordiante_step))
     
     @check_robot_arm_connection
+    @Slot()
     def tool_coordinate_step_sub(self):
         """末端工具坐标步长减少"""
         # 获取末端工具 edit 的值
@@ -865,6 +892,7 @@ class MainWindow(QWidget, Ui_Form):
         self.CoordinateStepEdit.setText(str(new_coordiante_step))
     
     @check_robot_arm_connection
+    @Slot()
     def tool_rx_operate(self, action="add"):
         """末端工具坐标 Rx 增减函数"""
         # 获取末端工具的坐标
@@ -906,7 +934,8 @@ class MainWindow(QWidget, Ui_Form):
         if self.RecordActivateButton.isChecked():
             self.add_item()
     
-    @check_robot_arm_connection           
+    @check_robot_arm_connection
+    @Slot()           
     def tool_ry_operate(self, action="add"):
         """末端工具坐标 Ry 增减函数"""
         # 获取末端工具的坐标
@@ -949,7 +978,8 @@ class MainWindow(QWidget, Ui_Form):
         if self.RecordActivateButton.isChecked():
             self.add_item()
             
-    @check_robot_arm_connection    
+    @check_robot_arm_connection
+    @Slot()    
     def tool_rz_operate(self, action="add"):
         """末端工具坐标 Rz 增减函数"""
         # 获取末端工具的坐标、姿态数值
@@ -993,6 +1023,7 @@ class MainWindow(QWidget, Ui_Form):
             self.add_item()
     
     @check_robot_arm_connection
+    @Slot()
     def tool_pose_step_add(self):
         """末端工具姿态步长增加"""
         # 获取末端工具姿态步长值
@@ -1002,6 +1033,7 @@ class MainWindow(QWidget, Ui_Form):
         self.ApStepEdit.setText(str(new_poset_step))
     
     @check_robot_arm_connection
+    @Slot()
     def tool_pose_step_sub(self):
         """末端工具姿态步长减少"""
         # 校验末端工具姿态步长值，必须为数字
@@ -1012,6 +1044,7 @@ class MainWindow(QWidget, Ui_Form):
     
     # 示教控制回调函数编写
     @check_robot_arm_connection
+    @Slot()
     def add_item(self):
         """示教控制添加一行动作"""
         speed_percentage = self.ArmSpeedEdit.text()  # 速度值，暂定百分比
@@ -1043,6 +1076,7 @@ class MainWindow(QWidget, Ui_Form):
         self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem(str(self.ArmDelayTimeEdit.text())))
 
     @check_robot_arm_connection
+    @Slot()
     def remove_item(self):
         """示教控制删除一行动作"""
         selected_rows = self.ActionTableWidget.selectionModel().selectedRows()
@@ -1057,6 +1091,7 @@ class MainWindow(QWidget, Ui_Form):
                 self.ActionTableWidget.removeRow(row.row())
 
     @check_robot_arm_connection
+    @Slot()
     def update_row(self):
         """示教控制更新指定行的动作"""
         selected_rows = self.ActionTableWidget.selectionModel().selectedRows()
@@ -1086,6 +1121,7 @@ class MainWindow(QWidget, Ui_Form):
             self.message_box.warning_message_box(message="请选择需要更新的行! \n点击表格左侧行号即可选中行")
 
     @check_robot_arm_connection
+    @Slot()
     def update_column(self):
         """更新选中的列"""
         selected_columns = self.ActionTableWidget.selectionModel().selectedColumns()
@@ -1121,6 +1157,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box(message="请选择需要更新的列! \n点击表格上方列名即可选中列")
     
+    @Slot()
     def copy_selected_row(self):
         """复制选择行"""
         selected_row = self.ActionTableWidget.currentRow()
@@ -1137,6 +1174,7 @@ class MainWindow(QWidget, Ui_Form):
                     if item is not None:
                         self.copied_row.append(item.text())
 
+    @Slot()
     def paste_row(self):
         """粘贴选择行"""
         if self.copied_row:
@@ -1158,6 +1196,7 @@ class MainWindow(QWidget, Ui_Form):
                 else:
                     self.update_table_cell(row_position, col, value)
     
+    @Slot()
     def update_cell(self):
         """更新选中的单元格"""
         # 获取选中的单元格
@@ -1193,6 +1232,7 @@ class MainWindow(QWidget, Ui_Form):
         else:
             self.message_box.warning_message_box(message="请选择需要更新的单元格! \n点击表格即可选中单元格")
     
+    @Slot()
     def insert_row(self):
         """在当前行下插入一行"""
         selected_row = self.ActionTableWidget.currentRow()
@@ -1228,12 +1268,13 @@ class MainWindow(QWidget, Ui_Form):
                     self.update_table_cell_widget(row_position, col, arm_tool_control)
                 elif col == 9:
                     self.update_table_cell(row_position, col, self.ArmDelayTimeEdit.text())
-                    
+    
+    @check_robot_arm_connection
+    @Slot()                    
     def import_data(self):
         """导入动作"""
-        options = QFileDialog.Options()
-        file_name, _ = QFileDialog.getOpenFileName(self, "Import Data from JSON", "",
-                                                   "JSON Files (*.json);;All Files (*)", options=options)
+        file_name, _ = QFileDialog.getOpenFileName(self, "导入动作文件", "",
+                                                   "JSON Files (*.json);;All Files (*)", options=QFileDialog.DontUseNativeDialog)
         logger.info(f"开始导入 {file_name} 动作文件")
         if file_name:
             with open(file_name, "r") as json_file:
@@ -1278,12 +1319,13 @@ class MainWindow(QWidget, Ui_Form):
                     # 延时列
                     self.update_table_cell(row_position, 9, arm_action_delay_time)
         logger.info("导入动作文件成功!")  
-                    
+    
+    @check_robot_arm_connection
+    @Slot()                    
     def export_data(self):
         """导出动作"""
-        options = QFileDialog.Options()
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save Data to JSON", "", "JSON Files (*.json);;All Files (*)",
-                                                   options=options)
+        file_name, _ = QFileDialog.getSaveFileName(self, "导出动作文件", "", "JSON Files (*.json);;All Files (*)",
+                                                   options=QFileDialog.DontUseNativeDialog)
         logger.info("开始导出动作文件")
         logger.debug(f"导出的配置文件的路径 {file_name}")
         if file_name:
@@ -1337,6 +1379,7 @@ class MainWindow(QWidget, Ui_Form):
             time.sleep(delay_time)  # 等待动作执行完成
     
     @check_robot_arm_connection
+    @Slot()
     def run_all_action(self):
         """顺序执行示教动作"""
         self.TeachArmRunLogWindow.append('【顺序执行】开始')
@@ -1381,6 +1424,7 @@ class MainWindow(QWidget, Ui_Form):
         return delay_time
 
     @check_robot_arm_connection
+    @Slot()
     def run_action_step(self):
         """单次执行选定的动作"""
         # 获取到选定的动作
@@ -1395,6 +1439,7 @@ class MainWindow(QWidget, Ui_Form):
             self.message_box.warning_message_box("请选择需要执行的动作!")
 
     @check_robot_arm_connection
+    @Slot()
     def run_action_loop(self):
         """循环执行动作"""
         # 获取循环动作循环执行的次数
@@ -1404,7 +1449,8 @@ class MainWindow(QWidget, Ui_Form):
                 self.tale_action_thread()
         else:
             self.message_box.warning_message_box(f"请输入所以动作循环次数[0-9]")
-        
+    
+    @Slot()
     def show_context_menu(self, pos):
         """右键复制粘贴菜单"""
         self.context_menu.exec_(self.ActionTableWidget.mapToGlobal(pos))
@@ -1439,4 +1485,4 @@ if __name__ == '__main__':
     apply_stylesheet(app, theme='light_blue.xml')
     window.show()
     logger.warning("系统初始化完成, 请在【连接配置】中填写机械臂连接配置信息后开始使用!")
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
