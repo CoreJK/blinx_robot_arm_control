@@ -39,7 +39,7 @@ from common.check_tools import check_robot_arm_connection
 from loguru import logger
 
 # 项目根目录
-PROJECT_ROOT_PATH = Path(__file__).resolve(strict=True).parent
+PROJECT_ROOT_PATH = Path(__file__).absolute().parent
 
 # 配置文件路径
 LOG_FILE_PATH = PROJECT_ROOT_PATH / "logs/record_{time}.log"
