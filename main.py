@@ -466,10 +466,8 @@ class MainWindow(QWidget, Ui_Form):
                             self.update_arm_pose_text()
                             
                     except Exception as e:
-                        logger.error(f"发送命令失败: {e}")
-                        self.message_box.error_message_box(message="发送命令失败!")
-                        self.command_queue = PriorityQueue(maxsize=100)
-
+                        logger.warning(f"命令处理异常: {e}")
+                        continue
                 
     # 机械臂关节控制回调函数
     @check_robot_arm_connection
