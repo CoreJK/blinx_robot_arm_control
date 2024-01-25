@@ -279,7 +279,8 @@ class MainWindow(QWidget, Ui_Form):
         """机械臂复位
         :param mode:
         """
-        self.command_queue.put((1, '{"command":"set_joint_Auto_zero"}\r\n'.encode()))
+        command = json.dumps({"command": "set_joint_Auto_zero"}).replace('', "") + '\r\n'
+        self.command_queue.put((1, command.encode()))
         self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
         logger.warning("机械臂复位中!请注意手臂姿态")
         
@@ -287,7 +288,8 @@ class MainWindow(QWidget, Ui_Form):
     @Slot()
     def reset_to_zero(self):
         """机械臂复位到零点"""
-        self.command_queue.put((1, '{"command":"set_joint_angle_all_time","data":[0.0,0.0,0.0,0.0,0.0,0.0,0,35]}\r\n'.encode()))
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 35]}).replace(' ', "") + '\r\n'
+        self.command_queue.put((1, command.encode()))
         self.message_box.warning_message_box("机械臂回到初始角度中!\n请注意手臂姿态")
         logger.warning("机械臂回到初始角度中!")
         
@@ -315,7 +317,8 @@ class MainWindow(QWidget, Ui_Form):
         """实时获取关节的角度值"""        
         while not self.loop_flag:
             time.sleep(1)
-            self.command_queue.put((3, '{"command":"get_joint_angle_all"}\r\n'.encode()))
+            command = json.dumps({"command": "get_joint_angle_all"}).replace(' ',"") + '\r\n'
+            self.command_queue.put((3, command.encode()))
     
     # 一些 qt 界面的常用的抽象操作                
     def update_table_cell(self, row, col, value):
