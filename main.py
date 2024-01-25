@@ -781,9 +781,42 @@ class MainWindow(QWidget, Ui_Form):
         # 通过逆解算出机械臂各个关节角度值
         R_T = SE3([new_x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        degrade = [round(degrees(d), 2) for d in sol.q]
+        degrade = [round(degrees(d), 1) for d in sol.q]
         degrade.extend([0, speed_percentage])
         
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
         # 构造发送命令
         command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
         self.command_queue.put((2, command.encode('utf-8')))
@@ -821,9 +854,42 @@ class MainWindow(QWidget, Ui_Form):
         # 通过逆解算出机械臂各个关节角度值
         R_T = SE3([x_coordinate, new_y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        degrade = [round(degrees(d), 2) for d in sol.q]
+        degrade = [round(degrees(d), 1) for d in sol.q]
         degrade.extend([0, speed_percentage])
         
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
         # 构造发送命令
         command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
@@ -863,9 +929,42 @@ class MainWindow(QWidget, Ui_Form):
         # 通过逆解算出机械臂各个关节角度值
         R_T = SE3([x_coordinate, y_coordinate, new_z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        degrade = [round(degrees(d), 2) for d in sol.q]
+        degrade = [round(degrees(d), 1) for d in sol.q]
         degrade.extend([0, speed_percentage])
         
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
         # 构造发送命令
         command = json.dumps(
                 {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
@@ -925,11 +1024,44 @@ class MainWindow(QWidget, Ui_Form):
         # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
         R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, new_rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        degrade = [round(degrees(d), 2) for d in sol.q]
+        degrade = [round(degrees(d), 1) for d in sol.q]
         
         # 更新关节控制界面中的角度值
         degrade.extend([0, speed_percentage])
         
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
         # 构造发送命令
         command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
 
@@ -968,11 +1100,43 @@ class MainWindow(QWidget, Ui_Form):
         # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
         R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, new_ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        degrade = [round(degrees(d), 2) for d in sol.q]
+        degrade = [round(degrees(d), 1) for d in sol.q]
         
         # 更新关节控制界面中的角度值
         degrade.extend([0, speed_percentage])
-        
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
         # 构造发送命令
         command = json.dumps(
                 {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
@@ -1012,11 +1176,44 @@ class MainWindow(QWidget, Ui_Form):
         # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
         R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([new_rz_pose, ry_pose, rx_pose], unit='deg')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        degrade = [round(degrees(d), 2) for d in sol.q]
+        degrade = [round(degrees(d), 1) for d in sol.q]
         
         # 更新完关节角度值后，发送命令
         degrade.extend([0, speed_percentage])
         
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
         # 构造发送命令
         command = json.dumps(
                 {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'

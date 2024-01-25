@@ -1,0 +1,55 @@
+<mxfile host="Electron" modified="2024-01-25T03:27:44.580Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.21 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="Uof-PnsZ5XfCmtEFPVK9" version="22.1.21" type="device">
+  <diagram name="第 1 页" id="nuXHE1S9SsyU0DOErVFe">
+    <mxGraphModel dx="1182" dy="683" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="dPo5zAtyzAK4RITNQLvk-1" target="dPo5zAtyzAK4RITNQLvk-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-1" value="开始" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="330" y="120" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="dPo5zAtyzAK4RITNQLvk-2" target="dPo5zAtyzAK4RITNQLvk-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-2" value="开场：&lt;br&gt;后台控制三台一起开始跳舞" style="whiteSpace=wrap;html=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="320" y="200" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="dPo5zAtyzAK4RITNQLvk-4" target="dPo5zAtyzAK4RITNQLvk-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-4" value="归零：&lt;br&gt;等待主持人讲解" style="whiteSpace=wrap;html=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="320" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="dPo5zAtyzAK4RITNQLvk-6" target="dPo5zAtyzAK4RITNQLvk-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-6" value="写字：&lt;br&gt;周总、两位投资人点击写“龙”，“年”，“好”" style="whiteSpace=wrap;html=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="320" y="360" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="dPo5zAtyzAK4RITNQLvk-8" target="dPo5zAtyzAK4RITNQLvk-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-8" value="点头：&lt;br&gt;主持人展示写好的字&lt;br&gt;后台控制机械臂点头" style="whiteSpace=wrap;html=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="320" y="520" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-10" value="结束" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="330" y="680" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-13" value="归零：&lt;br&gt;等待主持人讲解" style="whiteSpace=wrap;html=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="320" y="600" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="dPo5zAtyzAK4RITNQLvk-13" target="dPo5zAtyzAK4RITNQLvk-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="dPo5zAtyzAK4RITNQLvk-16" target="dPo5zAtyzAK4RITNQLvk-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dPo5zAtyzAK4RITNQLvk-16" value="归零：&lt;br&gt;等待主持人讲解" style="whiteSpace=wrap;html=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="320" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
