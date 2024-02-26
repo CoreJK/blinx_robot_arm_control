@@ -22,7 +22,7 @@
 
 ## 📝 Table of Contents
 
-- [About](#about)
+- [关于](#about)
 - [Getting Started](#getting_started)
 - [Deployment](#deployment)
 - [Usage](#usage)
@@ -32,7 +32,7 @@
 - [Authors](#authors)
 - [Acknowledgments](#acknowledgement)
 
-## 🧐 About <a name = "about"></a>
+## 🧐 关于 <a name = "about"></a>
 
 比邻星六轴机械臂
 
