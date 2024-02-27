@@ -35,3 +35,4 @@ typing-extensions==4.8.0
 websockets==11.0.3
 win32-setctime==1.1.0
 zipp==3.17.0
+PyYAML==6.0.1

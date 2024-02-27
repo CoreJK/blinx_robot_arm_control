@@ -1,2 +1,4 @@
-*
-!.gitignore
+# sheleve 保存的数据文件
+*.bak
+*.dir
+*.dat

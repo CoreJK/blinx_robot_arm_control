@@ -3,7 +3,6 @@ import platform
 import shelve
 import sys
 import time
-from pathlib import Path
 from functools import partial
 from queue import PriorityQueue
 from retrying import retry
@@ -32,20 +31,16 @@ from common.socket_client import ClientSocket, Worker
 from common.blinx_robot_module import Mirobot
 from common.check_tools import check_robot_arm_connection
 
-# 调试 segment 异常时，解除改注释
-# import faulthandler;faulthandler.enable()
+# 文件路径信息
+import common.settings as settings
 
 # 日志模块
 from loguru import logger
 
-# 项目根目录
-PROJECT_ROOT_PATH = Path(__file__).absolute().parent
+# 调试 segment 异常时，解除改注释
+# import faulthandler;faulthandler.enable()
 
-# 配置文件路径
-LOG_FILE_PATH = PROJECT_ROOT_PATH / "logs/record_{time}.log"
-IP_PORT_INFO_FILE_PATH = PROJECT_ROOT_PATH / "config/Socket_Info"
-WIFI_INFO_FILE_PATH = PROJECT_ROOT_PATH / "config/WiFi_Info"
-logger.add(LOG_FILE_PATH, level="INFO")
+logger.add(settings.LOG_FILE_PATH, level="INFO")
 
 
 class MainWindow(QWidget, Ui_Form):
@@ -57,7 +52,7 @@ class MainWindow(QWidget, Ui_Form):
         self.setWindowTitle("BLinx Robot Arm V1.0")
         
         # 初始化机械臂模型
-        self.blinx_robot_arm = Mirobot()
+        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
         
         # 角度初始值
         self.q1 = 0.0
@@ -193,10 +188,10 @@ class MainWindow(QWidget, Ui_Form):
     def reload_ip_port_history(self):
         """获取历史IP和Port填写记录"""
         try:
-            if IP_PORT_INFO_FILE_PATH.parent.exists() is False:
-                IP_PORT_INFO_FILE_PATH.parent.mkdir(parents=True)
+            if settings.IP_PORT_INFO_FILE_PATH.parent.exists() is False:
+                settings.IP_PORT_INFO_FILE_PATH.parent.mkdir(parents=True)
             else:
-                socket_info = shelve.open(str(IP_PORT_INFO_FILE_PATH))
+                socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
                 self.TargetIpEdit.setText(socket_info["target_ip"])
                 self.TargetPortEdit.setText(str(socket_info["target_port"]))
                 socket_info.close()
@@ -213,7 +208,7 @@ class MainWindow(QWidget, Ui_Form):
         
         # 保存 IP 和 Port 信息
         if all([ip, port]):
-            socket_info = shelve.open(str(IP_PORT_INFO_FILE_PATH))
+            socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
             socket_info["target_ip"] = ip
             socket_info["target_port"] = int(port)
             self.message_box.success_message_box(message="配置添加成功!")
@@ -231,10 +226,10 @@ class MainWindow(QWidget, Ui_Form):
     def reload_ap_passwd_history(self):
         """获取历史 WiFi 名称和 Passwd 记录"""            
         try:
-            if WIFI_INFO_FILE_PATH.parent.exists() is False:
-                WIFI_INFO_FILE_PATH.parent.mkdir(parents=True)
+            if settings.WIFI_INFO_FILE_PATH.parent.exists() is False:
+                settings.WIFI_INFO_FILE_PATH.parent.mkdir(parents=True)
             else:
-                wifi_info = shelve.open(str(WIFI_INFO_FILE_PATH))
+                wifi_info = shelve.open(str(settings.WIFI_INFO_FILE_PATH))
                 self.WiFiSsidEdit.setText(wifi_info["SSID"])
                 self.WiFiPasswdEdit.setText(wifi_info["passwd"])
                 wifi_info.close()
@@ -251,7 +246,7 @@ class MainWindow(QWidget, Ui_Form):
         
         # 保存 IP 和 Port 信息
         if all([ip, port]):
-            wifi_info = shelve.open(str(WIFI_INFO_FILE_PATH))
+            wifi_info = shelve.open(str(settings.WIFI_INFO_FILE_PATH))
             wifi_info["SSID"] = ip
             wifi_info["passwd"] = port
             wifi_info.close()
@@ -1664,7 +1659,7 @@ class MainWindow(QWidget, Ui_Form):
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
         try:
-            socket_info = shelve.open(str(IP_PORT_INFO_FILE_PATH))
+            socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
             host = socket_info['target_ip']
             port = int(socket_info['target_port'])
             robot_arm_client = ClientSocket(host, port)
