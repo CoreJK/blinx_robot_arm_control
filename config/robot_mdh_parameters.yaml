@@ -9,7 +9,7 @@
 # 第二关节
 - joint: 2
   alpha: -pi / 2
-  a: 0.055
+  a: 0.024
   d: 0
   theta: -pi / 2
   qlim: [-90, 90]

@@ -17,7 +17,8 @@ from spatialmath.base import rpy2tr
 from PySide6.QtCore import Qt, QThreadPool, Slot
 from PySide6.QtWidgets import (QApplication, QComboBox, QFileDialog, QMenu,
                                QTableWidgetItem, QWidget)
-from qt_material import apply_stylesheet
+from qfluentwidgets import MSFluentWindow
+# from qt_material import apply_stylesheet
 
 # 三方通讯模块
 from serial.tools import list_ports
@@ -43,7 +44,7 @@ from loguru import logger
 logger.add(settings.LOG_FILE_PATH, level="INFO")
 
 
-class MainWindow(QWidget, Ui_Form):
+class MainWindow(MSFluentWindow, Ui_Form):
     """机械臂上位机控制窗口"""
     
     def __init__(self):
@@ -1681,7 +1682,7 @@ if __name__ == '__main__':
     logger.info("欢迎使用比邻星六轴机械臂!")
     app = QApplication(sys.argv)
     window = MainWindow()
-    apply_stylesheet(app, theme='light_blue.xml')
+    # apply_stylesheet(app, theme='light_blue.xml')
     window.show()
     logger.warning("系统初始化完成, 请在【连接配置】中填写机械臂连接配置信息后开始使用!")
     sys.exit(app.exec())

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'BLinx_Robot_Arm_ui.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.1
+## Created by: Qt User Interface Compiler version 6.4.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,11 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGroupBox,
-    QHeaderView, QLabel, QLineEdit, QPushButton,
-    QRadioButton, QSizePolicy, QTabWidget, QTableWidget,
-    QTableWidgetItem, QTextBrowser, QTextEdit, QWidget)
-import app.blinx_logo_rc as blinx_logo_rc
+from PySide6.QtWidgets import (QApplication, QComboBox, QGroupBox, QHeaderView,
+    QLabel, QLineEdit, QPushButton, QRadioButton,
+    QSizePolicy, QTabWidget, QTableWidget, QTableWidgetItem,
+    QTextBrowser, QTextEdit, QWidget)
+from app import blinx_logo_rc
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -94,7 +94,7 @@ class Ui_Form(object):
         self.ActionTableWidget.setHorizontalHeaderItem(10, __qtablewidgetitem10)
         self.ActionTableWidget.setObjectName(u"ActionTableWidget")
         self.ActionTableWidget.setGeometry(QRect(20, 40, 901, 361))
-        self.ActionTableWidget.horizontalHeader().setVisible(True)
+        self.ActionTableWidget.horizontalHeader().setVisible(False)
         self.ActionTableWidget.horizontalHeader().setCascadingSectionResizes(False)
         self.ActionTableWidget.horizontalHeader().setDefaultSectionSize(81)
         self.TeachArmRunLogLabel = QLabel(self.HelpTeachPage)
@@ -495,15 +495,6 @@ class Ui_Form(object):
         self.RobotArmStopButton = QPushButton(Form)
         self.RobotArmStopButton.setObjectName(u"RobotArmStopButton")
         self.RobotArmStopButton.setGeometry(QRect(1403, 531, 121, 111))
-        self.CompanyTitleLable = QLabel(Form)
-        self.CompanyTitleLable.setObjectName(u"CompanyTitleLable")
-        self.CompanyTitleLable.setGeometry(QRect(42, 8, 281, 51))
-        self.CompanyTitleLable.setStyleSheet(u"image: url(:/images/images/Blinx_tec_logo.png);")
-        self.line = QFrame(Form)
-        self.line.setObjectName(u"line")
-        self.line.setGeometry(QRect(0, 57, 1521, 20))
-        self.line.setFrameShape(QFrame.HLine)
-        self.line.setFrameShadow(QFrame.Sunken)
         self.RobotArmZeroButton = QPushButton(Form)
         self.RobotArmZeroButton.setObjectName(u"RobotArmZeroButton")
         self.RobotArmZeroButton.setGeometry(QRect(1280, 593, 111, 51))
@@ -670,7 +661,6 @@ class Ui_Form(object):
         self.ApStepEdit.setText(QCoreApplication.translate("Form", u"0", None))
         self.RobotArmResetButton.setText(QCoreApplication.translate("Form", u"\u590d\u4f4d", None))
         self.RobotArmStopButton.setText(QCoreApplication.translate("Form", u"\u6025\u505c", None))
-        self.CompanyTitleLable.setText("")
         self.RobotArmZeroButton.setText(QCoreApplication.translate("Form", u"\u5f52\u96f6", None))
     # retranslateUi
 
