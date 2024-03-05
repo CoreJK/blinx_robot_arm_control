@@ -24,52 +24,63 @@ class command_page_frame(object):
     def setupUi(self, Frame):
         if not Frame.objectName():
             Frame.setObjectName(u"Frame")
-        Frame.resize(900, 678)
-        self.widget = QWidget(Frame)
-        self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(50, 10, 811, 646))
-        self.verticalLayout_2 = QVBoxLayout(self.widget)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        Frame.resize(1120, 650)
+        self.horizontalLayout_3 = QHBoxLayout(Frame)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.StrongBodyLabel = StrongBodyLabel(self.widget)
+        self.StrongBodyLabel = StrongBodyLabel(Frame)
         self.StrongBodyLabel.setObjectName(u"StrongBodyLabel")
 
         self.verticalLayout.addWidget(self.StrongBodyLabel)
 
-        self.PlainTextEdit = PlainTextEdit(self.widget)
+        self.PlainTextEdit = PlainTextEdit(Frame)
         self.PlainTextEdit.setObjectName(u"PlainTextEdit")
 
         self.verticalLayout.addWidget(self.PlainTextEdit)
 
-        self.StrongBodyLabel_2 = StrongBodyLabel(self.widget)
+        self.StrongBodyLabel_2 = StrongBodyLabel(Frame)
         self.StrongBodyLabel_2.setObjectName(u"StrongBodyLabel_2")
 
         self.verticalLayout.addWidget(self.StrongBodyLabel_2)
 
-        self.PlainTextEdit_2 = PlainTextEdit(self.widget)
+        self.PlainTextEdit_2 = PlainTextEdit(Frame)
         self.PlainTextEdit_2.setObjectName(u"PlainTextEdit_2")
 
         self.verticalLayout.addWidget(self.PlainTextEdit_2)
 
 
-        self.verticalLayout_2.addLayout(self.verticalLayout)
+        self.horizontalLayout_2.addLayout(self.verticalLayout)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.PlainTextEdit_3 = PlainTextEdit(self.widget)
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.StrongBodyLabel_3 = StrongBodyLabel(Frame)
+        self.StrongBodyLabel_3.setObjectName(u"StrongBodyLabel_3")
+
+        self.verticalLayout_2.addWidget(self.StrongBodyLabel_3)
+
+        self.PlainTextEdit_3 = PlainTextEdit(Frame)
         self.PlainTextEdit_3.setObjectName(u"PlainTextEdit_3")
 
-        self.horizontalLayout.addWidget(self.PlainTextEdit_3)
+        self.verticalLayout_2.addWidget(self.PlainTextEdit_3)
 
-        self.PushButton = PushButton(self.widget)
+
+        self.horizontalLayout.addLayout(self.verticalLayout_2)
+
+        self.PushButton = PushButton(Frame)
         self.PushButton.setObjectName(u"PushButton")
 
         self.horizontalLayout.addWidget(self.PushButton)
 
 
-        self.verticalLayout_2.addLayout(self.horizontalLayout)
+        self.horizontalLayout_2.addLayout(self.horizontalLayout)
+
+
+        self.horizontalLayout_3.addLayout(self.horizontalLayout_2)
 
 
         self.retranslateUi(Frame)
@@ -80,7 +91,8 @@ class command_page_frame(object):
     def retranslateUi(self, Frame):
         Frame.setWindowTitle(QCoreApplication.translate("Frame", u"Frame", None))
         self.StrongBodyLabel.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u53d1\u9001", None))
-        self.StrongBodyLabel_2.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u53d1\u9001", None))
-        self.PushButton.setText("")
+        self.StrongBodyLabel_2.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u63a5\u6536", None))
+        self.StrongBodyLabel_3.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u7f16\u8f91\u7a97\u53e3", None))
+        self.PushButton.setText(QCoreApplication.translate("Frame", u"\u53d1\u9001", None))
     # retranslateUi
 

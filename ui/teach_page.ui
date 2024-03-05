@@ -6,181 +6,762 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1078</width>
-    <height>570</height>
+    <width>1111</width>
+    <height>528</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Frame</string>
   </property>
-  <widget class="QWidget" name="">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>931</width>
-     <height>541</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="PillPushButton" name="PillPushButton_2">
-        <property name="text">
-         <string>导入动作</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="PillPushButton" name="PillPushButton_3">
-        <property name="text">
-         <string>导出动作</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="RadioButton" name="RadioButton">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="RadioButton" name="RadioButton_2">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="PillPushButton" name="PillPushButton_4">
-        <property name="text">
-         <string>顺序执行</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="PillPushButton" name="PillPushButton_5">
-        <property name="text">
-         <string>单次执行</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="PillPushButton" name="PillPushButton_6">
-        <property name="text">
-         <string>循环执行</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="LineEdit" name="LineEdit">
-        <property name="text">
-         <string>1~100</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="TableWidget" name="TableWidget">
-      <column>
-       <property name="text">
-        <string>J1</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>J2</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>J3</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>J4</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>速度</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>工具</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>开关</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>延时</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>备注</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string/>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="PillPushButton" name="PillPushButton_7">
-        <property name="text">
-         <string>删除动作</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="PillPushButton" name="PillPushButton_8">
-        <property name="text">
-         <string>添加动作</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="PillPushButton" name="PillPushButton_9">
-        <property name="text">
-         <string>更新行</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="PillPushButton" name="PillPushButton_10">
-        <property name="text">
-         <string>更新列</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-   </layout>
-  </widget>
+  <layout class="QHBoxLayout" name="horizontalLayout_4">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="7,3">
+     <item>
+      <layout class="QVBoxLayout" name="TeachLayout">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="ToolButton" name="ActionImportButton"/>
+         </item>
+         <item>
+          <widget class="ToolButton" name="ActionOutputButton"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>80</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="RadioButton" name="RadioButton">
+           <property name="text">
+            <string>录制模式</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="RadioButton" name="RecordDeActivateButton">
+           <property name="text">
+            <string>普通模式</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>80</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="ToolButton" name="ActionRunButton"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>5</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="ToolButton" name="ActionStepRunButton"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>5</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="ToolButton" name="ActionLoopRunButton"/>
+         </item>
+         <item>
+          <widget class="LineEdit" name="ActionLoopTimes">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="placeholderText">
+            <string>1~100</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="TableWidget" name="ActionTableWidget">
+         <column>
+          <property name="text">
+           <string>J1</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>J2</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>J3</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>J4</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>速度</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>工具</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>开关</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>延时</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>备注</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string/>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="ToolButton" name="ActionDeleteButton"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="ToolButton" name="ActionAddButton"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="ToolButton" name="ActionUpdateRowButton">
+           <property name="icon">
+            <iconset theme="SEND">
+             <normaloff>.</normaloff>.</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="ToolButton" name="ActionUpdateColButton"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="RobotArmControlLaylout">
+       <item>
+        <widget class="SegmentedWidget" name="RobotArmControlSegmentedWidget"/>
+       </item>
+       <item>
+        <widget class="QStackedWidget" name="ArmActionControlStackWidget">
+         <property name="currentIndex">
+          <number>2</number>
+         </property>
+         <widget class="QWidget" name="ArmAngleControlPage">
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="CardWidget" name="ArmAngleControlCard">
+             <layout class="QHBoxLayout" name="horizontalLayout_22">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_2">
+                <item>
+                 <layout class="QHBoxLayout" name="JointOneLaylout">
+                  <item>
+                   <widget class="StrongBodyLabel" name="JointOneLabel">
+                    <property name="text">
+                     <string>关节1</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointOneSubButton"/>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="JointOneEdit"/>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointOneAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="JointTwolout">
+                  <item>
+                   <widget class="StrongBodyLabel" name="JointTwoLabel">
+                    <property name="text">
+                     <string>关节2</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointTwoSubButton"/>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="JointTwoEdit"/>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointTwoAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="JointThreeLaylout">
+                  <item>
+                   <widget class="StrongBodyLabel" name="JointThreeLabel">
+                    <property name="text">
+                     <string>关节3</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointThreeSubButton"/>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="JointThreeEdit"/>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointThreeAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="JointFourLaylout">
+                  <item>
+                   <widget class="StrongBodyLabel" name="JointFourLabel">
+                    <property name="text">
+                     <string>关节4</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointFourSubButton"/>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="JointFourEdit"/>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointFourAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="JointFiveLaylout">
+                  <item>
+                   <widget class="StrongBodyLabel" name="JointFiveLabel">
+                    <property name="text">
+                     <string>关节5</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointFiveSubButton"/>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="JointFiveEdit"/>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointFiveAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="JointSixLaylout">
+                  <item>
+                   <widget class="StrongBodyLabel" name="JointSixLabel">
+                    <property name="text">
+                     <string>关节6</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointSixSubButton"/>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="JointSixEdit"/>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointSixAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="JointAngleStepLaylout">
+                  <item>
+                   <widget class="StrongBodyLabel" name="JointStepLabel">
+                    <property name="text">
+                     <string>步长</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointStepSubButton"/>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="JointStepEdit"/>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointStepAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="JointSpeedLaylout">
+                  <item>
+                   <widget class="StrongBodyLabel" name="JointSpeedLabel">
+                    <property name="text">
+                     <string>速度</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointSpeedDecButton"/>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="JointSpeedEdit"/>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointSpeedUpButton"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="JointDelayTimeLaylout">
+                  <item>
+                   <widget class="StrongBodyLabel" name="JointDelayTimeLabel">
+                    <property name="text">
+                     <string>延时</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointDelayTimeSubButton"/>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="JointDelayTimeEdit"/>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="JointDelayTimeAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="ArmEndToolsCoordinateControlPage">
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="CardWidget" name="ArmEndToolsCoordinateControlCard">
+               <layout class="QHBoxLayout" name="horizontalLayout_21">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_4">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_10">
+                    <item>
+                     <widget class="StrongBodyLabel" name="XLable">
+                      <property name="text">
+                       <string>X </string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="ToolButton" name="XAxisSubButton"/>
+                    </item>
+                    <item>
+                     <widget class="LineEdit" name="XAxisEdit"/>
+                    </item>
+                    <item>
+                     <widget class="ToolButton" name="XAxisAddButton"/>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_11">
+                    <item>
+                     <widget class="StrongBodyLabel" name="YLable">
+                      <property name="text">
+                       <string>Y </string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="ToolButton" name="YAxisSubButton"/>
+                    </item>
+                    <item>
+                     <widget class="LineEdit" name="YAxisEdit"/>
+                    </item>
+                    <item>
+                     <widget class="ToolButton" name="YAxisAddButton"/>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_13">
+                    <item>
+                     <widget class="StrongBodyLabel" name="Zlable">
+                      <property name="text">
+                       <string>Z </string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="ToolButton" name="ZAxisSubButton"/>
+                    </item>
+                    <item>
+                     <widget class="LineEdit" name="ZAxisEdit"/>
+                    </item>
+                    <item>
+                     <widget class="ToolButton" name="ZAxisAddButton"/>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_14">
+                    <item>
+                     <widget class="StrongBodyLabel" name="CoordinateStepLable">
+                      <property name="text">
+                       <string>步长</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="ToolButton" name="CoordinateStepSubButton"/>
+                    </item>
+                    <item>
+                     <widget class="LineEdit" name="CoordinateStepEdit"/>
+                    </item>
+                    <item>
+                     <widget class="ToolButton" name="CoordinateAddButton"/>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="ArmEndToolsPositionControlPage">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="CardWidget" name="ArmEndToolsPositionControlCard">
+             <layout class="QHBoxLayout" name="horizontalLayout_23">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_5">
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_15">
+                  <item>
+                   <widget class="StrongBodyLabel" name="RxLabel">
+                    <property name="text">
+                     <string>Rx</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="RxAxisSubButton"/>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_8">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="RxAxisEdit"/>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_9">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="RxAxisAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_16">
+                  <item>
+                   <widget class="StrongBodyLabel" name="RyLabel">
+                    <property name="text">
+                     <string>Ry</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="RyAxisSubButton"/>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_10">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="RyAxisEdit"/>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_11">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="RyAxisAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_17">
+                  <item>
+                   <widget class="StrongBodyLabel" name="RzLabel">
+                    <property name="text">
+                     <string>Rz</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="RzAxisSubButton"/>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_12">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="RzAxisEdit"/>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_13">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="RzAxisAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_18">
+                  <item>
+                   <widget class="StrongBodyLabel" name="ApStepLabel">
+                    <property name="text">
+                     <string>步长</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="ApStepSubButton"/>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_14">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="LineEdit" name="ApStepEdit"/>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_15">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="ToolButton" name="ApStepAddButton"/>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PushButton</class>
-   <extends>QPushButton</extends>
-   <header>qfluentwidgets</header>
-  </customwidget>
-  <customwidget>
-   <class>PillPushButton</class>
-   <extends>ToggleButton</extends>
+   <class>ToolButton</class>
+   <extends>QToolButton</extends>
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
@@ -189,8 +770,24 @@
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
-   <class>ToggleButton</class>
-   <extends>PushButton</extends>
+   <class>CardWidget</class>
+   <extends>QFrame</extends>
+   <header>qfluentwidgets</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>StrongBodyLabel</class>
+   <extends>QLabel</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>Pivot</class>
+   <extends>QWidget</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>SegmentedWidget</class>
+   <extends>Pivot</extends>
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
