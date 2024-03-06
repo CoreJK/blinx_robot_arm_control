@@ -53,15 +53,20 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
-        self.RadioButton = RadioButton(Frame)
-        self.RadioButton.setObjectName(u"RadioButton")
+        self.RecordActivateButton = RadioButton(Frame)
+        self.RecordActivateButton.setObjectName(u"RecordActivateButton")
 
-        self.horizontalLayout.addWidget(self.RadioButton)
+        self.horizontalLayout.addWidget(self.RecordActivateButton)
 
         self.RecordDeActivateButton = RadioButton(Frame)
         self.RecordDeActivateButton.setObjectName(u"RecordDeActivateButton")
 
         self.horizontalLayout.addWidget(self.RecordDeActivateButton)
+
+        self.VerticalSeparator_4 = VerticalSeparator(Frame)
+        self.VerticalSeparator_4.setObjectName(u"VerticalSeparator_4")
+
+        self.horizontalLayout.addWidget(self.VerticalSeparator_4)
 
         self.ActionRunButton = ToolButton(Frame)
         self.ActionRunButton.setObjectName(u"ActionRunButton")
@@ -81,11 +86,6 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer_4)
 
-        self.VerticalSeparator_2 = VerticalSeparator(Frame)
-        self.VerticalSeparator_2.setObjectName(u"VerticalSeparator_2")
-
-        self.horizontalLayout.addWidget(self.VerticalSeparator_2)
-
         self.ActionLoopRunButton = ToolButton(Frame)
         self.ActionLoopRunButton.setObjectName(u"ActionLoopRunButton")
 
@@ -101,8 +101,8 @@ class teach_page_frame(object):
         self.TeachLayout.addLayout(self.horizontalLayout)
 
         self.ActionTableWidget = TableWidget(Frame)
-        if (self.ActionTableWidget.columnCount() < 10):
-            self.ActionTableWidget.setColumnCount(10)
+        if (self.ActionTableWidget.columnCount() < 12):
+            self.ActionTableWidget.setColumnCount(12)
         __qtablewidgetitem = QTableWidgetItem()
         self.ActionTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
@@ -123,6 +123,10 @@ class teach_page_frame(object):
         self.ActionTableWidget.setHorizontalHeaderItem(8, __qtablewidgetitem8)
         __qtablewidgetitem9 = QTableWidgetItem()
         self.ActionTableWidget.setHorizontalHeaderItem(9, __qtablewidgetitem9)
+        __qtablewidgetitem10 = QTableWidgetItem()
+        self.ActionTableWidget.setHorizontalHeaderItem(10, __qtablewidgetitem10)
+        __qtablewidgetitem11 = QTableWidgetItem()
+        self.ActionTableWidget.setHorizontalHeaderItem(11, __qtablewidgetitem11)
         self.ActionTableWidget.setObjectName(u"ActionTableWidget")
 
         self.TeachLayout.addWidget(self.ActionTableWidget)
@@ -180,10 +184,11 @@ class teach_page_frame(object):
 
         self.verticalLayout_10.addWidget(self.HorizontalSeparator)
 
-        self.PlainTextEdit = PlainTextEdit(Frame)
-        self.PlainTextEdit.setObjectName(u"PlainTextEdit")
+        self.TeachArmRunLogWindow = PlainTextEdit(Frame)
+        self.TeachArmRunLogWindow.setObjectName(u"TeachArmRunLogWindow")
+        self.TeachArmRunLogWindow.setReadOnly(True)
 
-        self.verticalLayout_10.addWidget(self.PlainTextEdit)
+        self.verticalLayout_10.addWidget(self.TeachArmRunLogWindow)
 
         self.verticalLayout_10.setStretch(0, 7)
         self.verticalLayout_10.setStretch(2, 1)
@@ -228,6 +233,7 @@ class teach_page_frame(object):
 
         self.JointOneEdit = LineEdit(self.ArmAngleControlCard)
         self.JointOneEdit.setObjectName(u"JointOneEdit")
+        self.JointOneEdit.setReadOnly(True)
 
         self.JointOneLaylout.addWidget(self.JointOneEdit)
 
@@ -253,6 +259,7 @@ class teach_page_frame(object):
 
         self.JointTwoEdit = LineEdit(self.ArmAngleControlCard)
         self.JointTwoEdit.setObjectName(u"JointTwoEdit")
+        self.JointTwoEdit.setReadOnly(True)
 
         self.JointTwolout.addWidget(self.JointTwoEdit)
 
@@ -278,6 +285,7 @@ class teach_page_frame(object):
 
         self.JointThreeEdit = LineEdit(self.ArmAngleControlCard)
         self.JointThreeEdit.setObjectName(u"JointThreeEdit")
+        self.JointThreeEdit.setReadOnly(True)
 
         self.JointThreeLaylout.addWidget(self.JointThreeEdit)
 
@@ -303,6 +311,7 @@ class teach_page_frame(object):
 
         self.JointFourEdit = LineEdit(self.ArmAngleControlCard)
         self.JointFourEdit.setObjectName(u"JointFourEdit")
+        self.JointFourEdit.setReadOnly(True)
 
         self.JointFourLaylout.addWidget(self.JointFourEdit)
 
@@ -328,6 +337,7 @@ class teach_page_frame(object):
 
         self.JointFiveEdit = LineEdit(self.ArmAngleControlCard)
         self.JointFiveEdit.setObjectName(u"JointFiveEdit")
+        self.JointFiveEdit.setReadOnly(True)
 
         self.JointFiveLaylout.addWidget(self.JointFiveEdit)
 
@@ -353,6 +363,7 @@ class teach_page_frame(object):
 
         self.JointSixEdit = LineEdit(self.ArmAngleControlCard)
         self.JointSixEdit.setObjectName(u"JointSixEdit")
+        self.JointSixEdit.setReadOnly(True)
 
         self.JointSixLaylout.addWidget(self.JointSixEdit)
 
@@ -470,6 +481,7 @@ class teach_page_frame(object):
 
         self.XAxisEdit = LineEdit(self.ArmEndToolsCoordinateControlCard)
         self.XAxisEdit.setObjectName(u"XAxisEdit")
+        self.XAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_10.addWidget(self.XAxisEdit)
 
@@ -495,6 +507,7 @@ class teach_page_frame(object):
 
         self.YAxisEdit = LineEdit(self.ArmEndToolsCoordinateControlCard)
         self.YAxisEdit.setObjectName(u"YAxisEdit")
+        self.YAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_11.addWidget(self.YAxisEdit)
 
@@ -520,6 +533,7 @@ class teach_page_frame(object):
 
         self.ZAxisEdit = LineEdit(self.ArmEndToolsCoordinateControlCard)
         self.ZAxisEdit.setObjectName(u"ZAxisEdit")
+        self.ZAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_13.addWidget(self.ZAxisEdit)
 
@@ -587,6 +601,7 @@ class teach_page_frame(object):
 
         self.RxAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
         self.RxAxisEdit.setObjectName(u"RxAxisEdit")
+        self.RxAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_15.addWidget(self.RxAxisEdit)
 
@@ -612,6 +627,7 @@ class teach_page_frame(object):
 
         self.RyAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
         self.RyAxisEdit.setObjectName(u"RyAxisEdit")
+        self.RyAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_16.addWidget(self.RyAxisEdit)
 
@@ -637,6 +653,7 @@ class teach_page_frame(object):
 
         self.RzAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
         self.RzAxisEdit.setObjectName(u"RzAxisEdit")
+        self.RzAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_17.addWidget(self.RzAxisEdit)
 
@@ -694,15 +711,15 @@ class teach_page_frame(object):
 
         self.horizontalLayout_tools.addItem(self.horizontalSpacer_16)
 
-        self.StrongBodyLabel = StrongBodyLabel(Frame)
-        self.StrongBodyLabel.setObjectName(u"StrongBodyLabel")
+        self.ArmToolLabel = StrongBodyLabel(Frame)
+        self.ArmToolLabel.setObjectName(u"ArmToolLabel")
 
-        self.horizontalLayout_tools.addWidget(self.StrongBodyLabel)
+        self.horizontalLayout_tools.addWidget(self.ArmToolLabel)
 
-        self.ComboBox = ComboBox(Frame)
-        self.ComboBox.setObjectName(u"ComboBox")
+        self.ArmToolComboBox = ComboBox(Frame)
+        self.ArmToolComboBox.setObjectName(u"ArmToolComboBox")
 
-        self.horizontalLayout_tools.addWidget(self.ComboBox)
+        self.horizontalLayout_tools.addWidget(self.ArmToolComboBox)
 
         self.horizontalLayout_tools.setStretch(1, 2)
         self.horizontalLayout_tools.setStretch(2, 8)
@@ -715,24 +732,24 @@ class teach_page_frame(object):
 
         self.horizontalLayout_tool_control.addItem(self.horizontalSpacer_17)
 
-        self.StrongBodyLabel_2 = StrongBodyLabel(Frame)
-        self.StrongBodyLabel_2.setObjectName(u"StrongBodyLabel_2")
+        self.ArmControlLabel = StrongBodyLabel(Frame)
+        self.ArmControlLabel.setObjectName(u"ArmControlLabel")
 
-        self.horizontalLayout_tool_control.addWidget(self.StrongBodyLabel_2)
+        self.horizontalLayout_tool_control.addWidget(self.ArmControlLabel)
 
-        self.PushButton_5 = PushButton(Frame)
-        self.PushButton_5.setObjectName(u"PushButton_5")
+        self.ArmClawOpenButton = PushButton(Frame)
+        self.ArmClawOpenButton.setObjectName(u"ArmClawOpenButton")
 
-        self.horizontalLayout_tool_control.addWidget(self.PushButton_5)
+        self.horizontalLayout_tool_control.addWidget(self.ArmClawOpenButton)
 
         self.horizontalSpacer_8 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_tool_control.addItem(self.horizontalSpacer_8)
 
-        self.PushButton_4 = PushButton(Frame)
-        self.PushButton_4.setObjectName(u"PushButton_4")
+        self.ArmClawCloseButton = PushButton(Frame)
+        self.ArmClawCloseButton.setObjectName(u"ArmClawCloseButton")
 
-        self.horizontalLayout_tool_control.addWidget(self.PushButton_4)
+        self.horizontalLayout_tool_control.addWidget(self.ArmClawCloseButton)
 
 
         self.verticalLayout_9.addLayout(self.horizontalLayout_tool_control)
@@ -749,24 +766,24 @@ class teach_page_frame(object):
 
         self.verticalLayout_8 = QVBoxLayout()
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
-        self.PushButton = PushButton(Frame)
-        self.PushButton.setObjectName(u"PushButton")
+        self.RobotArmResetButton = PushButton(Frame)
+        self.RobotArmResetButton.setObjectName(u"RobotArmResetButton")
 
-        self.verticalLayout_8.addWidget(self.PushButton)
+        self.verticalLayout_8.addWidget(self.RobotArmResetButton)
 
-        self.PushButton_2 = PushButton(Frame)
-        self.PushButton_2.setObjectName(u"PushButton_2")
+        self.RobotArmZeroButton = PushButton(Frame)
+        self.RobotArmZeroButton.setObjectName(u"RobotArmZeroButton")
 
-        self.verticalLayout_8.addWidget(self.PushButton_2)
+        self.verticalLayout_8.addWidget(self.RobotArmZeroButton)
 
 
         self.horizontalLayout_arm_init.addLayout(self.verticalLayout_8)
 
-        self.PushButton_3 = PushButton(Frame)
-        self.PushButton_3.setObjectName(u"PushButton_3")
-        self.PushButton_3.setMaximumSize(QSize(90, 90))
+        self.RobotArmStopButton = PushButton(Frame)
+        self.RobotArmStopButton.setObjectName(u"RobotArmStopButton")
+        self.RobotArmStopButton.setMaximumSize(QSize(90, 90))
 
-        self.horizontalLayout_arm_init.addWidget(self.PushButton_3)
+        self.horizontalLayout_arm_init.addWidget(self.RobotArmStopButton)
 
 
         self.horizontalLayout_3.addLayout(self.horizontalLayout_arm_init)
@@ -797,7 +814,7 @@ class teach_page_frame(object):
 
     def retranslateUi(self, Frame):
         Frame.setWindowTitle(QCoreApplication.translate("Frame", u"Frame", None))
-        self.RadioButton.setText(QCoreApplication.translate("Frame", u"\u5f55\u5236\u6a21\u5f0f", None))
+        self.RecordActivateButton.setText(QCoreApplication.translate("Frame", u"\u5f55\u5236\u6a21\u5f0f", None))
         self.RecordDeActivateButton.setText(QCoreApplication.translate("Frame", u"\u666e\u901a\u6a21\u5f0f", None))
         self.ActionLoopTimes.setText("")
         self.ActionLoopTimes.setPlaceholderText(QCoreApplication.translate("Frame", u"1~100", None))
@@ -810,15 +827,19 @@ class teach_page_frame(object):
         ___qtablewidgetitem3 = self.ActionTableWidget.horizontalHeaderItem(3)
         ___qtablewidgetitem3.setText(QCoreApplication.translate("Frame", u"J4", None));
         ___qtablewidgetitem4 = self.ActionTableWidget.horizontalHeaderItem(4)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("Frame", u"\u901f\u5ea6", None));
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("Frame", u"J5", None));
         ___qtablewidgetitem5 = self.ActionTableWidget.horizontalHeaderItem(5)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177", None));
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("Frame", u"J6", None));
         ___qtablewidgetitem6 = self.ActionTableWidget.horizontalHeaderItem(6)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("Frame", u"\u5f00\u5173", None));
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("Frame", u"\u901f\u5ea6", None));
         ___qtablewidgetitem7 = self.ActionTableWidget.horizontalHeaderItem(7)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("Frame", u"\u5ef6\u65f6", None));
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177", None));
         ___qtablewidgetitem8 = self.ActionTableWidget.horizontalHeaderItem(8)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("Frame", u"\u5907\u6ce8", None));
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("Frame", u"\u5f00\u5173", None));
+        ___qtablewidgetitem9 = self.ActionTableWidget.horizontalHeaderItem(9)
+        ___qtablewidgetitem9.setText(QCoreApplication.translate("Frame", u"\u5ef6\u65f6", None));
+        ___qtablewidgetitem10 = self.ActionTableWidget.horizontalHeaderItem(10)
+        ___qtablewidgetitem10.setText(QCoreApplication.translate("Frame", u"\u5907\u6ce8", None));
         self.JointOneLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82821", None))
         self.JointTwoLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82822", None))
         self.JointThreeLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82823", None))
@@ -836,12 +857,12 @@ class teach_page_frame(object):
         self.RyLabel.setText(QCoreApplication.translate("Frame", u"Ry", None))
         self.RzLabel.setText(QCoreApplication.translate("Frame", u"Rz", None))
         self.ApStepLabel.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
-        self.StrongBodyLabel.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177", None))
-        self.StrongBodyLabel_2.setText(QCoreApplication.translate("Frame", u"\u63a7\u5236", None))
-        self.PushButton_5.setText(QCoreApplication.translate("Frame", u"\u5f00", None))
-        self.PushButton_4.setText(QCoreApplication.translate("Frame", u"\u5173", None))
-        self.PushButton.setText(QCoreApplication.translate("Frame", u"\u590d\u4f4d", None))
-        self.PushButton_2.setText(QCoreApplication.translate("Frame", u"\u5f52\u96f6", None))
-        self.PushButton_3.setText(QCoreApplication.translate("Frame", u"\u6025\u505c", None))
+        self.ArmToolLabel.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177", None))
+        self.ArmControlLabel.setText(QCoreApplication.translate("Frame", u"\u63a7\u5236", None))
+        self.ArmClawOpenButton.setText(QCoreApplication.translate("Frame", u"\u5f00", None))
+        self.ArmClawCloseButton.setText(QCoreApplication.translate("Frame", u"\u5173", None))
+        self.RobotArmResetButton.setText(QCoreApplication.translate("Frame", u"\u590d\u4f4d", None))
+        self.RobotArmZeroButton.setText(QCoreApplication.translate("Frame", u"\u5f52\u96f6", None))
+        self.RobotArmStopButton.setText(QCoreApplication.translate("Frame", u"\u6025\u505c", None))
     # retranslateUi
 

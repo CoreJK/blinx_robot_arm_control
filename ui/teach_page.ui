@@ -45,7 +45,7 @@
             </spacer>
            </item>
            <item>
-            <widget class="RadioButton" name="RadioButton">
+            <widget class="RadioButton" name="RecordActivateButton">
              <property name="text">
               <string>录制模式</string>
              </property>
@@ -57,6 +57,9 @@
               <string>普通模式</string>
              </property>
             </widget>
+           </item>
+           <item>
+            <widget class="VerticalSeparator" name="VerticalSeparator_4"/>
            </item>
            <item>
             <widget class="ToolButton" name="ActionRunButton"/>
@@ -97,9 +100,6 @@
             </spacer>
            </item>
            <item>
-            <widget class="VerticalSeparator" name="VerticalSeparator_2"/>
-           </item>
-           <item>
             <widget class="ToolButton" name="ActionLoopRunButton"/>
            </item>
            <item>
@@ -137,6 +137,16 @@
            <column>
             <property name="text">
              <string>J4</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>J5</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>J6</string>
             </property>
            </column>
            <column>
@@ -243,7 +253,11 @@
         <widget class="HorizontalSeparator" name="HorizontalSeparator"/>
        </item>
        <item>
-        <widget class="PlainTextEdit" name="PlainTextEdit"/>
+        <widget class="PlainTextEdit" name="TeachArmRunLogWindow">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -280,7 +294,11 @@
                    <widget class="ToolButton" name="JointOneSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="JointOneEdit"/>
+                   <widget class="LineEdit" name="JointOneEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="JointOneAddButton"/>
@@ -300,7 +318,11 @@
                    <widget class="ToolButton" name="JointTwoSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="JointTwoEdit"/>
+                   <widget class="LineEdit" name="JointTwoEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="JointTwoAddButton"/>
@@ -320,7 +342,11 @@
                    <widget class="ToolButton" name="JointThreeSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="JointThreeEdit"/>
+                   <widget class="LineEdit" name="JointThreeEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="JointThreeAddButton"/>
@@ -340,7 +366,11 @@
                    <widget class="ToolButton" name="JointFourSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="JointFourEdit"/>
+                   <widget class="LineEdit" name="JointFourEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="JointFourAddButton"/>
@@ -360,7 +390,11 @@
                    <widget class="ToolButton" name="JointFiveSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="JointFiveEdit"/>
+                   <widget class="LineEdit" name="JointFiveEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="JointFiveAddButton"/>
@@ -380,7 +414,11 @@
                    <widget class="ToolButton" name="JointSixSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="JointSixEdit"/>
+                   <widget class="LineEdit" name="JointSixEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="JointSixAddButton"/>
@@ -474,7 +512,11 @@
                    <widget class="ToolButton" name="XAxisSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="XAxisEdit"/>
+                   <widget class="LineEdit" name="XAxisEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="XAxisAddButton"/>
@@ -494,7 +536,11 @@
                    <widget class="ToolButton" name="YAxisSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="YAxisEdit"/>
+                   <widget class="LineEdit" name="YAxisEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="YAxisAddButton"/>
@@ -514,7 +560,11 @@
                    <widget class="ToolButton" name="ZAxisSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="ZAxisEdit"/>
+                   <widget class="LineEdit" name="ZAxisEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="ZAxisAddButton"/>
@@ -568,7 +618,11 @@
                    <widget class="ToolButton" name="RxAxisSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="RxAxisEdit"/>
+                   <widget class="LineEdit" name="RxAxisEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="RxAxisAddButton"/>
@@ -588,7 +642,11 @@
                    <widget class="ToolButton" name="RyAxisSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="RyAxisEdit"/>
+                   <widget class="LineEdit" name="RyAxisEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="RyAxisAddButton"/>
@@ -608,7 +666,11 @@
                    <widget class="ToolButton" name="RzAxisSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="RzAxisEdit"/>
+                   <widget class="LineEdit" name="RzAxisEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="RzAxisAddButton"/>
@@ -670,14 +732,14 @@
               </spacer>
              </item>
              <item>
-              <widget class="StrongBodyLabel" name="StrongBodyLabel">
+              <widget class="StrongBodyLabel" name="ArmToolLabel">
                <property name="text">
                 <string>工具</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="ComboBox" name="ComboBox"/>
+              <widget class="ComboBox" name="ArmToolComboBox"/>
              </item>
             </layout>
            </item>
@@ -700,14 +762,14 @@
               </spacer>
              </item>
              <item>
-              <widget class="StrongBodyLabel" name="StrongBodyLabel_2">
+              <widget class="StrongBodyLabel" name="ArmControlLabel">
                <property name="text">
                 <string>控制</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="PushButton" name="PushButton_5">
+              <widget class="PushButton" name="ArmClawOpenButton">
                <property name="text">
                 <string>开</string>
                </property>
@@ -727,7 +789,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="PushButton" name="PushButton_4">
+              <widget class="PushButton" name="ArmClawCloseButton">
                <property name="text">
                 <string>关</string>
                </property>
@@ -745,14 +807,14 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_8">
              <item>
-              <widget class="PushButton" name="PushButton">
+              <widget class="PushButton" name="RobotArmResetButton">
                <property name="text">
                 <string>复位</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="PushButton" name="PushButton_2">
+              <widget class="PushButton" name="RobotArmZeroButton">
                <property name="text">
                 <string>归零</string>
                </property>
@@ -761,7 +823,7 @@
             </layout>
            </item>
            <item>
-            <widget class="PushButton" name="PushButton_3">
+            <widget class="PushButton" name="RobotArmStopButton">
              <property name="maximumSize">
               <size>
                <width>90</width>
