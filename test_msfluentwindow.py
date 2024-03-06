@@ -47,7 +47,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     def addSubInterface(self, widget: CardWidget, objectName, text):
         """添加子页面控件到分段导航栏"""
-        widget.setObjectName(objectName)
+        # 先将子页面添加到 StackWidget 堆栈控件中
         self.ArmActionControlStackWidget.addWidget(widget)
         self.RobotArmControlSegmentedWidget.addItem(
             routeKey=objectName,
@@ -109,9 +109,6 @@ class TeachPage(QFrame, teach_page_frame):
         self.ApStepSubButton.setIcon(FIF.REMOVE)
         
         
-    
-
-
 class Window(MSFluentWindow):
     """上位机主窗口"""    
     def __init__(self):
@@ -125,7 +122,7 @@ class Window(MSFluentWindow):
         
     def initWindow(self):
         """初始化窗口"""
-        self.resize(1370, 777)
+        self.resize(1394, 750)
         self.setWindowTitle("比邻星六轴机械臂上位机")
         self.setWindowIcon(QIcon(":/icons/icons/Robot_arm_log.png"))  # 设置窗口图标
         

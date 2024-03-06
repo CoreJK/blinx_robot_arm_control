@@ -19,18 +19,22 @@ from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QHeaderView,
     QSizePolicy, QSpacerItem, QStackedWidget, QTableWidgetItem,
     QVBoxLayout, QWidget)
 
-from qfluentwidgets import (CardWidget, LineEdit, Pivot, RadioButton,
-    SegmentedWidget, StrongBodyLabel, TableWidget, ToolButton)
+from qfluentwidgets import (CardWidget, ComboBox, HorizontalSeparator, LineEdit,
+    Pivot, PlainTextEdit, PushButton, RadioButton,
+    SegmentedWidget, StrongBodyLabel, TableWidget, ToolButton,
+    VerticalSeparator)
 
 class teach_page_frame(object):
     def setupUi(self, Frame):
         if not Frame.objectName():
             Frame.setObjectName(u"Frame")
-        Frame.resize(1111, 528)
-        self.horizontalLayout_4 = QHBoxLayout(Frame)
+        Frame.resize(1285, 688)
+        self.horizontalLayout_5 = QHBoxLayout(Frame)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.verticalLayout_10 = QVBoxLayout()
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
         self.TeachLayout = QVBoxLayout()
         self.TeachLayout.setObjectName(u"TeachLayout")
         self.horizontalLayout = QHBoxLayout()
@@ -45,7 +49,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addWidget(self.ActionOutputButton)
 
-        self.horizontalSpacer = QSpacerItem(80, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(320, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
@@ -58,10 +62,6 @@ class teach_page_frame(object):
         self.RecordDeActivateButton.setObjectName(u"RecordDeActivateButton")
 
         self.horizontalLayout.addWidget(self.RecordDeActivateButton)
-
-        self.horizontalSpacer_2 = QSpacerItem(80, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_2)
 
         self.ActionRunButton = ToolButton(Frame)
         self.ActionRunButton.setObjectName(u"ActionRunButton")
@@ -80,6 +80,11 @@ class teach_page_frame(object):
         self.horizontalSpacer_4 = QSpacerItem(5, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_4)
+
+        self.VerticalSeparator_2 = VerticalSeparator(Frame)
+        self.VerticalSeparator_2.setObjectName(u"VerticalSeparator_2")
+
+        self.horizontalLayout.addWidget(self.VerticalSeparator_2)
 
         self.ActionLoopRunButton = ToolButton(Frame)
         self.ActionLoopRunButton.setObjectName(u"ActionLoopRunButton")
@@ -168,14 +173,34 @@ class teach_page_frame(object):
         self.TeachLayout.addLayout(self.horizontalLayout_2)
 
 
-        self.horizontalLayout_3.addLayout(self.TeachLayout)
+        self.verticalLayout_10.addLayout(self.TeachLayout)
 
-        self.RobotArmControlLaylout = QVBoxLayout()
-        self.RobotArmControlLaylout.setObjectName(u"RobotArmControlLaylout")
+        self.HorizontalSeparator = HorizontalSeparator(Frame)
+        self.HorizontalSeparator.setObjectName(u"HorizontalSeparator")
+
+        self.verticalLayout_10.addWidget(self.HorizontalSeparator)
+
+        self.PlainTextEdit = PlainTextEdit(Frame)
+        self.PlainTextEdit.setObjectName(u"PlainTextEdit")
+
+        self.verticalLayout_10.addWidget(self.PlainTextEdit)
+
+        self.verticalLayout_10.setStretch(0, 7)
+        self.verticalLayout_10.setStretch(2, 1)
+
+        self.horizontalLayout_4.addLayout(self.verticalLayout_10)
+
+        self.VerticalSeparator = VerticalSeparator(Frame)
+        self.VerticalSeparator.setObjectName(u"VerticalSeparator")
+
+        self.horizontalLayout_4.addWidget(self.VerticalSeparator)
+
+        self.verticalLayout_11 = QVBoxLayout()
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
         self.RobotArmControlSegmentedWidget = SegmentedWidget(Frame)
         self.RobotArmControlSegmentedWidget.setObjectName(u"RobotArmControlSegmentedWidget")
 
-        self.RobotArmControlLaylout.addWidget(self.RobotArmControlSegmentedWidget)
+        self.verticalLayout_11.addWidget(self.RobotArmControlSegmentedWidget)
 
         self.ArmActionControlStackWidget = QStackedWidget(Frame)
         self.ArmActionControlStackWidget.setObjectName(u"ArmActionControlStackWidget")
@@ -423,10 +448,8 @@ class teach_page_frame(object):
         self.ArmActionControlStackWidget.addWidget(self.ArmAngleControlPage)
         self.ArmEndToolsCoordinateControlPage = QWidget()
         self.ArmEndToolsCoordinateControlPage.setObjectName(u"ArmEndToolsCoordinateControlPage")
-        self.verticalLayout_7 = QVBoxLayout(self.ArmEndToolsCoordinateControlPage)
-        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
-        self.verticalLayout_3 = QVBoxLayout()
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.horizontalLayout_6 = QHBoxLayout(self.ArmEndToolsCoordinateControlPage)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.ArmEndToolsCoordinateControlCard = CardWidget(self.ArmEndToolsCoordinateControlPage)
         self.ArmEndToolsCoordinateControlCard.setObjectName(u"ArmEndToolsCoordinateControlCard")
         self.horizontalLayout_21 = QHBoxLayout(self.ArmEndToolsCoordinateControlCard)
@@ -537,10 +560,7 @@ class teach_page_frame(object):
         self.horizontalLayout_21.addLayout(self.verticalLayout_4)
 
 
-        self.verticalLayout_3.addWidget(self.ArmEndToolsCoordinateControlCard)
-
-
-        self.verticalLayout_7.addLayout(self.verticalLayout_3)
+        self.horizontalLayout_6.addWidget(self.ArmEndToolsCoordinateControlCard)
 
         self.ArmActionControlStackWidget.addWidget(self.ArmEndToolsCoordinateControlPage)
         self.ArmEndToolsPositionControlPage = QWidget()
@@ -565,18 +585,10 @@ class teach_page_frame(object):
 
         self.horizontalLayout_15.addWidget(self.RxAxisSubButton)
 
-        self.horizontalSpacer_8 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_15.addItem(self.horizontalSpacer_8)
-
         self.RxAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
         self.RxAxisEdit.setObjectName(u"RxAxisEdit")
 
         self.horizontalLayout_15.addWidget(self.RxAxisEdit)
-
-        self.horizontalSpacer_9 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_15.addItem(self.horizontalSpacer_9)
 
         self.RxAxisAddButton = ToolButton(self.ArmEndToolsPositionControlCard)
         self.RxAxisAddButton.setObjectName(u"RxAxisAddButton")
@@ -598,18 +610,10 @@ class teach_page_frame(object):
 
         self.horizontalLayout_16.addWidget(self.RyAxisSubButton)
 
-        self.horizontalSpacer_10 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_16.addItem(self.horizontalSpacer_10)
-
         self.RyAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
         self.RyAxisEdit.setObjectName(u"RyAxisEdit")
 
         self.horizontalLayout_16.addWidget(self.RyAxisEdit)
-
-        self.horizontalSpacer_11 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_16.addItem(self.horizontalSpacer_11)
 
         self.RyAxisAddButton = ToolButton(self.ArmEndToolsPositionControlCard)
         self.RyAxisAddButton.setObjectName(u"RyAxisAddButton")
@@ -631,18 +635,10 @@ class teach_page_frame(object):
 
         self.horizontalLayout_17.addWidget(self.RzAxisSubButton)
 
-        self.horizontalSpacer_12 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_17.addItem(self.horizontalSpacer_12)
-
         self.RzAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
         self.RzAxisEdit.setObjectName(u"RzAxisEdit")
 
         self.horizontalLayout_17.addWidget(self.RzAxisEdit)
-
-        self.horizontalSpacer_13 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_17.addItem(self.horizontalSpacer_13)
 
         self.RzAxisAddButton = ToolButton(self.ArmEndToolsPositionControlCard)
         self.RzAxisAddButton.setObjectName(u"RzAxisAddButton")
@@ -664,18 +660,10 @@ class teach_page_frame(object):
 
         self.horizontalLayout_18.addWidget(self.ApStepSubButton)
 
-        self.horizontalSpacer_14 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_18.addItem(self.horizontalSpacer_14)
-
         self.ApStepEdit = LineEdit(self.ArmEndToolsPositionControlCard)
         self.ApStepEdit.setObjectName(u"ApStepEdit")
 
         self.horizontalLayout_18.addWidget(self.ApStepEdit)
-
-        self.horizontalSpacer_15 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_18.addItem(self.horizontalSpacer_15)
 
         self.ApStepAddButton = ToolButton(self.ArmEndToolsPositionControlCard)
         self.ApStepAddButton.setObjectName(u"ApStepAddButton")
@@ -693,20 +681,115 @@ class teach_page_frame(object):
 
         self.ArmActionControlStackWidget.addWidget(self.ArmEndToolsPositionControlPage)
 
-        self.RobotArmControlLaylout.addWidget(self.ArmActionControlStackWidget)
+        self.verticalLayout_11.addWidget(self.ArmActionControlStackWidget)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.verticalLayout_9 = QVBoxLayout()
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.horizontalLayout_tools = QHBoxLayout()
+        self.horizontalLayout_tools.setSpacing(6)
+        self.horizontalLayout_tools.setObjectName(u"horizontalLayout_tools")
+        self.horizontalSpacer_16 = QSpacerItem(5, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_tools.addItem(self.horizontalSpacer_16)
+
+        self.StrongBodyLabel = StrongBodyLabel(Frame)
+        self.StrongBodyLabel.setObjectName(u"StrongBodyLabel")
+
+        self.horizontalLayout_tools.addWidget(self.StrongBodyLabel)
+
+        self.ComboBox = ComboBox(Frame)
+        self.ComboBox.setObjectName(u"ComboBox")
+
+        self.horizontalLayout_tools.addWidget(self.ComboBox)
+
+        self.horizontalLayout_tools.setStretch(1, 2)
+        self.horizontalLayout_tools.setStretch(2, 8)
+
+        self.verticalLayout_9.addLayout(self.horizontalLayout_tools)
+
+        self.horizontalLayout_tool_control = QHBoxLayout()
+        self.horizontalLayout_tool_control.setObjectName(u"horizontalLayout_tool_control")
+        self.horizontalSpacer_17 = QSpacerItem(5, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_tool_control.addItem(self.horizontalSpacer_17)
+
+        self.StrongBodyLabel_2 = StrongBodyLabel(Frame)
+        self.StrongBodyLabel_2.setObjectName(u"StrongBodyLabel_2")
+
+        self.horizontalLayout_tool_control.addWidget(self.StrongBodyLabel_2)
+
+        self.PushButton_5 = PushButton(Frame)
+        self.PushButton_5.setObjectName(u"PushButton_5")
+
+        self.horizontalLayout_tool_control.addWidget(self.PushButton_5)
+
+        self.horizontalSpacer_8 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_tool_control.addItem(self.horizontalSpacer_8)
+
+        self.PushButton_4 = PushButton(Frame)
+        self.PushButton_4.setObjectName(u"PushButton_4")
+
+        self.horizontalLayout_tool_control.addWidget(self.PushButton_4)
 
 
-        self.horizontalLayout_3.addLayout(self.RobotArmControlLaylout)
+        self.verticalLayout_9.addLayout(self.horizontalLayout_tool_control)
 
-        self.horizontalLayout_3.setStretch(0, 7)
-        self.horizontalLayout_3.setStretch(1, 3)
 
-        self.horizontalLayout_4.addLayout(self.horizontalLayout_3)
+        self.horizontalLayout_3.addLayout(self.verticalLayout_9)
+
+        self.horizontalLayout_arm_init = QHBoxLayout()
+        self.horizontalLayout_arm_init.setObjectName(u"horizontalLayout_arm_init")
+        self.VerticalSeparator_3 = VerticalSeparator(Frame)
+        self.VerticalSeparator_3.setObjectName(u"VerticalSeparator_3")
+
+        self.horizontalLayout_arm_init.addWidget(self.VerticalSeparator_3)
+
+        self.verticalLayout_8 = QVBoxLayout()
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.PushButton = PushButton(Frame)
+        self.PushButton.setObjectName(u"PushButton")
+
+        self.verticalLayout_8.addWidget(self.PushButton)
+
+        self.PushButton_2 = PushButton(Frame)
+        self.PushButton_2.setObjectName(u"PushButton_2")
+
+        self.verticalLayout_8.addWidget(self.PushButton_2)
+
+
+        self.horizontalLayout_arm_init.addLayout(self.verticalLayout_8)
+
+        self.PushButton_3 = PushButton(Frame)
+        self.PushButton_3.setObjectName(u"PushButton_3")
+        self.PushButton_3.setMaximumSize(QSize(90, 90))
+
+        self.horizontalLayout_arm_init.addWidget(self.PushButton_3)
+
+
+        self.horizontalLayout_3.addLayout(self.horizontalLayout_arm_init)
+
+        self.horizontalLayout_3.setStretch(0, 4)
+        self.horizontalLayout_3.setStretch(1, 7)
+
+        self.verticalLayout_11.addLayout(self.horizontalLayout_3)
+
+        self.verticalLayout_11.setStretch(1, 12)
+        self.verticalLayout_11.setStretch(2, 2)
+
+        self.horizontalLayout_4.addLayout(self.verticalLayout_11)
+
+        self.horizontalLayout_4.setStretch(0, 7)
+        self.horizontalLayout_4.setStretch(2, 3)
+
+        self.horizontalLayout_5.addLayout(self.horizontalLayout_4)
 
 
         self.retranslateUi(Frame)
 
-        self.ArmActionControlStackWidget.setCurrentIndex(2)
+        self.ArmActionControlStackWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(Frame)
@@ -753,5 +836,12 @@ class teach_page_frame(object):
         self.RyLabel.setText(QCoreApplication.translate("Frame", u"Ry", None))
         self.RzLabel.setText(QCoreApplication.translate("Frame", u"Rz", None))
         self.ApStepLabel.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
+        self.StrongBodyLabel.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177", None))
+        self.StrongBodyLabel_2.setText(QCoreApplication.translate("Frame", u"\u63a7\u5236", None))
+        self.PushButton_5.setText(QCoreApplication.translate("Frame", u"\u5f00", None))
+        self.PushButton_4.setText(QCoreApplication.translate("Frame", u"\u5173", None))
+        self.PushButton.setText(QCoreApplication.translate("Frame", u"\u590d\u4f4d", None))
+        self.PushButton_2.setText(QCoreApplication.translate("Frame", u"\u5f52\u96f6", None))
+        self.PushButton_3.setText(QCoreApplication.translate("Frame", u"\u6025\u505c", None))
     # retranslateUi
 
