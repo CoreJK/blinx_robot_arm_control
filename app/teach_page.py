@@ -233,6 +233,7 @@ class teach_page_frame(object):
 
         self.JointOneEdit = LineEdit(self.ArmAngleControlCard)
         self.JointOneEdit.setObjectName(u"JointOneEdit")
+        self.JointOneEdit.setAlignment(Qt.AlignCenter)
         self.JointOneEdit.setReadOnly(True)
 
         self.JointOneLaylout.addWidget(self.JointOneEdit)
@@ -259,6 +260,7 @@ class teach_page_frame(object):
 
         self.JointTwoEdit = LineEdit(self.ArmAngleControlCard)
         self.JointTwoEdit.setObjectName(u"JointTwoEdit")
+        self.JointTwoEdit.setAlignment(Qt.AlignCenter)
         self.JointTwoEdit.setReadOnly(True)
 
         self.JointTwolout.addWidget(self.JointTwoEdit)
@@ -285,6 +287,7 @@ class teach_page_frame(object):
 
         self.JointThreeEdit = LineEdit(self.ArmAngleControlCard)
         self.JointThreeEdit.setObjectName(u"JointThreeEdit")
+        self.JointThreeEdit.setAlignment(Qt.AlignCenter)
         self.JointThreeEdit.setReadOnly(True)
 
         self.JointThreeLaylout.addWidget(self.JointThreeEdit)
@@ -311,6 +314,7 @@ class teach_page_frame(object):
 
         self.JointFourEdit = LineEdit(self.ArmAngleControlCard)
         self.JointFourEdit.setObjectName(u"JointFourEdit")
+        self.JointFourEdit.setAlignment(Qt.AlignCenter)
         self.JointFourEdit.setReadOnly(True)
 
         self.JointFourLaylout.addWidget(self.JointFourEdit)
@@ -337,6 +341,7 @@ class teach_page_frame(object):
 
         self.JointFiveEdit = LineEdit(self.ArmAngleControlCard)
         self.JointFiveEdit.setObjectName(u"JointFiveEdit")
+        self.JointFiveEdit.setAlignment(Qt.AlignCenter)
         self.JointFiveEdit.setReadOnly(True)
 
         self.JointFiveLaylout.addWidget(self.JointFiveEdit)
@@ -363,6 +368,7 @@ class teach_page_frame(object):
 
         self.JointSixEdit = LineEdit(self.ArmAngleControlCard)
         self.JointSixEdit.setObjectName(u"JointSixEdit")
+        self.JointSixEdit.setAlignment(Qt.AlignCenter)
         self.JointSixEdit.setReadOnly(True)
 
         self.JointSixLaylout.addWidget(self.JointSixEdit)
@@ -389,6 +395,7 @@ class teach_page_frame(object):
 
         self.JointStepEdit = LineEdit(self.ArmAngleControlCard)
         self.JointStepEdit.setObjectName(u"JointStepEdit")
+        self.JointStepEdit.setAlignment(Qt.AlignCenter)
 
         self.JointAngleStepLaylout.addWidget(self.JointStepEdit)
 
@@ -414,6 +421,7 @@ class teach_page_frame(object):
 
         self.JointSpeedEdit = LineEdit(self.ArmAngleControlCard)
         self.JointSpeedEdit.setObjectName(u"JointSpeedEdit")
+        self.JointSpeedEdit.setAlignment(Qt.AlignCenter)
 
         self.JointSpeedLaylout.addWidget(self.JointSpeedEdit)
 
@@ -439,6 +447,7 @@ class teach_page_frame(object):
 
         self.JointDelayTimeEdit = LineEdit(self.ArmAngleControlCard)
         self.JointDelayTimeEdit.setObjectName(u"JointDelayTimeEdit")
+        self.JointDelayTimeEdit.setAlignment(Qt.AlignCenter)
 
         self.JointDelayTimeLaylout.addWidget(self.JointDelayTimeEdit)
 
@@ -481,6 +490,7 @@ class teach_page_frame(object):
 
         self.XAxisEdit = LineEdit(self.ArmEndToolsCoordinateControlCard)
         self.XAxisEdit.setObjectName(u"XAxisEdit")
+        self.XAxisEdit.setAlignment(Qt.AlignCenter)
         self.XAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_10.addWidget(self.XAxisEdit)
@@ -507,6 +517,7 @@ class teach_page_frame(object):
 
         self.YAxisEdit = LineEdit(self.ArmEndToolsCoordinateControlCard)
         self.YAxisEdit.setObjectName(u"YAxisEdit")
+        self.YAxisEdit.setAlignment(Qt.AlignCenter)
         self.YAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_11.addWidget(self.YAxisEdit)
@@ -533,6 +544,7 @@ class teach_page_frame(object):
 
         self.ZAxisEdit = LineEdit(self.ArmEndToolsCoordinateControlCard)
         self.ZAxisEdit.setObjectName(u"ZAxisEdit")
+        self.ZAxisEdit.setAlignment(Qt.AlignCenter)
         self.ZAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_13.addWidget(self.ZAxisEdit)
@@ -559,6 +571,7 @@ class teach_page_frame(object):
 
         self.CoordinateStepEdit = LineEdit(self.ArmEndToolsCoordinateControlCard)
         self.CoordinateStepEdit.setObjectName(u"CoordinateStepEdit")
+        self.CoordinateStepEdit.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout_14.addWidget(self.CoordinateStepEdit)
 
@@ -601,6 +614,7 @@ class teach_page_frame(object):
 
         self.RxAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
         self.RxAxisEdit.setObjectName(u"RxAxisEdit")
+        self.RxAxisEdit.setAlignment(Qt.AlignCenter)
         self.RxAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_15.addWidget(self.RxAxisEdit)
@@ -627,6 +641,7 @@ class teach_page_frame(object):
 
         self.RyAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
         self.RyAxisEdit.setObjectName(u"RyAxisEdit")
+        self.RyAxisEdit.setAlignment(Qt.AlignCenter)
         self.RyAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_16.addWidget(self.RyAxisEdit)
@@ -653,6 +668,7 @@ class teach_page_frame(object):
 
         self.RzAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
         self.RzAxisEdit.setObjectName(u"RzAxisEdit")
+        self.RzAxisEdit.setAlignment(Qt.AlignCenter)
         self.RzAxisEdit.setReadOnly(True)
 
         self.horizontalLayout_17.addWidget(self.RzAxisEdit)
@@ -679,6 +695,7 @@ class teach_page_frame(object):
 
         self.ApStepEdit = LineEdit(self.ArmEndToolsPositionControlCard)
         self.ApStepEdit.setObjectName(u"ApStepEdit")
+        self.ApStepEdit.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout_18.addWidget(self.ApStepEdit)
 
@@ -806,7 +823,7 @@ class teach_page_frame(object):
 
         self.retranslateUi(Frame)
 
-        self.ArmActionControlStackWidget.setCurrentIndex(0)
+        self.ArmActionControlStackWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(Frame)
@@ -847,16 +864,21 @@ class teach_page_frame(object):
         self.JointFiveLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82825", None))
         self.JointSixLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82826", None))
         self.JointStepLabel.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
+        self.JointStepEdit.setText(QCoreApplication.translate("Frame", u"5", None))
         self.JointSpeedLabel.setText(QCoreApplication.translate("Frame", u"\u901f\u5ea6", None))
+        self.JointSpeedEdit.setText(QCoreApplication.translate("Frame", u"50", None))
         self.JointDelayTimeLabel.setText(QCoreApplication.translate("Frame", u"\u5ef6\u65f6", None))
+        self.JointDelayTimeEdit.setText(QCoreApplication.translate("Frame", u"1", None))
         self.XLable.setText(QCoreApplication.translate("Frame", u"X ", None))
         self.YLable.setText(QCoreApplication.translate("Frame", u"Y ", None))
         self.Zlable.setText(QCoreApplication.translate("Frame", u"Z ", None))
         self.CoordinateStepLable.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
+        self.CoordinateStepEdit.setText(QCoreApplication.translate("Frame", u"0.001", None))
         self.RxLabel.setText(QCoreApplication.translate("Frame", u"Rx", None))
         self.RyLabel.setText(QCoreApplication.translate("Frame", u"Ry", None))
         self.RzLabel.setText(QCoreApplication.translate("Frame", u"Rz", None))
         self.ApStepLabel.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
+        self.ApStepEdit.setText(QCoreApplication.translate("Frame", u"10", None))
         self.ArmToolLabel.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177", None))
         self.ArmControlLabel.setText(QCoreApplication.translate("Frame", u"\u63a7\u5236", None))
         self.ArmClawOpenButton.setText(QCoreApplication.translate("Frame", u"\u5f00", None))

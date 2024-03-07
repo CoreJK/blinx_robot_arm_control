@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 import sys
 import json
-import platform
 import shelve
 import sys
 import time
@@ -9,13 +8,13 @@ from functools import partial
 from queue import PriorityQueue
 from retrying import retry
 
-# 机械臂MDH模型
 import common.settings as settings
 from common.blinx_robot_module import Mirobot
 from common.check_tools import check_robot_arm_connection
+from common.socket_client import ClientSocket, Worker
 
 # UI 相关模块
-from PySide6.QtCore import Qt, Slot
+from PySide6.QtCore import Qt, QThreadPool, Slot
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
 from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox)
 from qfluentwidgets import FluentIcon as FIF
@@ -36,6 +35,9 @@ from spatialmath.base import rpy2tr
 from loguru import logger
 logger.add(settings.LOG_FILE_PATH, level="INFO")
 
+# 三方通讯模块
+from serial.tools import list_ports
+
 
 class CommandPage(QFrame, command_page_frame):
     """命令控制页面"""
@@ -53,14 +55,21 @@ class CommandPage(QFrame, command_page_frame):
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""
-    def __init__(self, page_name: str, parent=None, robot_model=None):
+    def __init__(self, page_name: str, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.initButtonIcon()
         self.initJointControlWidiget()
+        
+        # 开启 QT 线程池
+        self.threadpool = QThreadPool()
+        self.threadpool.start(self.get_joint_angle_thread)
+        
+        self.command_queue = command_queue  # 控制命令队列
+        self.command_response_queue = command_response_queue  # 控制命令响应队列
+        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
         self.message_box = BlinxMessageBox(self)
-        self.blinx_robot_arm = robot_model  # 六轴机械臂模型
         
         # 角度初始值
         self.q1 = 0.0
@@ -581,24 +590,281 @@ class TeachPage(QFrame, teach_page_frame):
         self.RzAxisAddButton.setIcon(FIF.ADD)
         self.ApStepAddButton.setIcon(FIF.ADD)
         self.ApStepSubButton.setIcon(FIF.REMOVE)
+    
+    def get_joint_angle_thread(self):
+        """后台更新各个关节角度"""
+        # 从 command_response_queue 中获取机械臂的关节角度信息
+        logger.info("获取机械臂的关节角度信息线程启动!")
+        while True:
+            if not self.command_response_queue.empty():
+                logger.debug("获取到机械臂的关节角度信息!")
+                angle_data_list = self.command_response_queue.get()
+                logger.debug(f"机械臂的关节角度信息: {angle_data_list}")
+                self.q1, self.q2, self.q3, self.q4, self.q5, self.q6 = angle_data_list[1]
+                self.update_joint_degrees_text()
+                
+                # 更新机械臂末端工具的坐标和姿态值
+                arm_joint_radians = np.radians(angle_data_list[1])
+                translation_vector = self.blinx_robot_arm.fkine(arm_joint_radians)
+                self.X, self.Y, self.Z = translation_vector.t  # 末端坐标
+                self.rz, self.ry, self.rx = translation_vector.rpy(unit='deg')  # 末端姿态
+                self.update_arm_pose_text()
+                
+            time.sleep(0.1)
+            
+    def update_joint_degrees_text(self):
+        """更新界面上的角度值, 并返回实时角度值
+
+        Args:
+            rs_data_dict (_dict_): 与机械臂通讯获取到的机械臂角度值
+        """
+        display_q1 = str(round(self.q1, 2))
+        display_q2 = str(round(self.q2, 2))
+        display_q3 = str(round(self.q3, 2))
+        display_q4 = str(round(self.q4, 2))
+        display_q5 = str(round(self.q5, 2))
+        display_q6 = str(round(self.q6, 2))
+        self.JointOneEdit.setText(display_q1)
+        self.JointTwoEdit.setText(display_q2)
+        self.JointThreeEdit.setText(display_q3)
+        self.JointFourEdit.setText(display_q4)
+        self.JointFiveEdit.setText(display_q5)
+        self.JointSixEdit.setText(display_q6)
+        logger.debug(f"显示的角度值: {[display_q1, display_q2, display_q3, display_q4, display_q5, display_q6]}")
+    
+    def update_arm_pose_text(self):
+        """更新界面上机械臂末端工具的坐标和姿态值"""
+        self.XAxisEdit.setText(str(round(self.X, 3)))
+        self.YAxisEdit.setText(str(round(self.Y, 3)))
+        self.ZAxisEdit.setText(str(round(self.Z, 3)))
+        self.RxAxisEdit.setText(str(round(self.rx, 3)))
+        self.RyAxisEdit.setText(str(round(self.ry, 3)))
+        self.RzAxisEdit.setText(str(round(self.rz, 3)))
         
         
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
-    def __init__(self, page_name: str, parent=None):
+    def __init__(self, page_name: str, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
+        self.reload_ip_port_history()  # 加载上一次的配置
         
+        # 开启 QT 线程池
+        self.threadpool = QThreadPool()
+        self.command_queue = command_queue
+        self.command_response_queue = command_response_queue
         
+        # 机械臂的查询循环控制位
+        self.loop_flag = False
+        self.robot_arm_is_connected = False
+        
+        self.message_box = BlinxMessageBox(self)
+        self.IpPortInfoSubmitButton.clicked.connect(self.submit_ip_port_info)
+        self.IpPortInfoRestButton.clicked.connect(self.reset_ip_port_info)
+
+        # 机械臂 WiFi AP 模式配置页面回调函数绑定
+        self.reload_ap_passwd_history()  # 加载上一次的配置
+        self.WiFiInfoSubmit.clicked.connect(self.submit_ap_passwd_info)
+        self.WiFiInfoReset.clicked.connect(self.reset_ap_passwd_info)
+
+        # 机械臂串口连接配置页面回调函数绑定
+        self.SbInfoFreshButton.clicked.connect(self.get_sb_info)
+
+        # 连接机械臂按钮回调函数绑定
+        self.RobotArmLinkButton.clicked.connect(self.connect_to_robot_arm)
+
+    # 机械臂连接配置回调函数
+    def reload_ip_port_history(self):
+        """获取历史IP和Port填写记录"""
+        try:
+            if settings.IP_PORT_INFO_FILE_PATH.parent.exists() is False:
+                settings.IP_PORT_INFO_FILE_PATH.parent.mkdir(parents=True)
+            else:
+                socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
+                self.TargetIpEdit.setText(socket_info["target_ip"])
+                self.TargetPortEdit.setText(str(socket_info["target_port"]))
+                socket_info.close()
+        except KeyError:
+            logger.warning("IP 和 Port 未找到对应记录, 请填写配置信息!")
+            self.TargetIpEdit.setText("")
+            self.TargetPortEdit.setText("")
+    
+    @Slot()
+    def submit_ip_port_info(self):
+        """配置机械臂的通讯IP和端口"""
+        ip = self.TargetIpEdit.text().strip()
+        port = self.TargetPortEdit.text().strip()
+        
+        # 保存 IP 和 Port 信息
+        if all([ip, port]):
+            socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
+            socket_info["target_ip"] = ip
+            socket_info["target_port"] = int(port)
+            self.message_box.success_message_box(message="配置添加成功!")
+            socket_info.close()
+        else:
+            self.message_box.warning_message_box(message="IP 或 Port 号为空，请重新填写!")
+    
+    @Slot()
+    def reset_ip_port_info(self):
+        """重置 IP 和 Port 输入框内容"""
+        self.TargetIpEdit.clear()
+        self.TargetPortEdit.clear()
+    
+    # 机械臂 WiFi AP 模式配置回调函数
+    def reload_ap_passwd_history(self):
+        """获取历史 WiFi 名称和 Passwd 记录"""            
+        try:
+            if settings.WIFI_INFO_FILE_PATH.parent.exists() is False:
+                settings.WIFI_INFO_FILE_PATH.parent.mkdir(parents=True)
+            else:
+                wifi_info = shelve.open(str(settings.WIFI_INFO_FILE_PATH))
+                self.WiFiSsidEdit.setText(wifi_info["SSID"])
+                self.WiFiPasswordLineEdit.setText(wifi_info["passwd"])
+                wifi_info.close()
+        except KeyError:
+            logger.warning("WiFi 配置未找到历史记录,请填写配置信息!")
+            self.WiFiSsidEdit.setText("")
+            self.WiFiPasswordLineEdit.setText("")
+    
+    @Slot()
+    def submit_ap_passwd_info(self):
+        """配置机械臂的通讯 WiFi 名称和 passwd"""
+        ip = self.WiFiSsidEdit.text().strip()
+        port = self.WiFiPasswordLineEdit.text().strip()
+        
+        # 保存 IP 和 Port 信息
+        if all([ip, port]):
+            wifi_info = shelve.open(str(settings.WIFI_INFO_FILE_PATH))
+            wifi_info["SSID"] = ip
+            wifi_info["passwd"] = port
+            wifi_info.close()
+            self.message_box.success_message_box(message="WiFi 配置添加成功!")
+        else:
+            self.message_box.warning_message_box(message="WiFi名称 或密码为空，请重新填写!")
+    
+    @Slot()
+    def reset_ap_passwd_info(self):
+        """重置 WiFi 名称和 passwd 输入框内容"""
+        self.WiFiSsidEdit.clear()
+        self.WiFiPasswordLineEdit.clear()
+
+    # todo: 机械臂串口连接配置回调函数
+    @Slot()
+    def get_sb_info(self):
+        """获取系统当前的串口信息并更新下拉框"""
+        ports = list_ports.comports()
+        self.SerialNumComboBox.addItems([f"{port.device}" for port in ports])
+    
+    @logger.catch
+    @Slot()
+    def connect_to_robot_arm(self):
+        """连接机械臂"""
+        
+        # self.initialize_values()
+        try:
+            # 检查网络连接状态
+            robot_arm_client = self.get_robot_arm_connector()
+            with robot_arm_client as rac:
+                remote_address = rac.getpeername()
+                logger.info("机械臂连接成功!")
+                self.message_box.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
+                
+            if self.RobotArmLinkButton.isEnabled() and remote_address:
+                # 机械臂连接成功标志
+                self.RobotArmLinkButton.setText("已连接")
+                self.robot_arm_is_connected = True
+                # 连接成功后，将连接机械臂按钮禁用，避免用户操作重复发起连接
+                self.RobotArmLinkButton.setEnabled(False)
+                # 启用急停按钮
+                # self.RobotArmStopButton.setEnabled(True)
+                
+                # 启用实时获取机械臂角度线程
+                get_all_angle = Worker(self.get_angle_value)
+                self.threadpool.start(get_all_angle)
+                logger.info("开始后台获取机械臂角度")
+                
+                # 启用轮询队列中所有命令的线程
+                command_sender_thread = Worker(self.command_sender)
+                self.threadpool.start(command_sender_thread)
+                logger.info("开启命令发送线程")
+                logger.warning("禁用连接机械臂按钮!")
+                
+        except Exception as e:
+            # 连接失败后，将连接机械臂按钮启用
+            self.RobotArmLinkButton.setEnabled(True)
+            # 清空队列
+            self.command_queue = PriorityQueue(maxsize=100)
+            # 关闭线程池
+            self.loop_flag = True
+            # 弹出错误提示框
+            logger.error(f"机械臂连接失败: {e}")
+            self.message_box.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
+            # 恢复线程池的初始标志位
+            self.loop_flag = False
+    
+    @retry(stop_max_attempt_number=3, wait_fixed=1000)
+    @logger.catch
+    def get_robot_arm_connector(self):
+        """获取与机械臂的连接对象"""
+        try:
+            socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
+            host = socket_info['target_ip']
+            port = int(socket_info['target_port'])
+            robot_arm_client = ClientSocket(host, port)
+            socket_info.close()
+        except Exception as e:
+            logger.error(str(e))
+            self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
+        return robot_arm_client
+    
+    @logger.catch
+    def get_angle_value(self):
+        """实时获取关节的角度值"""        
+        while not self.loop_flag:
+            command = json.dumps({"command": "get_joint_angle_all"}).replace(' ',"") + '\r\n'
+            self.command_queue.put((3, command.encode()))
+            time.sleep(1)
+
+    
+    def command_sender(self):
+        """后台获取命令池命令，并发送的线程"""
+        with self.get_robot_arm_connector() as con:
+            while not self.loop_flag:
+                if not self.command_queue.empty():
+                    try:
+                        command_str = self.command_queue.get()
+                        
+                        # 发送命令
+                        con.send(command_str[1])
+                        logger.debug(f"发送命令：{command_str[1].decode().strip()}")
+                        
+                        # 接收命令返回的信息
+                        response = json.loads(con.recv(1024).decode('utf-8').strip())
+                        logger.debug(f"返回信息: {response}")
+                        
+                        # todo 命令返回的信息放入另外一个队列
+                        # 解析机械臂角度获取返回的信息
+                        if response["return"] == "get_joint_angle_all":
+                            angle_data_list = response['data']
+                            self.command_response_queue.put((1, angle_data_list))
+                            
+                    except Exception as e:
+                        logger.warning(f"命令处理异常: {e}")
+                        continue
+            time.sleep(0.1)
+                         
+                       
 class BlinxRobotArmControlWindow(MSFluentWindow):
     """上位机主窗口"""    
     def __init__(self):
         super().__init__()
-        self.robot_model = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
+        self.command_queue = PriorityQueue()  # 控件发送的命令队列
+        self.response_queue = PriorityQueue()  # 接收响应的命令队列
         self.commandInterface = CommandPage('命令控制', self)
-        self.teachInterface = TeachPage('示教控制', self, self.robot_model)
-        self.connectionInterface = ConnectPage('连接设置', self)
+        self.teachInterface = TeachPage('示教控制', self.command_queue, self.response_queue, self)
+        self.connectionInterface = ConnectPage('连接设置', self.command_queue, self.response_queue, self)
         
         self.initNavigation()
         self.initWindow()
@@ -622,8 +888,14 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         
         # 设置默认打开的页面
         self.navigationInterface.setCurrentItem(self.commandInterface.objectName())
-
-        
+    
+    def closeEvent(self, event):
+        """用户触发窗口关闭事件，所有线程标志位为退出"""
+        self.loop_flag = True
+        logger.info("比邻星六轴机械臂上位机窗口关闭！")
+        event.accept()
+    
+    
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     w = BlinxRobotArmControlWindow()

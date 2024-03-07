@@ -272,7 +272,7 @@
        <item>
         <widget class="QStackedWidget" name="ArmActionControlStackWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="ArmAngleControlPage">
           <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -295,6 +295,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="JointOneEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -319,6 +322,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="JointTwoEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -343,6 +349,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="JointThreeEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -367,6 +376,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="JointFourEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -391,6 +403,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="JointFiveEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -415,6 +430,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="JointSixEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -438,7 +456,14 @@
                    <widget class="ToolButton" name="JointStepSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="JointStepEdit"/>
+                   <widget class="LineEdit" name="JointStepEdit">
+                    <property name="text">
+                     <string>5</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="JointStepAddButton"/>
@@ -458,7 +483,14 @@
                    <widget class="ToolButton" name="JointSpeedDecButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="JointSpeedEdit"/>
+                   <widget class="LineEdit" name="JointSpeedEdit">
+                    <property name="text">
+                     <string>50</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="JointSpeedUpButton"/>
@@ -478,7 +510,14 @@
                    <widget class="ToolButton" name="JointDelayTimeSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="JointDelayTimeEdit"/>
+                   <widget class="LineEdit" name="JointDelayTimeEdit">
+                    <property name="text">
+                     <string>1</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="JointDelayTimeAddButton"/>
@@ -513,6 +552,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="XAxisEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -537,6 +579,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="YAxisEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -561,6 +606,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="ZAxisEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -584,7 +632,14 @@
                    <widget class="ToolButton" name="CoordinateStepSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="CoordinateStepEdit"/>
+                   <widget class="LineEdit" name="CoordinateStepEdit">
+                    <property name="text">
+                     <string>0.001</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="CoordinateAddButton"/>
@@ -619,6 +674,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="RxAxisEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -643,6 +701,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="RyAxisEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -667,6 +728,9 @@
                   </item>
                   <item>
                    <widget class="LineEdit" name="RzAxisEdit">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
@@ -690,7 +754,14 @@
                    <widget class="ToolButton" name="ApStepSubButton"/>
                   </item>
                   <item>
-                   <widget class="LineEdit" name="ApStepEdit"/>
+                   <widget class="LineEdit" name="ApStepEdit">
+                    <property name="text">
+                     <string>10</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="ToolButton" name="ApStepAddButton"/>

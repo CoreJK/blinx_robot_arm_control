@@ -32,105 +32,105 @@ class connect_page_frame(object):
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.HeaderCardWidget = HeaderCardWidget(Frame)
         self.HeaderCardWidget.setObjectName(u"HeaderCardWidget")
-        self.widget = QWidget(self.HeaderCardWidget)
-        self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(440, 61, 271, 121))
-        self.verticalLayout = QVBoxLayout(self.widget)
+        self.layoutWidget = QWidget(self.HeaderCardWidget)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.layoutWidget.setGeometry(QRect(440, 61, 271, 121))
+        self.verticalLayout = QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
-        self.StrongBodyLabel_2 = StrongBodyLabel(self.widget)
-        self.StrongBodyLabel_2.setObjectName(u"StrongBodyLabel_2")
+        self.TargetPortLabel = StrongBodyLabel(self.layoutWidget)
+        self.TargetPortLabel.setObjectName(u"TargetPortLabel")
 
-        self.gridLayout.addWidget(self.StrongBodyLabel_2, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.TargetPortLabel, 1, 0, 1, 1)
 
-        self.LineEdit = LineEdit(self.widget)
-        self.LineEdit.setObjectName(u"LineEdit")
+        self.TargetIpEdit = LineEdit(self.layoutWidget)
+        self.TargetIpEdit.setObjectName(u"TargetIpEdit")
 
-        self.gridLayout.addWidget(self.LineEdit, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.TargetIpEdit, 0, 1, 1, 1)
 
-        self.StrongBodyLabel = StrongBodyLabel(self.widget)
-        self.StrongBodyLabel.setObjectName(u"StrongBodyLabel")
+        self.TargetIpLabel = StrongBodyLabel(self.layoutWidget)
+        self.TargetIpLabel.setObjectName(u"TargetIpLabel")
 
-        self.gridLayout.addWidget(self.StrongBodyLabel, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.TargetIpLabel, 0, 0, 1, 1)
 
-        self.LineEdit_2 = LineEdit(self.widget)
-        self.LineEdit_2.setObjectName(u"LineEdit_2")
+        self.TargetPortEdit = LineEdit(self.layoutWidget)
+        self.TargetPortEdit.setObjectName(u"TargetPortEdit")
 
-        self.gridLayout.addWidget(self.LineEdit_2, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.TargetPortEdit, 1, 1, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridLayout)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.PushButton_4 = PushButton(self.widget)
-        self.PushButton_4.setObjectName(u"PushButton_4")
-        self.PushButton_4.setProperty("hasIcon", False)
+        self.IpPortInfoRestButton = PushButton(self.layoutWidget)
+        self.IpPortInfoRestButton.setObjectName(u"IpPortInfoRestButton")
+        self.IpPortInfoRestButton.setProperty("hasIcon", False)
 
-        self.horizontalLayout.addWidget(self.PushButton_4)
+        self.horizontalLayout.addWidget(self.IpPortInfoRestButton)
 
-        self.PushButton_2 = PushButton(self.widget)
-        self.PushButton_2.setObjectName(u"PushButton_2")
-        self.PushButton_2.setProperty("hasIcon", False)
+        self.IpPortInfoSubmitButton = PushButton(self.layoutWidget)
+        self.IpPortInfoSubmitButton.setObjectName(u"IpPortInfoSubmitButton")
+        self.IpPortInfoSubmitButton.setProperty("hasIcon", False)
 
-        self.horizontalLayout.addWidget(self.PushButton_2)
+        self.horizontalLayout.addWidget(self.IpPortInfoSubmitButton)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.PushButton = PushButton(self.HeaderCardWidget)
-        self.PushButton.setObjectName(u"PushButton")
-        self.PushButton.setGeometry(QRect(520, 190, 110, 31))
-        self.PushButton.setMaximumSize(QSize(200, 16777215))
-        self.PushButton.setLayoutDirection(Qt.LeftToRight)
-        self.PushButton.setProperty("hasIcon", False)
+        self.RobotArmLinkButton = PushButton(self.HeaderCardWidget)
+        self.RobotArmLinkButton.setObjectName(u"RobotArmLinkButton")
+        self.RobotArmLinkButton.setGeometry(QRect(520, 190, 110, 31))
+        self.RobotArmLinkButton.setMaximumSize(QSize(200, 16777215))
+        self.RobotArmLinkButton.setLayoutDirection(Qt.LeftToRight)
+        self.RobotArmLinkButton.setProperty("hasIcon", False)
 
         self.verticalLayout_4.addWidget(self.HeaderCardWidget)
 
         self.HeaderCardWidget_2 = HeaderCardWidget(Frame)
         self.HeaderCardWidget_2.setObjectName(u"HeaderCardWidget_2")
-        self.layoutWidget = QWidget(self.HeaderCardWidget_2)
-        self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(440, 60, 281, 117))
-        self.verticalLayout_2 = QVBoxLayout(self.layoutWidget)
+        self.layoutWidget1 = QWidget(self.HeaderCardWidget_2)
+        self.layoutWidget1.setObjectName(u"layoutWidget1")
+        self.layoutWidget1.setGeometry(QRect(440, 60, 281, 117))
+        self.verticalLayout_2 = QVBoxLayout(self.layoutWidget1)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.gridLayout_2 = QGridLayout()
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.StrongBodyLabel_3 = StrongBodyLabel(self.layoutWidget)
-        self.StrongBodyLabel_3.setObjectName(u"StrongBodyLabel_3")
+        self.WiFiPasswdLabel = StrongBodyLabel(self.layoutWidget1)
+        self.WiFiPasswdLabel.setObjectName(u"WiFiPasswdLabel")
 
-        self.gridLayout_2.addWidget(self.StrongBodyLabel_3, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.WiFiPasswdLabel, 1, 0, 1, 1)
 
-        self.LineEdit_3 = LineEdit(self.layoutWidget)
-        self.LineEdit_3.setObjectName(u"LineEdit_3")
+        self.WiFiSsidEdit = LineEdit(self.layoutWidget1)
+        self.WiFiSsidEdit.setObjectName(u"WiFiSsidEdit")
 
-        self.gridLayout_2.addWidget(self.LineEdit_3, 0, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.WiFiSsidEdit, 0, 1, 1, 1)
 
-        self.StrongBodyLabel_4 = StrongBodyLabel(self.layoutWidget)
-        self.StrongBodyLabel_4.setObjectName(u"StrongBodyLabel_4")
+        self.WiFiSsidLabel = StrongBodyLabel(self.layoutWidget1)
+        self.WiFiSsidLabel.setObjectName(u"WiFiSsidLabel")
 
-        self.gridLayout_2.addWidget(self.StrongBodyLabel_4, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.WiFiSsidLabel, 0, 0, 1, 1)
 
-        self.PasswordLineEdit = PasswordLineEdit(self.layoutWidget)
-        self.PasswordLineEdit.setObjectName(u"PasswordLineEdit")
+        self.WiFiPasswordLineEdit = PasswordLineEdit(self.layoutWidget1)
+        self.WiFiPasswordLineEdit.setObjectName(u"WiFiPasswordLineEdit")
 
-        self.gridLayout_2.addWidget(self.PasswordLineEdit, 1, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.WiFiPasswordLineEdit, 1, 1, 1, 1)
 
 
         self.verticalLayout_2.addLayout(self.gridLayout_2)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.PushButton_5 = PushButton(self.layoutWidget)
-        self.PushButton_5.setObjectName(u"PushButton_5")
+        self.WiFiInfoReset = PushButton(self.layoutWidget1)
+        self.WiFiInfoReset.setObjectName(u"WiFiInfoReset")
 
-        self.horizontalLayout_2.addWidget(self.PushButton_5)
+        self.horizontalLayout_2.addWidget(self.WiFiInfoReset)
 
-        self.PushButton_3 = PushButton(self.layoutWidget)
-        self.PushButton_3.setObjectName(u"PushButton_3")
+        self.WiFiInfoSubmit = PushButton(self.layoutWidget1)
+        self.WiFiInfoSubmit.setObjectName(u"WiFiInfoSubmit")
 
-        self.horizontalLayout_2.addWidget(self.PushButton_3)
+        self.horizontalLayout_2.addWidget(self.WiFiInfoSubmit)
 
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
@@ -147,41 +147,41 @@ class connect_page_frame(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.gridLayout_3 = QGridLayout()
         self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.StrongBodyLabel_5 = StrongBodyLabel(self.layoutWidget_2)
-        self.StrongBodyLabel_5.setObjectName(u"StrongBodyLabel_5")
+        self.BaudRatesLabel = StrongBodyLabel(self.layoutWidget_2)
+        self.BaudRatesLabel.setObjectName(u"BaudRatesLabel")
 
-        self.gridLayout_3.addWidget(self.StrongBodyLabel_5, 1, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.BaudRatesLabel, 1, 0, 1, 1)
 
-        self.StrongBodyLabel_6 = StrongBodyLabel(self.layoutWidget_2)
-        self.StrongBodyLabel_6.setObjectName(u"StrongBodyLabel_6")
+        self.SerialNumLabel = StrongBodyLabel(self.layoutWidget_2)
+        self.SerialNumLabel.setObjectName(u"SerialNumLabel")
 
-        self.gridLayout_3.addWidget(self.StrongBodyLabel_6, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.SerialNumLabel, 0, 0, 1, 1)
 
-        self.ComboBox = ComboBox(self.layoutWidget_2)
-        self.ComboBox.setObjectName(u"ComboBox")
+        self.SerialNumComboBox = ComboBox(self.layoutWidget_2)
+        self.SerialNumComboBox.setObjectName(u"SerialNumComboBox")
 
-        self.gridLayout_3.addWidget(self.ComboBox, 0, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.SerialNumComboBox, 0, 1, 1, 1)
 
-        self.ComboBox_2 = ComboBox(self.layoutWidget_2)
-        self.ComboBox_2.setObjectName(u"ComboBox_2")
-        self.ComboBox_2.setFlat(False)
+        self.BaudRatesComboBox = ComboBox(self.layoutWidget_2)
+        self.BaudRatesComboBox.setObjectName(u"BaudRatesComboBox")
+        self.BaudRatesComboBox.setFlat(False)
 
-        self.gridLayout_3.addWidget(self.ComboBox_2, 1, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.BaudRatesComboBox, 1, 1, 1, 1)
 
 
         self.verticalLayout_3.addLayout(self.gridLayout_3)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.PushButton_6 = PushButton(self.layoutWidget_2)
-        self.PushButton_6.setObjectName(u"PushButton_6")
+        self.SbInfoFreshButton = PushButton(self.layoutWidget_2)
+        self.SbInfoFreshButton.setObjectName(u"SbInfoFreshButton")
 
-        self.horizontalLayout_3.addWidget(self.PushButton_6)
+        self.horizontalLayout_3.addWidget(self.SbInfoFreshButton)
 
-        self.PushButton_7 = PushButton(self.layoutWidget_2)
-        self.PushButton_7.setObjectName(u"PushButton_7")
+        self.SbInfoSubmitButton = PushButton(self.layoutWidget_2)
+        self.SbInfoSubmitButton.setObjectName(u"SbInfoSubmitButton")
 
-        self.horizontalLayout_3.addWidget(self.PushButton_7)
+        self.horizontalLayout_3.addWidget(self.SbInfoSubmitButton)
 
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_3)
@@ -195,7 +195,7 @@ class connect_page_frame(object):
 
         self.retranslateUi(Frame)
 
-        self.ComboBox_2.setDefault(False)
+        self.BaudRatesComboBox.setDefault(False)
 
 
         QMetaObject.connectSlotsByName(Frame)
@@ -204,21 +204,21 @@ class connect_page_frame(object):
     def retranslateUi(self, Frame):
         Frame.setWindowTitle(QCoreApplication.translate("Frame", u"Frame", None))
         self.HeaderCardWidget.setTitle(QCoreApplication.translate("Frame", u"\u673a\u68b0\u81c2\u8fde\u63a5\u914d\u7f6e", None))
-        self.StrongBodyLabel_2.setText(QCoreApplication.translate("Frame", u"\u7aef\u53e3\u53f7", None))
-        self.StrongBodyLabel.setText(QCoreApplication.translate("Frame", u"\u76ee\u6807 IP", None))
-        self.PushButton_4.setText(QCoreApplication.translate("Frame", u"\u91cd\u7f6e", None))
-        self.PushButton_2.setText(QCoreApplication.translate("Frame", u"\u786e\u5b9a", None))
-        self.PushButton.setText(QCoreApplication.translate("Frame", u"\u8fde\u63a5\u673a\u68b0\u81c2", None))
+        self.TargetPortLabel.setText(QCoreApplication.translate("Frame", u"\u7aef\u53e3\u53f7", None))
+        self.TargetIpLabel.setText(QCoreApplication.translate("Frame", u"\u76ee\u6807 IP", None))
+        self.IpPortInfoRestButton.setText(QCoreApplication.translate("Frame", u"\u91cd\u7f6e", None))
+        self.IpPortInfoSubmitButton.setText(QCoreApplication.translate("Frame", u"\u786e\u5b9a", None))
+        self.RobotArmLinkButton.setText(QCoreApplication.translate("Frame", u"\u8fde\u63a5\u673a\u68b0\u81c2", None))
         self.HeaderCardWidget_2.setTitle(QCoreApplication.translate("Frame", u"\u673a\u68b0\u81c2 WiFi \u6a21\u5f0f\u914d\u7f6e", None))
-        self.StrongBodyLabel_3.setText(QCoreApplication.translate("Frame", u"WiFi \u5bc6\u7801", None))
-        self.StrongBodyLabel_4.setText(QCoreApplication.translate("Frame", u"WiFi SSID", None))
-        self.PushButton_5.setText(QCoreApplication.translate("Frame", u"\u91cd\u7f6e", None))
-        self.PushButton_3.setText(QCoreApplication.translate("Frame", u"\u786e\u5b9a", None))
+        self.WiFiPasswdLabel.setText(QCoreApplication.translate("Frame", u"WiFi \u5bc6\u7801", None))
+        self.WiFiSsidLabel.setText(QCoreApplication.translate("Frame", u"WiFi SSID", None))
+        self.WiFiInfoReset.setText(QCoreApplication.translate("Frame", u"\u91cd\u7f6e", None))
+        self.WiFiInfoSubmit.setText(QCoreApplication.translate("Frame", u"\u786e\u5b9a", None))
         self.HeaderCardWidget_3.setTitle(QCoreApplication.translate("Frame", u"\u673a\u68b0\u81c2\u4e32\u53e3\u8fde\u63a5\u914d\u7f6e", None))
-        self.StrongBodyLabel_5.setText(QCoreApplication.translate("Frame", u"\u6ce2\u7279\u7387", None))
-        self.StrongBodyLabel_6.setText(QCoreApplication.translate("Frame", u"COM \u53e3", None))
-        self.ComboBox_2.setText(QCoreApplication.translate("Frame", u"115200", None))
-        self.PushButton_6.setText(QCoreApplication.translate("Frame", u"\u5237\u65b0", None))
-        self.PushButton_7.setText(QCoreApplication.translate("Frame", u"\u786e\u5b9a", None))
+        self.BaudRatesLabel.setText(QCoreApplication.translate("Frame", u"\u6ce2\u7279\u7387", None))
+        self.SerialNumLabel.setText(QCoreApplication.translate("Frame", u"COM \u53e3", None))
+        self.BaudRatesComboBox.setText(QCoreApplication.translate("Frame", u"115200", None))
+        self.SbInfoFreshButton.setText(QCoreApplication.translate("Frame", u"\u5237\u65b0", None))
+        self.SbInfoSubmitButton.setText(QCoreApplication.translate("Frame", u"\u786e\u5b9a", None))
     # retranslateUi
 
