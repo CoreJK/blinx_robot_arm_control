@@ -23,6 +23,7 @@ from qfluentwidgets import FluentIcon as FIF
 # 导入子页面控件布局文件
 from app.command_page import command_page_frame
 from app.teach_page import teach_page_frame
+from app.connect_page import connect_page_frame
 from componets.message_box import BlinxMessageBox
 
 # 正逆解相关模块
@@ -38,12 +39,11 @@ logger.add(settings.LOG_FILE_PATH, level="INFO")
 
 class CommandPage(QFrame, command_page_frame):
     """命令控制页面"""
-    def __init__(self, page_name, parent=None):
-        super().__init__(parent)
+    def __init__(self, page_name: str, parent=None):
+        super().__init__(parent=parent)
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.initButtonIcon()
-        
         
     def initButtonIcon(self):
         """初始化按钮图标"""
@@ -53,8 +53,8 @@ class CommandPage(QFrame, command_page_frame):
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""
-    def __init__(self, page_name, parent=None, robot_model=None):
-        super().__init__(parent)
+    def __init__(self, page_name: str, parent=None, robot_model=None):
+        super().__init__(parent=parent)
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.initButtonIcon()
@@ -98,7 +98,7 @@ class TeachPage(QFrame, teach_page_frame):
 
         
 
-        # # 示教控制添加右键的上下文菜单
+        # 示教控制添加右键的上下文菜单
         self.context_menu = QMenu(self)
         self.copy_action = self.context_menu.addAction("复制")
         self.paste_action = self.context_menu.addAction("粘贴")  # 默认粘贴到最后一行
@@ -583,6 +583,14 @@ class TeachPage(QFrame, teach_page_frame):
         self.ApStepSubButton.setIcon(FIF.REMOVE)
         
         
+class ConnectPage(QFrame, connect_page_frame):
+    """连接配置页面"""
+    def __init__(self, page_name: str, parent=None):
+        super().__init__(parent=parent)
+        self.setupUi(self)
+        self.setObjectName(page_name.replace(' ', '-'))
+        
+        
 class BlinxRobotArmControlWindow(MSFluentWindow):
     """上位机主窗口"""    
     def __init__(self):
@@ -590,6 +598,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         self.robot_model = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
         self.commandInterface = CommandPage('命令控制', self)
         self.teachInterface = TeachPage('示教控制', self, self.robot_model)
+        self.connectionInterface = ConnectPage('连接设置', self)
         
         self.initNavigation()
         self.initWindow()
@@ -609,6 +618,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         """初始化导航栏"""
         self.addSubInterface(self.commandInterface, FIF.COMMAND_PROMPT, '命令控制')
         self.addSubInterface(self.teachInterface, FIF.APPLICATION, '示教控制')
+        self.addSubInterface(self.connectionInterface, FIF.IOT, '连接设置')
         
         # 设置默认打开的页面
         self.navigationInterface.setCurrentItem(self.commandInterface.objectName())
