@@ -272,7 +272,7 @@
        <item>
         <widget class="QStackedWidget" name="ArmActionControlStackWidget">
          <property name="currentIndex">
-          <number>2</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="ArmAngleControlPage">
           <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -634,7 +634,7 @@
                   <item>
                    <widget class="LineEdit" name="CoordinateStepEdit">
                     <property name="text">
-                     <string>0.001</string>
+                     <string>0.01</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>

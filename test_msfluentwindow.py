@@ -151,28 +151,28 @@ class TeachPage(QFrame, teach_page_frame):
         self.RobotArmStopButton.clicked.connect(self.stop_robot_arm)
         
         # # 末端工具控制组回调函数绑定
-        # self.ArmClawOpenButton.clicked.connect(self.tool_open)
-        # self.ArmClawCloseButton.clicked.connect(self.tool_close)
+        self.ArmClawOpenButton.clicked.connect(partial(self.tool_control, action=True))
+        self.ArmClawCloseButton.clicked.connect(partial(self.tool_control, action=False))
         
-        # # 末端工具坐标增减回调函数绑定 
-        # self.XAxisAddButton.clicked.connect(partial(self.tool_x_operate, action="add"))
-        # self.XAxisSubButton.clicked.connect(partial(self.tool_x_operate, action="sub"))
-        # self.YAxisAddButton.clicked.connect(partial(self.tool_y_operate, action="add"))
-        # self.YAxisSubButton.clicked.connect(partial(self.tool_y_operate, action="sub"))
-        # self.ZAxisAddButton.clicked.connect(partial(self.tool_z_operate, action="add"))
-        # self.ZAxisSubButton.clicked.connect(partial(self.tool_z_operate, action="sub"))
-        # self.CoordinateAddButton.clicked.connect(self.tool_coordinate_step_add)
-        # self.CoordinateStepSubButton.clicked.connect(self.tool_coordinate_step_sub)
+        # 末端工具坐标增减回调函数绑定 
+        self.XAxisAddButton.clicked.connect(partial(self.tool_x_operate, action="add"))
+        self.XAxisSubButton.clicked.connect(partial(self.tool_x_operate, action="sub"))
+        self.YAxisAddButton.clicked.connect(partial(self.tool_y_operate, action="add"))
+        self.YAxisSubButton.clicked.connect(partial(self.tool_y_operate, action="sub"))
+        self.ZAxisAddButton.clicked.connect(partial(self.tool_z_operate, action="add"))
+        self.ZAxisSubButton.clicked.connect(partial(self.tool_z_operate, action="sub"))
+        self.CoordinateAddButton.clicked.connect(self.tool_coordinate_step_add)
+        self.CoordinateStepSubButton.clicked.connect(self.tool_coordinate_step_sub)
         
-        # # 末端工具姿态增减回调函数绑定
-        # self.RxAxisAddButton.clicked.connect(partial(self.tool_rx_operate, action="add"))
-        # self.RxAxisSubButton.clicked.connect(partial(self.tool_rx_operate, action="sub"))
-        # self.RyAxisAddButton.clicked.connect(partial(self.tool_ry_operate, action="add"))
-        # self.RyAxisSubButton.clicked.connect(partial(self.tool_ry_operate, action="sub"))
-        # self.RzAxisAddButton.clicked.connect(partial(self.tool_rz_operate, action="add"))
-        # self.RzAxisSubButton.clicked.connect(partial(self.tool_rz_operate, action="sub"))
-        # self.ApStepAddButton.clicked.connect(self.tool_pose_step_add)
-        # self.ApStepSubButton.clicked.connect(self.tool_pose_step_sub)
+        # 末端工具姿态增减回调函数绑定
+        self.RxAxisAddButton.clicked.connect(partial(self.tool_rx_operate, action="add"))
+        self.RxAxisSubButton.clicked.connect(partial(self.tool_rx_operate, action="sub"))
+        self.RyAxisAddButton.clicked.connect(partial(self.tool_ry_operate, action="add"))
+        self.RyAxisSubButton.clicked.connect(partial(self.tool_ry_operate, action="sub"))
+        self.RzAxisAddButton.clicked.connect(partial(self.tool_rz_operate, action="add"))
+        self.RzAxisSubButton.clicked.connect(partial(self.tool_rz_operate, action="sub"))
+        self.ApStepAddButton.clicked.connect(self.tool_pose_step_add)
+        self.ApStepSubButton.clicked.connect(self.tool_pose_step_sub)
 
     # 顶部工具栏
     @Slot()                    
@@ -614,6 +614,500 @@ class TeachPage(QFrame, teach_page_frame):
         self.loop_flag = False  # 恢复线程池的初始标志位
         self.robot_arm_is_connected = False # 机械臂连接标志位设置为 False
     
+    
+    @Slot()
+    def tool_control(self, action=True):
+        """吸盘工具开"""
+        type_of_tool = self.ArmToolComboBox.currentText()
+        if type_of_tool == "吸盘":
+            command = json.dumps({"command":"set_robot_io_interface", "data": [0, action]}) + '\r\n'
+            self.command_queue.put((1, command.encode()))
+        else:
+            self.message_box.warning_message_box("末端工具未选择吸盘!")
+
+    
+    @Slot()
+    def tool_x_operate(self, action="add"):
+        """末端工具坐标 x 增减函数"""
+        # 获取末端工具的坐标
+        old_x_coordinate = self.X
+        y_coordinate = self.Y
+        z_coordinate = self.Z
+        
+        # 获取末端工具的姿态
+        rx_pose = self.rx
+        ry_pose = self.ry
+        rz_pose = self.rz
+        
+        change_value = round(float(self.CoordinateStepEdit.text().strip()), 3)  # 步长值
+        speed_percentage = round(float(self.JointSpeedEdit.text().strip()), 3)  # 速度值
+        
+        # 根据按钮加减增减数值
+        if action == "add":
+            new_x_coordinate = old_x_coordinate + change_value
+            self.XAxisEdit.setText(str(new_x_coordinate))  # 更新末端工具坐标 X
+            
+        else:
+            new_x_coordinate = old_x_coordinate - change_value
+            self.XAxisEdit.setText(str(new_x_coordinate))  
+        
+        # 通过逆解算出机械臂各个关节角度值
+        R_T = SE3([new_x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 1) for d in sol.q]
+        degrade.extend([0, speed_percentage])
+        
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
+        # 构造发送命令
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
+        self.command_queue.put((2, command.encode('utf-8')))
+        
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
+        
+    @Slot()
+    def tool_y_operate(self, action="add"):
+        """末端工具坐标 y 增减函数"""
+        x_coordinate = self.X
+        old_y_coordinate = self.Y
+        z_coordinate = self.Z
+        
+        # 获取末端工具的姿态
+        rx_pose = self.rx
+        ry_pose = self.ry
+        rz_pose = self.rz
+        
+        change_value = round(float(self.CoordinateStepEdit.text().strip()), 2)  # 步长值
+        speed_percentage = round(float(self.JointSpeedEdit.text().strip()), 2)  # 速度值
+        
+        # 根据按钮加减增减数值
+        if action == "add":
+            new_y_coordinate = old_y_coordinate + change_value
+            self.YAxisEdit.setText(str(new_y_coordinate))  # 更新末端工具坐标 Y
+            
+        else:
+            new_y_coordinate = old_y_coordinate - change_value
+            self.YAxisEdit.setText(str(new_y_coordinate))  
+        
+        # 通过逆解算出机械臂各个关节角度值
+        R_T = SE3([x_coordinate, new_y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 1) for d in sol.q]
+        degrade.extend([0, speed_percentage])
+        
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
+        # 构造发送命令
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
+
+        # 发送命令
+        self.command_queue.put((2, command.encode()))
+        
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
+
+    @Slot()
+    def tool_z_operate(self, action="add"):
+        """末端工具坐标 z 增减函数"""
+        # 获取末端工具的坐标
+        x_coordinate = self.X
+        y_coordinate = self.Y
+        old_z_coordinate = self.Z
+        
+        # 获取末端工具的姿态
+        rx_pose = self.rx
+        ry_pose = self.ry
+        rz_pose = self.rz
+        
+        change_value = round(float(self.CoordinateStepEdit.text().strip()), 2)  # 步长值
+        speed_percentage = round(float(self.JointSpeedEdit.text().strip()), 2)  # 速度值
+        
+        # 根据按钮加减增减数值
+        if action == "add":
+            new_z_coordinate = old_z_coordinate + change_value
+            self.ZAxisEdit.setText(str(new_z_coordinate))  # 更新末端工具坐标 Z
+            
+        else:
+            new_z_coordinate = old_z_coordinate - change_value
+            self.ZAxisEdit.setText(str(new_z_coordinate))  
+        
+        # 通过逆解算出机械臂各个关节角度值
+        R_T = SE3([x_coordinate, y_coordinate, new_z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 1) for d in sol.q]
+        degrade.extend([0, speed_percentage])
+        
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
+        # 构造发送命令
+        command = json.dumps(
+                {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
+
+        # 发送命令
+        self.command_queue.put((2, command.encode()))
+        
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
+
+    @Slot()
+    def tool_coordinate_step_add(self):
+        """末端工具坐标步长增加"""
+        # 获取末端工具 edit 的值
+        old_coordiante_step = round(float(self.CoordinateStepEdit.text().strip()), 2)
+        now_coordiante_step = round(old_coordiante_step + 0.01, 2)
+        # 更新末端工具坐标步长值
+        self.CoordinateStepEdit.setText(str(now_coordiante_step))
+    
+    @Slot()
+    def tool_coordinate_step_sub(self):
+        """末端工具坐标步长减少"""
+        # 获取末端工具 edit 的值
+        old_coordiante_step = round(float(self.CoordinateStepEdit.text().strip()), 2)
+        new_coordiante_step = round(old_coordiante_step - 0.01, 2)
+        # 更新末端工具坐标步长值
+        self.CoordinateStepEdit.setText(str(new_coordiante_step))
+    
+    @Slot()
+    def tool_rx_operate(self, action="add"):
+        """末端工具坐标 Rx 增减函数"""
+        # 获取末端工具的坐标
+        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
+        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
+        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        old_rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
+        
+        # 获取末端工具的姿态
+        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
+        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        
+        change_value = round(float(self.ApStepEdit.text().strip()), 2)  # 步长值
+        speed_percentage = round(float(self.JointSpeedEdit.text().strip()), 2)  # 速度值
+        
+        # 根据按钮加减增减数值
+        if action == "add":
+            new_rx_pose = old_rx_pose + change_value
+            self.RxAxisEdit.setText(str(new_rx_pose))  # 更新末端工具姿态 Rx
+        else:
+            new_rx_pose = old_rx_pose - change_value
+            self.RxAxisEdit.setText(str(new_rx_pose))  # 更新末端工具姿态 Rx
+            
+        # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
+        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, new_rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 1) for d in sol.q]
+        
+        # 更新关节控制界面中的角度值
+        degrade.extend([0, speed_percentage])
+        
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
+        # 构造发送命令
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
+
+        # 发送命令
+        self.command_queue.put((2, command.encode()))
+        
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
+    
+    @Slot()           
+    def tool_ry_operate(self, action="add"):
+        """末端工具坐标 Ry 增减函数"""
+        # 获取末端工具的坐标
+        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
+        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
+        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        
+        # 获取末端工具的姿态
+        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
+        old_ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
+        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        
+        change_value = round(float(self.ApStepEdit.text().strip()), 2)  # 步长值
+        speed_percentage = round(float(self.JointSpeedEdit.text().strip()), 2)  # 速度值
+        
+        # 根据按钮加减增减数值
+        if action == "add":
+            new_ry_pose = old_ry_pose + change_value
+            self.RyAxisEdit.setText(str(new_ry_pose))  # 更新末端工具姿态 Ry
+        else:
+            new_ry_pose = old_ry_pose - change_value
+            self.RyAxisEdit.setText(str(new_ry_pose))  # 更新末端工具姿态 Ry
+            
+        # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
+        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, new_ry_pose, rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 1) for d in sol.q]
+        
+        # 更新关节控制界面中的角度值
+        degrade.extend([0, speed_percentage])
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
+        # 构造发送命令
+        command = json.dumps(
+                {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
+
+        # 发送命令
+        self.command_queue.put((2, command.encode()))
+        
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
+            
+    @Slot()    
+    def tool_rz_operate(self, action="add"):
+        """末端工具坐标 Rz 增减函数"""
+        # 获取末端工具的坐标、姿态数值
+        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
+        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
+        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        
+        # 获取末端工具的姿态
+        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
+        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
+        old_rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        
+        change_value = round(float(self.ApStepEdit.text().strip()), 2)  # 步长值
+        speed_percentage = round(float(self.JointSpeedEdit.text().strip()), 2)  # 速度值
+        
+        # 根据按钮加减增减数值
+        if action == "add":
+            new_rz_pose = old_rz_pose + change_value
+            self.RzAxisEdit.setText(str(new_rz_pose))  # 更新末端工具姿态 Rz
+        else:
+            new_rz_pose = old_rz_pose - change_value
+            self.RzAxisEdit.setText(str(new_rz_pose))  # 更新末端工具姿态 Rz
+            
+        # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
+        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([new_rz_pose, ry_pose, rx_pose], unit='deg')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        degrade = [round(degrees(d), 1) for d in sol.q]
+        
+        # 更新完关节角度值后，发送命令
+        degrade.extend([0, speed_percentage])
+        
+        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
+        for i, d in enumerate(degrade):
+            if i == 0:
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    return
+            elif i == 1:
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    return
+            elif i == 2:
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    return
+            elif i == 3:
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    return
+            elif i == 4:
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    return
+            elif i == 5:
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    return
+                
+        # 构造发送命令
+        command = json.dumps(
+                {"command": "set_joint_angle_all_time", "data": degrade}).replace(' ', "") + '\r\n'
+
+        # 发送命令
+        self.command_queue.put((2, command.encode()))
+        
+        #  录制操作激活时
+        if self.RecordActivateButton.isChecked():
+            self.add_item()
+    
+    @Slot()
+    def tool_pose_step_add(self):
+        """末端工具姿态步长增加"""
+        # 获取末端工具姿态步长值
+        old_pose_step = round(float(self.ApStepEdit.text().strip()), 2)
+        new_poset_step = round(old_pose_step + 1, 2)
+        # 更新末端工具姿态步长值
+        self.ApStepEdit.setText(str(new_poset_step))
+    
+    @Slot()
+    def tool_pose_step_sub(self):
+        """末端工具姿态步长减少"""
+        # 校验末端工具姿态步长值，必须为数字
+        old_pose_step = round(float(self.ApStepEdit.text().strip()), 2)
+        new_poset_step = round(old_pose_step - 1, 2)
+        # 更新末端工具姿态步长值
+        self.ApStepEdit.setText(str(new_poset_step))
+    
     # 一些 qt 界面的常用的抽象操作
     def update_table_cell_widget(self, row, col, widget):
         """更新表格指定位置的小部件"""
@@ -694,6 +1188,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.RyAxisAddButton.setIcon(FIF.ADD)
         self.RyAxisSubButton.setIcon(FIF.REMOVE)
         self.RzAxisAddButton.setIcon(FIF.ADD)
+        self.RzAxisSubButton.setIcon(FIF.REMOVE)
         self.ApStepAddButton.setIcon(FIF.ADD)
         self.ApStepSubButton.setIcon(FIF.REMOVE)
     

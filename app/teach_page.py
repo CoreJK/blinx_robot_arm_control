@@ -823,7 +823,7 @@ class teach_page_frame(object):
 
         self.retranslateUi(Frame)
 
-        self.ArmActionControlStackWidget.setCurrentIndex(2)
+        self.ArmActionControlStackWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(Frame)
@@ -873,7 +873,7 @@ class teach_page_frame(object):
         self.YLable.setText(QCoreApplication.translate("Frame", u"Y ", None))
         self.Zlable.setText(QCoreApplication.translate("Frame", u"Z ", None))
         self.CoordinateStepLable.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
-        self.CoordinateStepEdit.setText(QCoreApplication.translate("Frame", u"0.001", None))
+        self.CoordinateStepEdit.setText(QCoreApplication.translate("Frame", u"0.01", None))
         self.RxLabel.setText(QCoreApplication.translate("Frame", u"Rx", None))
         self.RyLabel.setText(QCoreApplication.translate("Frame", u"Ry", None))
         self.RzLabel.setText(QCoreApplication.translate("Frame", u"Rz", None))
