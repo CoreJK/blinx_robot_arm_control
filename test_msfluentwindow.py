@@ -123,31 +123,32 @@ class TeachPage(QFrame, teach_page_frame):
 
 
         # # 实例化机械臂关节控制回调函数绑定
-        # self.JointStepAddButton.clicked.connect(self.arm_angle_step_add)
-        # self.JointStepSubButton.clicked.connect(self.arm_angle_step_sub)
-        # self.JointOneAddButton.clicked.connect(partial(self.arm_one_control, -140, 140, increase=True))
-        # self.JointOneSubButton.clicked.connect(partial(self.arm_one_control, -140, 140, increase=False))
-        # self.JointTwoAddButton.clicked.connect(partial(self.arm_two_control, -70, 70, increase=True))
-        # self.JointTwoSubButton.clicked.connect(partial(self.arm_two_control, -70, 70, increase=False))
-        # self.JointThreeAddButton.clicked.connect(partial(self.arm_three_control, -60, 45, increase=True))
-        # self.JointThreeSubButton.clicked.connect(partial(self.arm_three_control, -60, 45, increase=False))
-        # self.JointFourAddButton.clicked.connect(partial(self.arm_four_control, -150, 150, increase=True))
-        # self.JointFourSubButton.clicked.connect(partial(self.arm_four_control, -150, 150, increase=False))
-        # self.JointFiveAddButton.clicked.connect(partial(self.arm_five_control, -180, 10, increase=True))
-        # self.JointFiveSubButton.clicked.connect(partial(self.arm_five_control, -180, 10, increase=False))
-        # self.JointSixAddButton.clicked.connect(partial(self.arm_six_control, -180, 180, increase=True))
-        # self.JointSixSubButton.clicked.connect(partial(self.arm_six_control, -180, 180, increase=False))
-        # self.JointSpeedUpButton.clicked.connect(self.arm_speed_percentage_add)
-        # self.JointSpeedDecButton.clicked.connect(self.arm_speed_percentage_sub)
-        # self.JointDelayTimeAddButton.clicked.connect(self.arm_delay_time_add)
-        # self.JointDelayTimeSubButton.clicked.connect(self.arm_delay_time_sub)
+        
+        self.JointOneAddButton.clicked.connect(partial(self.modify_joint_angle, 1, -140, 140, increase=True))
+        self.JointOneSubButton.clicked.connect(partial(self.modify_joint_angle, 1, -140, 140, increase=False))
+        self.JointTwoAddButton.clicked.connect(partial(self.modify_joint_angle, 2, -70, 70, increase=True))
+        self.JointTwoSubButton.clicked.connect(partial(self.modify_joint_angle, 2, -70, 70, increase=False))
+        self.JointThreeAddButton.clicked.connect(partial(self.modify_joint_angle, 3, -60, 45, increase=True))
+        self.JointThreeSubButton.clicked.connect(partial(self.modify_joint_angle, 3, -60, 45, increase=False))
+        self.JointFourAddButton.clicked.connect(partial(self.modify_joint_angle, 4, -150, 150, increase=True))
+        self.JointFourSubButton.clicked.connect(partial(self.modify_joint_angle, 4, -150, 150, increase=False))
+        self.JointFiveAddButton.clicked.connect(partial(self.modify_joint_angle, 5, -180, 10, increase=True))
+        self.JointFiveSubButton.clicked.connect(partial(self.modify_joint_angle, 5, -180, 10, increase=False))
+        self.JointSixAddButton.clicked.connect(partial(self.modify_joint_angle, 6, -180, 180, increase=True))
+        self.JointSixSubButton.clicked.connect(partial(self.modify_joint_angle, 6, -180, 180, increase=False))
+        self.JointStepAddButton.clicked.connect(partial(self.modify_joint_angle_step, increase=True))
+        self.JointStepSubButton.clicked.connect(partial(self.modify_joint_angle_step, increase=False))
+        self.JointSpeedUpButton.clicked.connect(partial(self.modify_joint_speed_percentage, increase=True))
+        self.JointSpeedDecButton.clicked.connect(partial(self.modify_joint_speed_percentage, increase=False))
+        self.JointDelayTimeAddButton.clicked.connect(partial(self.modify_joint_delay_time, increase=True))
+        self.JointDelayTimeSubButton.clicked.connect(partial(self.modify_joint_delay_time, increase=False))
 
         
         # # 复位和急停按钮绑定
-        # self.RobotArmResetButton.clicked.connect(self.reset_robot_arm)
-        # self.RobotArmZeroButton.clicked.connect(self.reset_to_zero)
+        self.RobotArmResetButton.clicked.connect(self.reset_robot_arm)
+        self.RobotArmZeroButton.clicked.connect(self.reset_to_zero)
         # self.RobotArmStopButton.setEnabled(False) # 禁用急停按钮
-        # self.RobotArmStopButton.clicked.connect(self.stop_robot_arm)
+        self.RobotArmStopButton.clicked.connect(self.stop_robot_arm)
         
         # # 末端工具控制组回调函数绑定
         # self.ArmClawOpenButton.clicked.connect(self.tool_open)
@@ -173,6 +174,7 @@ class TeachPage(QFrame, teach_page_frame):
         # self.ApStepAddButton.clicked.connect(self.tool_pose_step_add)
         # self.ApStepSubButton.clicked.connect(self.tool_pose_step_sub)
 
+    # 顶部工具栏
     @Slot()                    
     def import_data(self):
         """导入动作"""
@@ -389,7 +391,7 @@ class TeachPage(QFrame, teach_page_frame):
         else:
             self.message_box.warning_message_box(message="请选择需要更新的列! \n点击表格上方列名即可选中列")
     
-    # 示教表格的右键菜单功能
+    # 表格的右键菜单功能
     @Slot()
     def show_context_menu(self, pos):
         """右键复制粘贴菜单"""
@@ -507,7 +509,111 @@ class TeachPage(QFrame, teach_page_frame):
                 elif col == 9:
                     self.update_table_cell(row_position, col, self.JointDelayTimeEdit.text())
     
+    @Slot()
+    def modify_joint_angle(self, joint_number, min_degrade, max_degrade, increase=True):
+        """机械臂关节角度增减操作"""
+        old_degrade = getattr(self, f'q{joint_number}')  # 获取当前对象的属性
+        step_degrade = float(self.JointStepEdit.text().strip())
+        speed_percentage = float(self.JointSpeedEdit.text().strip())
+
+        if increase:
+            degrade = old_degrade + step_degrade
+        else:
+            degrade = old_degrade - step_degrade
+
+        joint_name_mapping = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six'}
+        getattr(self, f'Joint{joint_name_mapping[joint_number]}Edit').setText(str(degrade))  # 更新关节角度值
+
+        if degrade < min_degrade or degrade > max_degrade:
+            self.message_box.error_message_box(message=f"关节角度超出范围: {min_degrade} ~ {max_degrade}")
+        else:
+            # 使用线性回归方程限制关节角度
+            degrade = np.clip(degrade, min_degrade, max_degrade)
+
+            # 构造发送命令
+            command = json.dumps(
+                {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
+            self.command_queue.put((1.5, command.encode()))
+            
+            #  录制操作激活时
+            if self.RecordActivateButton.isChecked():
+                self.add_item()
+    
+    @Slot()
+    def modify_joint_angle_step(self, increase=True):
+        """修改机械臂关节步长"""
+        old_degrade = int(self.JointStepEdit.text().strip())
+        degrade = old_degrade + 5 if increase else old_degrade - 5
+        if 0 < degrade <= 20:
+            self.JointStepEdit.setText(str(degrade))
+        else:
+            message = "步长不能超过 20" if increase else "步长不能为负!"
+            self.message_box.warning_message_box(message=message)
+    
+    @Slot()
+    def modify_joint_speed_percentage(self, increase=True):
+        """修改关节运动速度百分比"""
+        speed_percentage_edit = self.JointSpeedEdit.text()
+        if speed_percentage_edit is not None and speed_percentage_edit.isdigit():
+            old_speed_percentage = int(speed_percentage_edit.strip())
+            new_speed_percentage = old_speed_percentage + 5 if increase else old_speed_percentage - 5
+            if 0 <= new_speed_percentage <= 100:
+                self.JointSpeedEdit.setText(str(new_speed_percentage))
+            else:
+                self.message_box.warning_message_box(message=f"关节速度范围 0 ~ 100")
+        else:
+            self.message_box.error_message_box(message="请输入整数字符!")
+
+    @Slot()
+    def modify_joint_delay_time(self, increase=True):
+        """修改机械臂延时时间"""
+        delay_time_edit = self.JointDelayTimeEdit.text()
+        if delay_time_edit is not None and delay_time_edit.isdigit():
+            old_delay_time = int(delay_time_edit.strip())
+            new_delay_time = old_delay_time + 1 if increase else old_delay_time - 1
+            if 0 <= new_delay_time <= 100:
+                self.JointDelayTimeEdit.setText(str(new_delay_time))
+            else:
+                self.message_box.warning_message_box(message=f"延时时间必须在 0-100s 之间")
+        else:
+            self.message_box.error_message_box(message="请输入整数字符!")
               
+    @Slot()
+    def reset_robot_arm(self):
+        """机械臂复位
+        :param mode:
+        """
+        command = json.dumps({"command": "set_joint_Auto_zero"}).replace('', "") + '\r\n'
+        self.command_queue.put((1, command.encode()))
+        self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
+        logger.warning("机械臂复位中!请注意手臂姿态")
+        
+    @Slot()
+    def reset_to_zero(self):
+        """机械臂复位到零点"""
+        command = json.dumps({"command": "set_joint_angle_all_time", "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 35]}).replace(' ', "") + '\r\n'
+        self.command_queue.put((1, command.encode()))
+        self.message_box.warning_message_box("机械臂回到初始角度中!\n请注意手臂姿态")
+        logger.warning("机械臂回到初始角度中!")
+        
+    # 机械臂急停按钮回调函数
+    @Slot()
+    def stop_robot_arm(self):
+        """机械臂急停"""
+        # 线程标志设置为停止
+        self.loop_flag = True
+        # 清空队列中的命令
+        self.command_queue.queue.clear()
+        # 恢复连接机械臂按钮
+        # self.RobotArmLinkButton.setText("连接机械臂")
+        # self.RobotArmLinkButton.setEnabled(True)
+        # 禁用急停按钮
+        self.RobotArmStopButton.setEnabled(False)
+        
+        self.message_box.error_message_box("机械臂急停!")
+        self.loop_flag = False  # 恢复线程池的初始标志位
+        self.robot_arm_is_connected = False # 机械臂连接标志位设置为 False
+    
     # 一些 qt 界面的常用的抽象操作
     def update_table_cell_widget(self, row, col, widget):
         """更新表格指定位置的小部件"""
@@ -597,9 +703,7 @@ class TeachPage(QFrame, teach_page_frame):
         logger.info("获取机械臂的关节角度信息线程启动!")
         while True:
             if not self.command_response_queue.empty():
-                logger.debug("获取到机械臂的关节角度信息!")
                 angle_data_list = self.command_response_queue.get()
-                logger.debug(f"机械臂的关节角度信息: {angle_data_list}")
                 self.q1, self.q2, self.q3, self.q4, self.q5, self.q6 = angle_data_list[1]
                 self.update_joint_degrees_text()
                 
