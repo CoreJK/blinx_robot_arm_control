@@ -85,7 +85,7 @@ class CommandPage(QFrame, command_page_frame):
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""
-    def __init__(self, page_name: str, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
+    def __init__(self, page_name: str, main_thread_pool: QThreadPool, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
@@ -93,7 +93,8 @@ class TeachPage(QFrame, teach_page_frame):
         self.initJointControlWidiget()
         
         # 开启 QT 线程池
-        self.threadpool = QThreadPool()
+        self.stop_loop_flag = False
+        self.threadpool = main_thread_pool
         self.threadpool.start(self.get_joint_angle_thread)
         
         self.command_queue = command_queue  # 控制命令队列
@@ -718,9 +719,6 @@ class TeachPage(QFrame, teach_page_frame):
         self.loop_flag = True
         # 清空队列中的命令
         self.command_queue.queue.clear()
-        # 恢复连接机械臂按钮
-        # self.RobotArmLinkButton.setText("连接机械臂")
-        # self.RobotArmLinkButton.setEnabled(True)
         # 禁用急停按钮
         self.RobotArmStopButton.setEnabled(False)
         
@@ -1310,7 +1308,7 @@ class TeachPage(QFrame, teach_page_frame):
         """后台更新各个关节角度"""
         # 从 command_response_queue 中获取机械臂的关节角度信息
         logger.info("获取机械臂的关节角度信息线程启动!")
-        while True:
+        while not self.stop_thread_flag:
             if not self.command_response_queue.empty():
                 angle_data_list = self.command_response_queue.get()
                 self.q1, self.q2, self.q3, self.q4, self.q5, self.q6 = angle_data_list[1]
@@ -1353,18 +1351,23 @@ class TeachPage(QFrame, teach_page_frame):
         self.RxAxisEdit.setText(str(round(self.rx, 3)))
         self.RyAxisEdit.setText(str(round(self.ry, 3)))
         self.RzAxisEdit.setText(str(round(self.rz, 3)))
-        
+    
+    def closeEvent(self, event):
+        """用户触发窗口关闭事件，所有线程标志位为退出"""
+        self.stop_loop_flag = True
+        logger.info("比邻星六轴机械臂上位机窗口关闭！")
+        event.accept()
         
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
-    def __init__(self, page_name: str, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
+    def __init__(self, page_name: str, main_thread_pool: QThreadPool, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.reload_ip_port_history()  # 加载上一次的配置
         
         # 开启 QT 线程池
-        self.threadpool = QThreadPool()
+        self.threadpool = main_thread_pool
         self.command_queue = command_queue
         self.command_response_queue = command_response_queue
         
@@ -1542,7 +1545,7 @@ class ConnectPage(QFrame, connect_page_frame):
 
     
     def command_sender(self):
-        """后台获取命令池命令，并发送的线程"""
+        """后台轮询命令队列，并发送的优先级最高的命令"""
         with self.get_robot_arm_connector() as con:
             while not self.loop_flag:
                 if not self.command_queue.empty():
@@ -1567,7 +1570,12 @@ class ConnectPage(QFrame, connect_page_frame):
                         logger.warning(f"命令处理异常: {e}")
                         continue
             time.sleep(0.1)
-                         
+    
+    def closeEvent(self, event):
+        """用户触发窗口关闭事件，所有线程标志位为退出"""
+        self.loop_flag = True
+        logger.info("比邻星六轴机械臂上位机窗口关闭！")
+        event.accept()
                        
 class BlinxRobotArmControlWindow(MSFluentWindow):
     """上位机主窗口"""    
@@ -1575,9 +1583,10 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         super().__init__()
         self.command_queue = PriorityQueue()  # 控件发送的命令队列
         self.response_queue = PriorityQueue()  # 接收响应的命令队列
+        self.threadpool = QThreadPool()
         self.commandInterface = CommandPage('命令控制', self)
-        self.teachInterface = TeachPage('示教控制', self.command_queue, self.response_queue, self)
-        self.connectionInterface = ConnectPage('连接设置', self.command_queue, self.response_queue, self)
+        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.response_queue, self)
+        self.connectionInterface = ConnectPage('连接设置', self.threadpool, self.command_queue, self.response_queue, self)
         
         self.initNavigation()
         self.initWindow()
@@ -1601,12 +1610,6 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         
         # 设置默认打开的页面
         self.navigationInterface.setCurrentItem(self.commandInterface.objectName())
-    
-    def closeEvent(self, event):
-        """用户触发窗口关闭事件，所有线程标志位为退出"""
-        self.loop_flag = True
-        logger.info("比邻星六轴机械臂上位机窗口关闭！")
-        event.accept()
     
     
 if __name__ == "__main__":
