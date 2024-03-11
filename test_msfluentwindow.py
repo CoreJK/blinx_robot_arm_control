@@ -46,12 +46,42 @@ class CommandPage(QFrame, command_page_frame):
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.initButtonIcon()
+        self.message_box = BlinxMessageBox(self)
+        self.CommandSendButton.clicked.connect(self.send_json_command)
         
     def initButtonIcon(self):
         """初始化按钮图标"""
-        self.PushButton.setIcon(FIF.SEND)
-        self.PushButton.setText('发送')
+        self.CommandSendButton.setIcon(FIF.SEND)
+        self.CommandSendButton.setText('发送')
 
+    @Slot()
+    def send_json_command(self):
+        """json数据发送按钮"""
+        json_data = self.CommandEditWindow.toPlainText() + '\r\n'
+        self.CommandSendWindow.appendPlainText(json_data.strip())
+
+        # 发送机械臂命令
+        robot_arm_client = self.get_robot_arm_connector()
+        with robot_arm_client as rac:
+            rac.send(json_data.encode('utf-8'))
+            rs_data = json.loads(rac.recv(1024).decode('utf-8').strip())
+            self.CommandResWindow.appendPlainText(json.dumps(rs_data))  # 命令响应填入到响应窗口
+    
+    @retry(stop_max_attempt_number=3, wait_fixed=1000)
+    @logger.catch
+    def get_robot_arm_connector(self):
+        """获取与机械臂的连接对象"""
+        try:
+            socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
+            host = socket_info['target_ip']
+            port = int(socket_info['target_port'])
+            robot_arm_client = ClientSocket(host, port)
+            socket_info.close()
+        except Exception as e:
+            logger.error(str(e))
+            self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
+        return robot_arm_client
+    
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""

@@ -31,25 +31,25 @@ class command_page_frame(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.StrongBodyLabel = StrongBodyLabel(Frame)
-        self.StrongBodyLabel.setObjectName(u"StrongBodyLabel")
+        self.SendLabel = StrongBodyLabel(Frame)
+        self.SendLabel.setObjectName(u"SendLabel")
 
-        self.verticalLayout.addWidget(self.StrongBodyLabel)
+        self.verticalLayout.addWidget(self.SendLabel)
 
-        self.PlainTextEdit = PlainTextEdit(Frame)
-        self.PlainTextEdit.setObjectName(u"PlainTextEdit")
+        self.CommandSendWindow = PlainTextEdit(Frame)
+        self.CommandSendWindow.setObjectName(u"CommandSendWindow")
 
-        self.verticalLayout.addWidget(self.PlainTextEdit)
+        self.verticalLayout.addWidget(self.CommandSendWindow)
 
-        self.StrongBodyLabel_2 = StrongBodyLabel(Frame)
-        self.StrongBodyLabel_2.setObjectName(u"StrongBodyLabel_2")
+        self.ResponseLabel = StrongBodyLabel(Frame)
+        self.ResponseLabel.setObjectName(u"ResponseLabel")
 
-        self.verticalLayout.addWidget(self.StrongBodyLabel_2)
+        self.verticalLayout.addWidget(self.ResponseLabel)
 
-        self.PlainTextEdit_2 = PlainTextEdit(Frame)
-        self.PlainTextEdit_2.setObjectName(u"PlainTextEdit_2")
+        self.CommandResWindow = PlainTextEdit(Frame)
+        self.CommandResWindow.setObjectName(u"CommandResWindow")
 
-        self.verticalLayout.addWidget(self.PlainTextEdit_2)
+        self.verticalLayout.addWidget(self.CommandResWindow)
 
 
         self.horizontalLayout_2.addLayout(self.verticalLayout)
@@ -58,23 +58,23 @@ class command_page_frame(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.StrongBodyLabel_3 = StrongBodyLabel(Frame)
-        self.StrongBodyLabel_3.setObjectName(u"StrongBodyLabel_3")
+        self.CommandArmRunLogLabel = StrongBodyLabel(Frame)
+        self.CommandArmRunLogLabel.setObjectName(u"CommandArmRunLogLabel")
 
-        self.verticalLayout_2.addWidget(self.StrongBodyLabel_3)
+        self.verticalLayout_2.addWidget(self.CommandArmRunLogLabel)
 
-        self.PlainTextEdit_3 = PlainTextEdit(Frame)
-        self.PlainTextEdit_3.setObjectName(u"PlainTextEdit_3")
+        self.CommandEditWindow = PlainTextEdit(Frame)
+        self.CommandEditWindow.setObjectName(u"CommandEditWindow")
 
-        self.verticalLayout_2.addWidget(self.PlainTextEdit_3)
+        self.verticalLayout_2.addWidget(self.CommandEditWindow)
 
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
 
-        self.PushButton = PushButton(Frame)
-        self.PushButton.setObjectName(u"PushButton")
+        self.CommandSendButton = PushButton(Frame)
+        self.CommandSendButton.setObjectName(u"CommandSendButton")
 
-        self.horizontalLayout.addWidget(self.PushButton)
+        self.horizontalLayout.addWidget(self.CommandSendButton)
 
 
         self.horizontalLayout_2.addLayout(self.horizontalLayout)
@@ -90,9 +90,9 @@ class command_page_frame(object):
 
     def retranslateUi(self, Frame):
         Frame.setWindowTitle(QCoreApplication.translate("Frame", u"Frame", None))
-        self.StrongBodyLabel.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u53d1\u9001", None))
-        self.StrongBodyLabel_2.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u63a5\u6536", None))
-        self.StrongBodyLabel_3.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u7f16\u8f91\u7a97\u53e3", None))
-        self.PushButton.setText(QCoreApplication.translate("Frame", u"\u53d1\u9001", None))
+        self.SendLabel.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u53d1\u9001", None))
+        self.ResponseLabel.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u63a5\u6536", None))
+        self.CommandArmRunLogLabel.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u7f16\u8f91\u7a97\u53e3", None))
+        self.CommandSendButton.setText(QCoreApplication.translate("Frame", u"\u53d1\u9001", None))
     # retranslateUi
 

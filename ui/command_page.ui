@@ -19,24 +19,24 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="StrongBodyLabel" name="StrongBodyLabel">
+        <widget class="StrongBodyLabel" name="SendLabel">
          <property name="text">
           <string>命令发送</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="PlainTextEdit" name="PlainTextEdit"/>
+        <widget class="PlainTextEdit" name="CommandSendWindow"/>
        </item>
        <item>
-        <widget class="StrongBodyLabel" name="StrongBodyLabel_2">
+        <widget class="StrongBodyLabel" name="ResponseLabel">
          <property name="text">
           <string>命令接收</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="PlainTextEdit" name="PlainTextEdit_2"/>
+        <widget class="PlainTextEdit" name="CommandResWindow"/>
        </item>
       </layout>
      </item>
@@ -45,19 +45,19 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="StrongBodyLabel" name="StrongBodyLabel_3">
+          <widget class="StrongBodyLabel" name="CommandArmRunLogLabel">
            <property name="text">
             <string>命令编辑窗口</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="PlainTextEdit" name="PlainTextEdit_3"/>
+          <widget class="PlainTextEdit" name="CommandEditWindow"/>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="PushButton" name="PushButton">
+        <widget class="PushButton" name="CommandSendButton">
          <property name="text">
           <string>发送</string>
          </property>
