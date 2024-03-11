@@ -56,13 +56,16 @@
              <property name="text">
               <string>普通模式</string>
              </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item>
             <widget class="VerticalSeparator" name="VerticalSeparator_4"/>
            </item>
            <item>
-            <widget class="ToolButton" name="ActionRunButton"/>
+            <widget class="ToolButton" name="ActionStepRunButton"/>
            </item>
            <item>
             <spacer name="horizontalSpacer_3">
@@ -81,7 +84,7 @@
             </spacer>
            </item>
            <item>
-            <widget class="ToolButton" name="ActionStepRunButton"/>
+            <widget class="ToolButton" name="ActionRunButton"/>
            </item>
            <item>
             <spacer name="horizontalSpacer_4">
@@ -272,7 +275,7 @@
        <item>
         <widget class="QStackedWidget" name="ArmActionControlStackWidget">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="ArmAngleControlPage">
           <layout class="QVBoxLayout" name="verticalLayout_6">

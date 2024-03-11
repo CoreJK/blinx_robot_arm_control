@@ -60,6 +60,7 @@ class teach_page_frame(object):
 
         self.RecordDeActivateButton = RadioButton(Frame)
         self.RecordDeActivateButton.setObjectName(u"RecordDeActivateButton")
+        self.RecordDeActivateButton.setChecked(True)
 
         self.horizontalLayout.addWidget(self.RecordDeActivateButton)
 
@@ -68,19 +69,19 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addWidget(self.VerticalSeparator_4)
 
-        self.ActionRunButton = ToolButton(Frame)
-        self.ActionRunButton.setObjectName(u"ActionRunButton")
+        self.ActionStepRunButton = ToolButton(Frame)
+        self.ActionStepRunButton.setObjectName(u"ActionStepRunButton")
 
-        self.horizontalLayout.addWidget(self.ActionRunButton)
+        self.horizontalLayout.addWidget(self.ActionStepRunButton)
 
         self.horizontalSpacer_3 = QSpacerItem(5, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_3)
 
-        self.ActionStepRunButton = ToolButton(Frame)
-        self.ActionStepRunButton.setObjectName(u"ActionStepRunButton")
+        self.ActionRunButton = ToolButton(Frame)
+        self.ActionRunButton.setObjectName(u"ActionRunButton")
 
-        self.horizontalLayout.addWidget(self.ActionStepRunButton)
+        self.horizontalLayout.addWidget(self.ActionRunButton)
 
         self.horizontalSpacer_4 = QSpacerItem(5, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
 
@@ -823,7 +824,7 @@ class teach_page_frame(object):
 
         self.retranslateUi(Frame)
 
-        self.ArmActionControlStackWidget.setCurrentIndex(1)
+        self.ArmActionControlStackWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(Frame)

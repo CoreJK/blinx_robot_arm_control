@@ -97,9 +97,9 @@ class TeachPage(QFrame, teach_page_frame):
         # 示教控制操作按钮槽函数绑定
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
-        # self.ActionStepRunButton.clicked.connect(self.run_action_step)
-        # self.ActionRunButton.clicked.connect(self.run_all_action)
-        # self.ActionLoopRunButton.clicked.connect(self.run_action_loop)
+        self.ActionStepRunButton.clicked.connect(self.run_action_step)
+        self.ActionRunButton.clicked.connect(self.run_all_action)
+        self.ActionLoopRunButton.clicked.connect(self.run_action_loop)
         self.ActionDeleteButton.clicked.connect(self.remove_item)
         self.ActionAddButton.clicked.connect(self.add_item)
         self.ActionUpdateRowButton.clicked.connect(self.update_row)
@@ -278,6 +278,90 @@ class TeachPage(QFrame, teach_page_frame):
             with open(file_name, "w", encoding="utf-8") as json_file:
                 json.dump(data, json_file, indent=4, ensure_ascii=False)
                 logger.info("导出配置文件成功!")
+    
+    def tale_action_thread(self):
+        # todo 获取开始与结束行
+        # todo 如果开始与结束行不为空，且没有超出当前行数，则执行指定行的动作
+        # todo 如果开始与结束行为空，则按顺序从头执行所有动作
+        for row in range(self.ActionTableWidget.rowCount()):
+            delay_time = self.run_action(row)
+            self.TeachArmRunLogWindow.appendPlainText(f"机械臂正在执行第 {row + 1} 个动作")
+            time.sleep(delay_time)  # 等待动作执行完成
+    
+    @Slot()
+    def run_all_action(self):
+        """顺序执行示教动作"""
+        self.TeachArmRunLogWindow.appendPlainText('【顺序执行】开始')
+        run_all_action_thread = Worker(self.tale_action_thread)
+        self.threadpool.start(run_all_action_thread)
+        
+    def run_action(self, row):
+        """机械臂示执行示教动作
+
+        Args:
+            row (QTableWidget): 用户在示教界面，点击选中的行
+
+        Returns:
+            delay_time (int): 返回动作的执行耗时
+        """
+        angle_1 = float(self.ActionTableWidget.item(row, 0).text())
+        angle_2 = float(self.ActionTableWidget.item(row, 1).text())
+        angle_3 = float(self.ActionTableWidget.item(row, 2).text())
+        angle_4 = float(self.ActionTableWidget.item(row, 3).text())
+        angle_5 = float(self.ActionTableWidget.item(row, 4).text())
+        angle_6 = float(self.ActionTableWidget.item(row, 5).text())
+        speed_percentage = float(self.ActionTableWidget.item(row, 6).text())
+        type_of_tool = self.ActionTableWidget.cellWidget(row, 7).currentText()
+        tool_switch = self.ActionTableWidget.cellWidget(row, 8).currentText()
+        delay_time = float(self.ActionTableWidget.item(row, 9).text())  # 执行动作需要的时间
+        
+        # 机械臂执行命令
+        json_command = {"command": "set_joint_angle_all_time",
+                                "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, 0,
+                                        speed_percentage]}
+        str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+        self.command_queue.put((2, str_command.encode()))
+        
+        # 末端工具动作
+        logger.info("单次执行，开关控制")
+        if type_of_tool == "吸盘":
+            tool_status = True if tool_switch == "开" else False
+            json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
+            str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+            self.command_queue.put((1, str_command.encode()))
+                    
+        return delay_time
+
+    @Slot()
+    def run_action_step(self):
+        """单次执行选定的动作"""
+        # 获取到选定的动作
+        selected_row = self.ActionTableWidget.currentRow()
+        if selected_row >= 0:
+            self.TeachArmRunLogWindow.appendPlainText("正在执行第 " + str(selected_row + 1) + " 个动作")
+            # 启动机械臂动作执行线程
+            run_action_step_thread = Worker(self.run_action, selected_row)
+            self.threadpool.start(run_action_step_thread)
+            
+        else:
+            self.message_box.warning_message_box("请选择需要执行的动作!")
+
+    @Slot()
+    def run_action_loop(self):
+        """循环执行动作"""
+        # 获取循环动作循环执行的次数
+        if self.ActionLoopTimes.text().isdigit():
+            loop_times = int(self.ActionLoopTimes.text().strip()) 
+            for _ in range(loop_times):
+                self.tale_action_thread()
+        else:
+            self.message_box.warning_message_box(f"请输入所以动作循环次数[0-9]")
+    
+    @Slot()
+    def show_context_menu(self, pos):
+        """右键复制粘贴菜单"""
+        self.context_menu.exec_(self.ActionTableWidget.mapToGlobal(pos))
+
     
     @Slot()
     def add_item(self):
@@ -532,7 +616,7 @@ class TeachPage(QFrame, teach_page_frame):
 
             # 构造发送命令
             command = json.dumps(
-                {"command": "set_joint_angle_speed_percentage", "data": [2, degrade, speed_percentage]}) + '\r\n'
+                {"command": "set_joint_angle_speed_percentage", "data": [joint_number, degrade, speed_percentage]}) + '\r\n'
             self.command_queue.put((1.5, command.encode()))
             
             #  录制操作激活时
@@ -1147,8 +1231,8 @@ class TeachPage(QFrame, teach_page_frame):
         """初始化按钮图标"""
         self.ActionImportButton.setIcon(FIF.DOWNLOAD)
         self.ActionOutputButton.setIcon(FIF.UP)
-        self.ActionRunButton.setIcon(FIF.PLAY)
-        self.ActionStepRunButton.setIcon(FIF.ALIGNMENT)
+        self.ActionStepRunButton.setIcon(FIF.PLAY)
+        self.ActionRunButton.setIcon(FIF.ALIGNMENT)
         self.ActionLoopRunButton.setIcon(FIF.ROTATE)
         self.ActionAddButton.setIcon(FIF.ADD_TO)
         self.ActionDeleteButton.setIcon(FIF.DELETE)
@@ -1471,7 +1555,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         
     def initWindow(self):
         """初始化窗口"""
-        self.resize(1394, 750)
+        self.resize(1247, 750)
         self.setWindowTitle("比邻星六轴机械臂上位机")
         
         # 根据屏幕大小居中显示
