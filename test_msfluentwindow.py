@@ -12,7 +12,7 @@ import common.settings as settings
 from common.blinx_robot_module import Mirobot
 from common.check_tools import check_robot_arm_connection
 from common.socket_client import ClientSocket, Worker
-from common.work_threads import UpdateJointAnglesThread
+from common.work_threads import UpdateJointAnglesThread, AgnleDegreeWatchDog
 
 # UI 相关模块
 from PySide6.QtCore import Qt, QThreadPool, Slot
@@ -1357,6 +1357,7 @@ class ConnectPage(QFrame, connect_page_frame):
         self.threadpool = main_thread_pool
         self.command_queue = command_queue
         self.command_response_queue = command_response_queue
+        self.angle_degree_thread = AgnleDegreeWatchDog(self.command_queue)
         
         # 机械臂的查询循环控制位
         self.loop_flag = False
@@ -1484,8 +1485,7 @@ class ConnectPage(QFrame, connect_page_frame):
                 # self.RobotArmStopButton.setEnabled(True)
                 
                 # 启用实时获取机械臂角度线程
-                get_all_angle = Worker(self.get_angle_value)
-                self.threadpool.start(get_all_angle)
+                self.angle_degree_thread.start()
                 logger.info("开始后台获取机械臂角度")
                 
                 # 启用轮询队列中所有命令的线程
@@ -1557,6 +1557,7 @@ class ConnectPage(QFrame, connect_page_frame):
                         logger.warning(f"命令处理异常: {e}")
                         continue
             time.sleep(0.1)
+  
                        
 class BlinxRobotArmControlWindow(MSFluentWindow):
     """上位机主窗口"""    

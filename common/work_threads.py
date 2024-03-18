@@ -1,3 +1,4 @@
+import json
 import numpy as np
 from queue import PriorityQueue
 
@@ -33,3 +34,17 @@ class UpdateJointAnglesThread(QThread):
             self.sleep(0.1)
     
             
+class AgnleDegreeWatchDog(QThread):
+    """获取关节角度值的线程"""
+    
+    def __init__(self, command_queue: PriorityQueue):
+        super().__init__()
+        self.command_queue = command_queue
+        self.is_on = True
+        
+    def run(self):
+        while self.is_on:
+            command = json.dumps({"command": "get_joint_angle_all"}).replace(' ',"") + '\r\n'
+            self.command_queue.put((3, command.encode()))
+            self.sleep(1)
+                
