@@ -12,6 +12,7 @@ import common.settings as settings
 from common.blinx_robot_module import Mirobot
 from common.check_tools import check_robot_arm_connection
 from common.socket_client import ClientSocket, Worker
+from common.work_threads import UpdateJointAnglesThread
 
 # UI 相关模块
 from PySide6.QtCore import Qt, QThreadPool, Slot
@@ -85,22 +86,21 @@ class CommandPage(QFrame, command_page_frame):
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""
-    def __init__(self, page_name: str, main_thread_pool: QThreadPool, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
+    def __init__(self, page_name: str, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.initButtonIcon()
         self.initJointControlWidiget()
         
-        # 开启 QT 线程池
-        self.stop_loop_flag = False
-        self.threadpool = main_thread_pool
-        self.threadpool.start(self.get_joint_angle_thread)
         
         self.command_queue = command_queue  # 控制命令队列
         self.command_response_queue = command_response_queue  # 控制命令响应队列
         self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
         self.message_box = BlinxMessageBox(self)
+        
+        # 开启角度更新与末端工具位姿的更新线程
+        self.back_task_start()
         
         # 角度初始值
         self.q1 = 0.0
@@ -204,6 +204,14 @@ class TeachPage(QFrame, teach_page_frame):
         self.RzAxisSubButton.clicked.connect(partial(self.tool_rz_operate, action="sub"))
         self.ApStepAddButton.clicked.connect(self.tool_pose_step_add)
         self.ApStepSubButton.clicked.connect(self.tool_pose_step_sub)
+
+    def back_task_start(self):
+        """后台任务启动"""
+        logger.info("获取机械臂的关节角度信息线程启动!")
+        self.update_joint_angles_thread = UpdateJointAnglesThread(self.command_response_queue)
+        self.update_joint_angles_thread.start()
+        self.update_joint_angles_thread.joint_angles_update_signal.connect(self.update_joint_degrees_text)
+        self.update_joint_angles_thread.arm_endfactor_positions_update_signal.connect(self.update_arm_pose_text)
 
     # 顶部工具栏
     @Slot()                    
@@ -1304,31 +1312,13 @@ class TeachPage(QFrame, teach_page_frame):
         self.ApStepAddButton.setIcon(FIF.ADD)
         self.ApStepSubButton.setIcon(FIF.REMOVE)
     
-    def get_joint_angle_thread(self):
-        """后台更新各个关节角度"""
-        # 从 command_response_queue 中获取机械臂的关节角度信息
-        logger.info("获取机械臂的关节角度信息线程启动!")
-        while not self.stop_thread_flag:
-            if not self.command_response_queue.empty():
-                angle_data_list = self.command_response_queue.get()
-                self.q1, self.q2, self.q3, self.q4, self.q5, self.q6 = angle_data_list[1]
-                self.update_joint_degrees_text()
-                
-                # 更新机械臂末端工具的坐标和姿态值
-                arm_joint_radians = np.radians(angle_data_list[1])
-                translation_vector = self.blinx_robot_arm.fkine(arm_joint_radians)
-                self.X, self.Y, self.Z = translation_vector.t  # 末端坐标
-                self.rz, self.ry, self.rx = translation_vector.rpy(unit='deg')  # 末端姿态
-                self.update_arm_pose_text()
-                
-            time.sleep(0.1)
-            
-    def update_joint_degrees_text(self):
+    def update_joint_degrees_text(self, angle_data_list: list):
         """更新界面上的角度值, 并返回实时角度值
 
         Args:
             rs_data_dict (_dict_): 与机械臂通讯获取到的机械臂角度值
         """
+        self.q1, self.q2, self.q3, self.q4, self.q5, self.q6 = angle_data_list[1]
         display_q1 = str(round(self.q1, 2))
         display_q2 = str(round(self.q2, 2))
         display_q3 = str(round(self.q3, 2))
@@ -1343,20 +1333,17 @@ class TeachPage(QFrame, teach_page_frame):
         self.JointSixEdit.setText(display_q6)
         logger.debug(f"显示的角度值: {[display_q1, display_q2, display_q3, display_q4, display_q5, display_q6]}")
     
-    def update_arm_pose_text(self):
+    def update_arm_pose_text(self, arm_pose_data: list):
         """更新界面上机械臂末端工具的坐标和姿态值"""
+        self.X, self.Y, self.Z = arm_pose_data[:3]
+        self.rx, self.ry, self.rz = arm_pose_data[3:]
         self.XAxisEdit.setText(str(round(self.X, 3)))
         self.YAxisEdit.setText(str(round(self.Y, 3)))
         self.ZAxisEdit.setText(str(round(self.Z, 3)))
         self.RxAxisEdit.setText(str(round(self.rx, 3)))
         self.RyAxisEdit.setText(str(round(self.ry, 3)))
         self.RzAxisEdit.setText(str(round(self.rz, 3)))
-    
-    def closeEvent(self, event):
-        """用户触发窗口关闭事件，所有线程标志位为退出"""
-        self.stop_loop_flag = True
-        logger.info("比邻星六轴机械臂上位机窗口关闭！")
-        event.accept()
+
         
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
@@ -1570,12 +1557,6 @@ class ConnectPage(QFrame, connect_page_frame):
                         logger.warning(f"命令处理异常: {e}")
                         continue
             time.sleep(0.1)
-    
-    def closeEvent(self, event):
-        """用户触发窗口关闭事件，所有线程标志位为退出"""
-        self.loop_flag = True
-        logger.info("比邻星六轴机械臂上位机窗口关闭！")
-        event.accept()
                        
 class BlinxRobotArmControlWindow(MSFluentWindow):
     """上位机主窗口"""    
@@ -1585,12 +1566,11 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         self.response_queue = PriorityQueue()  # 接收响应的命令队列
         self.threadpool = QThreadPool()
         self.commandInterface = CommandPage('命令控制', self)
-        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.response_queue, self)
+        self.teachInterface = TeachPage('示教控制', self.command_queue, self.response_queue, self)
         self.connectionInterface = ConnectPage('连接设置', self.threadpool, self.command_queue, self.response_queue, self)
         
         self.initNavigation()
         self.initWindow()
-        
         
     def initWindow(self):
         """初始化窗口"""
