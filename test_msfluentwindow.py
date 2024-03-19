@@ -12,7 +12,7 @@ import common.settings as settings
 from common.blinx_robot_module import Mirobot
 from common.check_tools import check_robot_arm_connection
 from common.socket_client import ClientSocket, Worker
-from common.work_threads import UpdateJointAnglesThread, AgnleDegreeWatchDog
+from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask
 
 # UI 相关模块
 from PySide6.QtCore import Qt, QThreadPool, Slot
@@ -208,7 +208,7 @@ class TeachPage(QFrame, teach_page_frame):
     def back_task_start(self):
         """后台任务启动"""
         logger.info("获取机械臂的关节角度信息线程启动!")
-        self.update_joint_angles_thread = UpdateJointAnglesThread(self.command_response_queue)
+        self.update_joint_angles_thread = UpdateJointAnglesTask(self.command_response_queue)
         self.update_joint_angles_thread.start()
         self.update_joint_angles_thread.joint_angles_update_signal.connect(self.update_joint_degrees_text)
         self.update_joint_angles_thread.arm_endfactor_positions_update_signal.connect(self.update_arm_pose_text)
@@ -1354,10 +1354,10 @@ class ConnectPage(QFrame, connect_page_frame):
         self.reload_ip_port_history()  # 加载上一次的配置
         
         # 开启 QT 线程池
-        self.threadpool = main_thread_pool
         self.command_queue = command_queue
         self.command_response_queue = command_response_queue
-        self.angle_degree_thread = AgnleDegreeWatchDog(self.command_queue)
+        
+        self.init_task_thread()
         
         # 机械臂的查询循环控制位
         self.loop_flag = False
@@ -1377,6 +1377,12 @@ class ConnectPage(QFrame, connect_page_frame):
 
         # 连接机械臂按钮回调函数绑定
         self.RobotArmLinkButton.clicked.connect(self.connect_to_robot_arm)
+
+    def init_task_thread(self):
+        """初始化后台 线程任务"""
+        self.angle_degree_thread = AgnleDegreeWatchTask(self.command_queue)
+        self.command_sender_thread = CommandSenderTask(self.command_queue, self.command_response_queue)
+        
 
     # 机械臂连接配置回调函数
     def reload_ip_port_history(self):
@@ -1489,8 +1495,9 @@ class ConnectPage(QFrame, connect_page_frame):
                 logger.info("开始后台获取机械臂角度")
                 
                 # 启用轮询队列中所有命令的线程
-                command_sender_thread = Worker(self.command_sender)
-                self.threadpool.start(command_sender_thread)
+                # 后台轮询命令队列，并发送的优先级最高的命令
+                self.command_sender_thread.start()
+                    
                 logger.info("开启命令发送线程")
                 logger.warning("禁用连接机械臂按钮!")
                 
@@ -1522,42 +1529,6 @@ class ConnectPage(QFrame, connect_page_frame):
             self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
         return robot_arm_client
     
-    @logger.catch
-    def get_angle_value(self):
-        """实时获取关节的角度值"""        
-        while not self.loop_flag:
-            command = json.dumps({"command": "get_joint_angle_all"}).replace(' ',"") + '\r\n'
-            self.command_queue.put((3, command.encode()))
-            time.sleep(1)
-
-    
-    def command_sender(self):
-        """后台轮询命令队列，并发送的优先级最高的命令"""
-        with self.get_robot_arm_connector() as con:
-            while not self.loop_flag:
-                if not self.command_queue.empty():
-                    try:
-                        command_str = self.command_queue.get()
-                        
-                        # 发送命令
-                        con.send(command_str[1])
-                        logger.debug(f"发送命令：{command_str[1].decode().strip()}")
-                        
-                        # 接收命令返回的信息
-                        response = json.loads(con.recv(1024).decode('utf-8').strip())
-                        logger.debug(f"返回信息: {response}")
-                        
-                        # todo 命令返回的信息放入另外一个队列
-                        # 解析机械臂角度获取返回的信息
-                        if response["return"] == "get_joint_angle_all":
-                            angle_data_list = response['data']
-                            self.command_response_queue.put((1, angle_data_list))
-                            
-                    except Exception as e:
-                        logger.warning(f"命令处理异常: {e}")
-                        continue
-            time.sleep(0.1)
-  
                        
 class BlinxRobotArmControlWindow(MSFluentWindow):
     """上位机主窗口"""    
