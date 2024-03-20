@@ -39,6 +39,8 @@ logger.add(settings.LOG_FILE_PATH, level="INFO")
 # 三方通讯模块
 from serial.tools import list_ports
 
+# 遇到异常退出时，解除注释下面的代码，查看异常信息
+# import faulthandler;faulthandler.enable()
 
 class CommandPage(QFrame, command_page_frame):
     """命令控制页面"""
@@ -86,14 +88,14 @@ class CommandPage(QFrame, command_page_frame):
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""
-    def __init__(self, page_name: str, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
+    def __init__(self, page_name: str, thread_pool, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.initButtonIcon()
         self.initJointControlWidiget()
         
-        
+        self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
         self.command_response_queue = command_response_queue  # 控制命令响应队列
         self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
@@ -332,7 +334,7 @@ class TeachPage(QFrame, teach_page_frame):
         """顺序执行示教动作"""
         self.TeachArmRunLogWindow.appendPlainText('【顺序执行】开始')
         run_all_action_thread = Worker(self.tale_action_thread)
-        self.threadpool.start(run_all_action_thread)
+        self.thread_pool.start(run_all_action_thread)
         
     def run_action(self, row):
         """机械臂示执行示教动作
@@ -380,7 +382,7 @@ class TeachPage(QFrame, teach_page_frame):
             self.TeachArmRunLogWindow.appendPlainText("正在执行第 " + str(selected_row + 1) + " 个动作")
             # 启动机械臂动作执行线程
             run_action_step_thread = Worker(self.run_action, selected_row)
-            self.threadpool.start(run_action_step_thread)
+            self.thread_pool.start(run_action_step_thread)
             
         else:
             self.message_box.warning_message_box("请选择需要执行的动作!")
@@ -1538,7 +1540,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         self.response_queue = PriorityQueue()  # 接收响应的命令队列
         self.threadpool = QThreadPool()
         self.commandInterface = CommandPage('命令控制', self)
-        self.teachInterface = TeachPage('示教控制', self.command_queue, self.response_queue, self)
+        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.response_queue, self)
         self.connectionInterface = ConnectPage('连接设置', self.threadpool, self.command_queue, self.response_queue, self)
         
         self.initNavigation()

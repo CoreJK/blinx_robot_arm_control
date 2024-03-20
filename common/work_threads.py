@@ -102,3 +102,45 @@ class CommandSenderTask(QThread):
         except Exception as e:
             logger.error(str(e))
         return robot_arm_client
+    
+
+class ActionTableTask(QThread):
+    """执行表格任务的线程"""
+    def __init__(self, table_object, select_row, command_queue: PriorityQueue):
+        super().__init__()
+        self.is_on = True
+        self.table_object = table_object
+        self.select_row = select_row
+        self.command_queue = command_queue
+        
+    def run(self):
+        angle_1 = float(self.table_object.item(self.select_row, 0).text())
+        angle_2 = float(self.table_object.item(self.select_row, 1).text())
+        angle_3 = float(self.table_object.item(self.select_row, 2).text())
+        angle_4 = float(self.table_object.item(self.select_row, 3).text())
+        angle_5 = float(self.table_object.item(self.select_row, 4).text())
+        angle_6 = float(self.table_object.item(self.select_row, 5).text())
+        speed_percentage = float(self.table_object.item(self.select_row, 6).text())
+        type_of_tool = self.table_object.cellWidget(self.select_row, 7).currentText()
+        tool_switch = self.table_object.cellWidget(self.select_row, 8).currentText()
+        delay_time = float(self.table_object.item(self.select_row, 9).text())  # 执行动作需要的时间
+        
+        # 机械臂执行命令
+        json_command = {"command": "set_joint_angle_all_time",
+                                "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, 0,
+                                        speed_percentage]}
+        str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+        self.command_queue.put((2, str_command.encode()))
+        
+        # 末端工具动作
+        logger.info("单次执行，开关控制")
+        if type_of_tool == "吸盘":
+            tool_status = True if tool_switch == "开" else False
+            json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
+            str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+            self.command_queue.put((1, str_command.encode()))
+                    
+        return delay_time
+            
+            
+    
