@@ -40,7 +40,7 @@ logger.add(settings.LOG_FILE_PATH, level="INFO")
 from serial.tools import list_ports
 
 # 遇到异常退出时，解除注释下面的代码，查看异常信息
-# import faulthandler;faulthandler.enable()
+import faulthandler;faulthandler.enable()
 
 class CommandPage(QFrame, command_page_frame):
     """命令控制页面"""
@@ -1382,10 +1382,15 @@ class ConnectPage(QFrame, connect_page_frame):
 
     def init_task_thread(self):
         """初始化后台 线程任务"""
-        self.angle_degree_thread = AgnleDegreeWatchTask(self.command_queue)
+        self.angle_degree_thread = AgnleDegreeWatchTask()
+        self.angle_degree_thread.command_signal.connect(self.put_get_joint_angle_command)
         self.command_sender_thread = CommandSenderTask(self.command_queue, self.command_response_queue)
         
 
+    def put_get_joint_angle_command(self, command_str: str):
+        """向命令队列中添加获取机械臂角度的命令"""
+        self.command_queue.put((3, command_str.encode()))
+    
     # 机械臂连接配置回调函数
     def reload_ip_port_history(self):
         """获取历史IP和Port填写记录"""

@@ -41,21 +41,22 @@ class UpdateJointAnglesTask(QThread):
             
 class AgnleDegreeWatchTask(QThread):
     """获取关节角度值的线程"""
+    command_signal = Signal(str)
     
-    def __init__(self, command_queue: PriorityQueue):
+    def __init__(self):
         super().__init__()
-        self.command_queue = command_queue
         self.is_on = True
         
     def run(self):
         while self.is_on:
             command = json.dumps({"command": "get_joint_angle_all"}).replace(' ',"") + '\r\n'
-            self.command_queue.put((3, command.encode()))
+            self.command_signal.emit(command)        
             self.sleep(0.5)
                 
                 
 class CommandSenderTask(QThread):
     """发送命令的线程"""
+    
     
     def __init__(self, command_queue: PriorityQueue, command_respose_queue: PriorityQueue):
         super().__init__()
