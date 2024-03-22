@@ -357,9 +357,8 @@ class TeachPage(QFrame, teach_page_frame):
         delay_time = float(self.ActionTableWidget.item(row, 9).text())  # 执行动作需要的时间
         
         # 机械臂执行命令
-        json_command = {"command": "set_joint_angle_all_time", "data": [angle_1, angle_2, angle_3, angle_4, angle_5, angle_6, 0, speed_percentage]}
-
-        
+        json_command = {"command": "set_joint_angle_all_time",
+                                "data": [speed_percentage, angle_1, angle_2, angle_3, angle_4, angle_5, angle_6]}
         str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
         self.command_queue.put((2, str_command.encode()))
         
@@ -656,7 +655,8 @@ class TeachPage(QFrame, teach_page_frame):
             degrade = np.clip(degrade, min_degrade, max_degrade)
 
             # 构造发送命令
-            command = json.dumps({"command": "set_joint_angle_speed_percentage", "data": [joint_number, degrade, speed_percentage]}) + '\r\n'
+            command = json.dumps(
+                {"command": "set_joint_angle", "data": [joint_number, speed_percentage, degrade]}) + '\r\n'
             self.command_queue.put((1.5, command.encode()))
             
             #  录制操作激活时
@@ -707,15 +707,15 @@ class TeachPage(QFrame, teach_page_frame):
         """机械臂复位
         :param mode:
         """
-        command = json.dumps({"command": "set_joint_Auto_zero"}).replace('', "") + '\r\n'
+        command = json.dumps({"command": "set_joint_return_to_zero", "data": [0]}).replace('', "") + '\r\n'
         self.command_queue.put((1, command.encode()))
         self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
         logger.warning("机械臂复位中!请注意手臂姿态")
         
     @Slot()
     def reset_to_zero(self):
-        """机械臂复位到零点"""
-        command = json.dumps({"command": "set_joint_angle_all_time", "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 35]}).replace(' ', "") + '\r\n'
+        """机械臂复位到初始位姿"""
+        command = json.dumps({"command": "set_joint_angle_all", "data": [100, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}).replace(' ', "") + '\r\n'
         self.command_queue.put((1, command.encode()))
         self.message_box.warning_message_box("机械臂回到初始角度中!\n请注意手臂姿态")
         logger.warning("机械臂回到初始位姿中!")
@@ -1101,9 +1101,10 @@ class TeachPage(QFrame, teach_page_frame):
 
     def construct_and_send_command(self, sol, speed_percentage):
         """构造逆解后的发送命令"""
-        speed_degree_data = [round(degrees(d), 1) for d in sol.q]
+        speed_degree_data = [speed_percentage]
+        joint_degrees = [round(degrees(d), 1) for d in sol.q]
         # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
-        for i, d in enumerate(speed_degree_data):
+        for i, d in enumerate(joint_degrees):
             if i == 0:
                 if d < -140 or d > 140:
                     logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
@@ -1135,7 +1136,7 @@ class TeachPage(QFrame, teach_page_frame):
                     self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
                     return
                 
-        speed_degree_data.extend([0, speed_percentage])
+        speed_degree_data.extend(joint_degrees)
         command = json.dumps({"command": "set_joint_angle_all_time", "data": speed_degree_data}).replace(' ', "") + '\r\n'
 
         # 发送命令
