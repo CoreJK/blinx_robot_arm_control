@@ -157,18 +157,18 @@ class TeachPage(QFrame, teach_page_frame):
 
         # # 实例化机械臂关节控制回调函数绑定
         
-        self.JointOneAddButton.clicked.connect(partial(self.modify_joint_angle, 1, -140, 140, increase=True))
-        self.JointOneSubButton.clicked.connect(partial(self.modify_joint_angle, 1, -140, 140, increase=False))
-        self.JointTwoAddButton.clicked.connect(partial(self.modify_joint_angle, 2, -70, 70, increase=True))
-        self.JointTwoSubButton.clicked.connect(partial(self.modify_joint_angle, 2, -70, 70, increase=False))
-        self.JointThreeAddButton.clicked.connect(partial(self.modify_joint_angle, 3, -60, 45, increase=True))
-        self.JointThreeSubButton.clicked.connect(partial(self.modify_joint_angle, 3, -60, 45, increase=False))
-        self.JointFourAddButton.clicked.connect(partial(self.modify_joint_angle, 4, -150, 150, increase=True))
-        self.JointFourSubButton.clicked.connect(partial(self.modify_joint_angle, 4, -150, 150, increase=False))
-        self.JointFiveAddButton.clicked.connect(partial(self.modify_joint_angle, 5, -180, 10, increase=True))
-        self.JointFiveSubButton.clicked.connect(partial(self.modify_joint_angle, 5, -180, 10, increase=False))
-        self.JointSixAddButton.clicked.connect(partial(self.modify_joint_angle, 6, -180, 180, increase=True))
-        self.JointSixSubButton.clicked.connect(partial(self.modify_joint_angle, 6, -180, 180, increase=False))
+        self.JointOneAddButton.clicked.connect(partial(self.modify_joint_angle, 1, -130, 135, increase=True))
+        self.JointOneSubButton.clicked.connect(partial(self.modify_joint_angle, 1, -130, 135, increase=False))
+        self.JointTwoAddButton.clicked.connect(partial(self.modify_joint_angle, 2, -86, 96, increase=True))
+        self.JointTwoSubButton.clicked.connect(partial(self.modify_joint_angle, 2, -86, 96, increase=False))
+        self.JointThreeAddButton.clicked.connect(partial(self.modify_joint_angle, 3, -90, 46, increase=True))
+        self.JointThreeSubButton.clicked.connect(partial(self.modify_joint_angle, 3, -90, 46, increase=False))
+        self.JointFourAddButton.clicked.connect(partial(self.modify_joint_angle, 4, -143, 184, increase=True))
+        self.JointFourSubButton.clicked.connect(partial(self.modify_joint_angle, 4, -143, 184, increase=False))
+        self.JointFiveAddButton.clicked.connect(partial(self.modify_joint_angle, 5, -219, 36, increase=True))
+        self.JointFiveSubButton.clicked.connect(partial(self.modify_joint_angle, 5, -219, 36, increase=False))
+        self.JointSixAddButton.clicked.connect(partial(self.modify_joint_angle, 6, -360, 360, increase=True))
+        self.JointSixSubButton.clicked.connect(partial(self.modify_joint_angle, 6, -360, 360, increase=False))
         self.JointStepAddButton.clicked.connect(partial(self.modify_joint_angle_step, increase=True))
         self.JointStepSubButton.clicked.connect(partial(self.modify_joint_angle_step, increase=False))
         self.JointSpeedUpButton.clicked.connect(partial(self.modify_joint_speed_percentage, increase=True))
@@ -1074,12 +1074,12 @@ class TeachPage(QFrame, teach_page_frame):
             rs_data_dict (_dict_): 与机械臂通讯获取到的机械臂角度值
         """
         self.q1, self.q2, self.q3, self.q4, self.q5, self.q6 = angle_data_list[1]
-        display_q1 = str(round(self.q1, 2))
-        display_q2 = str(round(self.q2, 2))
-        display_q3 = str(round(self.q3, 2))
-        display_q4 = str(round(self.q4, 2))
-        display_q5 = str(round(self.q5, 2))
-        display_q6 = str(round(self.q6, 2))
+        display_q1 = str(round(self.q1, 3))
+        display_q2 = str(round(self.q2, 3))
+        display_q3 = str(round(self.q3, 3))
+        display_q4 = str(round(self.q4, 3))
+        display_q5 = str(round(self.q5, 3))
+        display_q6 = str(round(self.q6, 3))
         self.JointOneEdit.setText(display_q1)
         self.JointTwoEdit.setText(display_q2)
         self.JointThreeEdit.setText(display_q3)
@@ -1103,37 +1103,36 @@ class TeachPage(QFrame, teach_page_frame):
         """构造逆解后的发送命令"""
         speed_degree_data = [speed_percentage]
         joint_degrees = [round(degrees(d), 1) for d in sol.q]
-        # 校验每一个角度值是否超出范围，范围为:[[-140, 140], [-70, 70], [-60, 45], [-150, 150], [-180, 10], [-180, 180]]
         for i, d in enumerate(joint_degrees):
             if i == 0:
-                if d < -140 or d > 140:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
+                if d < -135 or d > 135:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-135, 135]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-135, 135]")
                     return
             elif i == 1:
-                if d < -70 or d > 70:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
+                if d < -86 or d > 96:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-86, 96]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-86, 96]")
                     return
             elif i == 2:
-                if d < -60 or d > 45:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
+                if d < -90 or d > 46:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-90, 46]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-90, 46]")
                     return
             elif i == 3:
-                if d < -150 or d > 150:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-150, 150]")
+                if d < -143 or d > 184:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-143, 184]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-143, 184]")
                     return
             elif i == 4:
-                if d < -180 or d > 10:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                if d < -219 or d > 36:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-219, 36]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-219, 36]")
                     return
             elif i == 5:
-                if d < -180 or d > 180:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
+                if d < -360 or d > 360:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-360, 360]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-360, 360]")
                     return
                 
         speed_degree_data.extend(joint_degrees)
@@ -1350,7 +1349,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
     def initWindow(self):
         """初始化窗口"""
         self.resize(1247, 750)
-        self.setWindowTitle("比邻星六轴机械臂上位机")
+        self.setWindowTitle("比邻星六轴机械臂上位机 v4.1.0")
         
         # 根据屏幕大小居中显示
         desktop = QApplication.screens()[0].availableGeometry()
