@@ -36,7 +36,7 @@ class UpdateJointAnglesTask(QThread):
                 X, Y, Z = translation_vector.t  # 末端坐标
                 rz, ry, rx = translation_vector.rpy(unit='deg')  # 末端姿态
                 self.arm_endfactor_positions_update_signal.emit([X, Y, Z, rz, ry, rx])
-            self.sleep(0.5)
+            self.sleep(0.1)
     
             
 class AgnleDegreeWatchTask(QThread):
@@ -88,8 +88,8 @@ class CommandSenderTask(QThread):
                     except Exception as e:
                         logger.warning(f"命令处理异常: {e}")
                         continue
-            self.sleep(0.5)
-            
+                    self.sleep(0.2)
+                    
     @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
     def get_robot_arm_connector(self):
