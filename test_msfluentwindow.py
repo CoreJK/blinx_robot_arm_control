@@ -15,9 +15,10 @@ from common.socket_client import ClientSocket, Worker
 from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask
 
 # UI 相关模块
-from PySide6.QtCore import Qt, QThreadPool, Slot
+from PySide6.QtCore import Qt, QThreadPool, Slot, QUrl
+from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
-from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox)
+from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, NavigationItemPosition, MessageBox)
 from qfluentwidgets import FluentIcon as FIF
 
 # 导入子页面控件布局文件
@@ -1362,9 +1363,30 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         self.addSubInterface(self.teachInterface, FIF.APPLICATION, '示教控制')
         self.addSubInterface(self.connectionInterface, FIF.IOT, '连接设置')
         
+        self.navigationInterface.addItem(
+            routeKey='Help',
+            icon=FIF.HELP,
+            text='帮助',
+            onClick=self.showMessageBox,
+            selectable=False,
+            position=NavigationItemPosition.BOTTOM
+        )
+        
         # 设置默认打开的页面
         self.navigationInterface.setCurrentItem(self.commandInterface.objectName())
     
+    def showMessageBox(self):
+        """弹出帮助信息框"""
+        w = MessageBox(
+            '📖帮助',
+            '🎊欢迎使用比邻星六轴机械臂上位机 v4.1.0🎊\n\n👇使用文档请访问官网获取👇',
+            self
+        )
+        w.yesButton.setText('直达官网🚀')
+        w.cancelButton.setText('取消❌')
+        if w.exec():
+            QDesktopServices.openUrl(QUrl("http://www.blinx.cn/"))
+        
     
 if __name__ == "__main__":
     app = QApplication(sys.argv)
