@@ -114,9 +114,9 @@ class TeachPage(QFrame, teach_page_frame):
         self.q6 = 0.0
         
         # 末端工具坐标初始值
-        self.X = 0.238
+        self.X = 0.245
         self.Y = 0.0
-        self.Z = 0.233
+        self.Z = 0.269
         
         # 末端工具姿态初始值
         self.rx = 0.0
@@ -774,14 +774,14 @@ class TeachPage(QFrame, teach_page_frame):
             self.XAxisEdit.setText(str(new_x_coordinate))  
         
         # 通过逆解算出机械臂各个关节角度值
-        R_T = SE3([new_x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
-        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        self.construct_and_send_command(sol, speed_percentage)
+        arm_ikine_solves = self.get_arm_ikine(new_x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose)
+        self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
         if self.RecordActivateButton.isChecked():
             self.add_item()
-        
+
+
     @Slot()
     def tool_y_operate(self, action="add"):
         """末端工具坐标 y 增减函数"""
@@ -807,9 +807,8 @@ class TeachPage(QFrame, teach_page_frame):
             self.YAxisEdit.setText(str(new_y_coordinate))  
         
         # 通过逆解算出机械臂各个关节角度值
-        R_T = SE3([x_coordinate, new_y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
-        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        self.construct_and_send_command(sol, speed_percentage)
+        arm_ikine_solves = self.get_arm_ikine(x_coordinate, new_y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose)
+        self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
         if self.RecordActivateButton.isChecked():
@@ -841,9 +840,8 @@ class TeachPage(QFrame, teach_page_frame):
             self.ZAxisEdit.setText(str(new_z_coordinate))  
         
         # 通过逆解算出机械臂各个关节角度值
-        R_T = SE3([x_coordinate, y_coordinate, new_z_coordinate]) * rpy2tr([rz_pose, ry_pose, rx_pose], unit='deg')
-        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        self.construct_and_send_command(sol, speed_percentage)
+        arm_ikine_solves = self.get_arm_ikine(x_coordinate, y_coordinate, new_z_coordinate, rx_pose, ry_pose, rz_pose)
+        self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
         if self.RecordActivateButton.isChecked():
@@ -874,9 +872,9 @@ class TeachPage(QFrame, teach_page_frame):
         x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
         y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
         z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
-        old_rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
         
         # 获取末端工具的姿态
+        old_rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
         ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
         rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
         
@@ -892,9 +890,8 @@ class TeachPage(QFrame, teach_page_frame):
             self.RxAxisEdit.setText(str(new_rx_pose))  # 更新末端工具姿态 Rx
             
         # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
-        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, ry_pose, new_rx_pose], unit='deg')
-        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        self.construct_and_send_command(sol, speed_percentage)
+        arm_ikine_solves = self.get_arm_ikine(x_coordinate, y_coordinate, z_coordinate, new_rx_pose, ry_pose, rz_pose)
+        self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
         if self.RecordActivateButton.isChecked():
@@ -925,9 +922,8 @@ class TeachPage(QFrame, teach_page_frame):
             self.RyAxisEdit.setText(str(new_ry_pose))  # 更新末端工具姿态 Ry
             
         # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
-        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rz_pose, new_ry_pose, rx_pose], unit='deg')
-        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        self.construct_and_send_command(sol, speed_percentage)
+        arm_ikine_solves = self.get_arm_ikine(x_coordinate, y_coordinate, z_coordinate, rx_pose, new_ry_pose, rz_pose)
+        self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
         if self.RecordActivateButton.isChecked():
@@ -958,9 +954,8 @@ class TeachPage(QFrame, teach_page_frame):
             self.RzAxisEdit.setText(str(new_rz_pose))  # 更新末端工具姿态 Rz
             
         # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
-        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([new_rz_pose, ry_pose, rx_pose], unit='deg')
-        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        self.construct_and_send_command(sol, speed_percentage)
+        arm_ikine_solves = self.get_arm_ikine(x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, new_rz_pose)
+        self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
         if self.RecordActivateButton.isChecked():
@@ -1087,7 +1082,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.JointFourEdit.setText(display_q4)
         self.JointFiveEdit.setText(display_q5)
         self.JointSixEdit.setText(display_q6)
-        logger.debug(f"显示的角度值: {[display_q1, display_q2, display_q3, display_q4, display_q5, display_q6]}")
+        # logger.debug(f"显示的角度值: {[display_q1, display_q2, display_q3, display_q4, display_q5, display_q6]}")
     
     def update_arm_pose_text(self, arm_pose_data: list):
         """更新界面上机械臂末端工具的坐标和姿态值"""
@@ -1100,40 +1095,39 @@ class TeachPage(QFrame, teach_page_frame):
         self.RyAxisEdit.setText(str(round(self.ry, 3)))
         self.RzAxisEdit.setText(str(round(self.rz, 3)))
 
-    def construct_and_send_command(self, sol, speed_percentage):
+    def construct_and_send_command(self, joint_degrees, speed_percentage):
         """构造逆解后的发送命令"""
         speed_degree_data = [speed_percentage]
-        joint_degrees = [round(degrees(d), 1) for d in sol.q]
         for i, d in enumerate(joint_degrees):
             if i == 0:
-                if d < -135 or d > 135:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-135, 135]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-135, 135]")
+                if d < -140 or d > 140:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
                     return
             elif i == 1:
-                if d < -86 or d > 96:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-86, 96]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-86, 96]")
+                if d < -70 or d > 70:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
                     return
             elif i == 2:
-                if d < -90 or d > 46:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-90, 46]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-90, 46]")
+                if d < -60 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
                     return
             elif i == 3:
-                if d < -143 or d > 184:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-143, 184]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-143, 184]")
+                if d < -150 or d > 150:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
                     return
             elif i == 4:
-                if d < -219 or d > 36:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-219, 36]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-219, 36]")
+                if d < -180 or d > 10:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
                     return
             elif i == 5:
-                if d < -360 or d > 360:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-360, 360]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-360, 360]")
+                if d < -180 or d > 180:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
                     return
                 
         speed_degree_data.extend(joint_degrees)
@@ -1142,7 +1136,16 @@ class TeachPage(QFrame, teach_page_frame):
         # 发送命令
         self.command_queue.put((2, command.encode()))
         
-            
+    def get_arm_ikine(self, x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose) -> list:
+        """计算机械臂的逆解"""
+        logger.debug(f"逆解算法参数: {x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose}")
+        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rx_pose, ry_pose, rz_pose], unit='deg', order='zyx')
+        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
+        joint_degrees = [round(degrees(d), 3) for d in sol.q]
+        logger.debug(f"逆解算法结果: {joint_degrees}")
+        return joint_degrees
+    
+     
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
     def __init__(self, page_name: str, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):

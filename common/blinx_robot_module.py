@@ -112,11 +112,11 @@ if __name__ == "__main__":
 
     # 机械臂正运动解
     q1 = radians(0)
-    q2 = radians(20)
+    q2 = radians(0)
     q3 = radians(0)
     q4 = radians(0)
     q5 = radians(0)
-    q6 = radians(0)
+    q6 = radians(150)
     print("机械臂关节角度 = ", [round(degrees(i), 2) for i in [q1, q2, q3, q4, q5, q6]])
     arm_pose_degree = np.array([q1, q2, q3, q4, q5, q6])
     translation_vector = mirobot.fkine(arm_pose_degree)
@@ -128,10 +128,11 @@ if __name__ == "__main__":
     print("y = ", round(y, 3))
     print("z = ", round(z, 3))
     print('')
-    Rz, Ry, Rx = translation_vector.rpy(unit='deg')  # 旋转角
-    print("r = ", round(Rz, 3))
-    print("p = ", round(Ry, 3))
-    print("y = ", round(Rx, 3))
+    print("机械臂末端姿态: ", translation_vector.rpy(unit='deg', order='zyx'))
+    R_x, P_y, Y_z = translation_vector.rpy(unit='deg', order='zyx')  # 旋转角
+    print("r = ", round(R_x, 3))
+    print("p = ", round(P_y, 3))
+    print("y = ", round(Y_z, 3))
     print("")
 
     # 机器人逆运动解
@@ -140,7 +141,7 @@ if __name__ == "__main__":
     print("机械臂逆解结果")
     rs_ik = []
     for i, _ in enumerate(range(10)):
-        R_T = SE3([x, y, z]) * rpy2tr([Rz, Ry, Rx], unit='deg')
+        R_T = SE3([x, y, z]) * rpy2tr([R_x, P_y, Y_z], unit='deg', order='zyx')
         sol = mirobot.ikine_LM(R_T, joint_limits=True)
 
         def get_value(number):
@@ -152,7 +153,7 @@ if __name__ == "__main__":
 
     # 统计出逆解数据列表数据中，指定数据出现的次数
     # 指定的数据为 [150.0, 70.0, 45.0, 150.0, 10.0, 0.0]
-    specified_data = list(map(lambda d: round(degrees(d), 1), [q1, q2, q3, q4, q5, q6]))
+    specified_data = list(map(lambda d: round(degrees(d), 2), [q1, q2, q3, q4, q5, q6]))
     occurrences = rs_ik.count(specified_data)
     print("Occurrences:", occurrences)
 

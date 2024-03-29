@@ -1,4 +1,5 @@
 import json
+import sys
 import shelve
 from queue import PriorityQueue
 
@@ -34,8 +35,8 @@ class UpdateJointAnglesTask(QThread):
                 arm_joint_radians = np.radians(angle_data_list[1])
                 translation_vector = self.blinx_robot_arm.fkine(arm_joint_radians)
                 X, Y, Z = translation_vector.t  # 末端坐标
-                rz, ry, rx = translation_vector.rpy(unit='deg')  # 末端姿态
-                self.arm_endfactor_positions_update_signal.emit([X, Y, Z, rz, ry, rx])
+                R_x, P_y, Y_z = translation_vector.rpy(unit='deg', order='zyx')  # 末端姿态
+                self.arm_endfactor_positions_update_signal.emit([X, Y, Z, R_x, P_y, Y_z])
             self.sleep(0.1)
     
             
@@ -73,11 +74,11 @@ class CommandSenderTask(QThread):
                         
                         # 发送命令
                         conn.send(command_str[1])
-                        logger.debug(f"发送命令：{command_str[1].decode().strip()}")
+                        # logger.debug(f"发送命令：{command_str[1].decode().strip()}")
                         
                         # 接收命令返回的信息
                         response = json.loads(conn.recv(1024).decode('utf-8').strip())
-                        logger.debug(f"返回信息: {response}")
+                        # logger.debug(f"返回信息: {response}")
                         
                         # todo 命令返回的信息放入另外一个队列
                         # 解析机械臂角度获取返回的信息
