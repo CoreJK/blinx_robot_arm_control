@@ -5,7 +5,7 @@ import shelve
 import sys
 import time
 from functools import partial
-from queue import PriorityQueue
+from queue import PriorityQueue, Queue
 from retrying import retry
 
 import common.settings as settings
@@ -89,7 +89,7 @@ class CommandPage(QFrame, command_page_frame):
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""
-    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
+    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: PriorityQueue, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
@@ -98,7 +98,7 @@ class TeachPage(QFrame, teach_page_frame):
         
         self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
-        self.command_response_queue = command_response_queue  # 控制命令响应队列
+        self.joints_angle_queue = joints_angle_queue  # 查询到的机械臂关节角度队列
         self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
         self.message_box = BlinxMessageBox(self)
         
@@ -210,7 +210,7 @@ class TeachPage(QFrame, teach_page_frame):
     def back_task_start(self):
         """后台任务启动"""
         logger.info("获取机械臂的关节角度信息线程启动!")
-        self.update_joint_angles_thread = UpdateJointAnglesTask(self.command_response_queue)
+        self.update_joint_angles_thread = UpdateJointAnglesTask(self.joints_angle_queue)
         self.update_joint_angles_thread.start()
         self.update_joint_angles_thread.joint_angles_update_signal.connect(self.update_joint_degrees_text)
         self.update_joint_angles_thread.arm_endfactor_positions_update_signal.connect(self.update_arm_pose_text)
@@ -1081,7 +1081,7 @@ class TeachPage(QFrame, teach_page_frame):
         Args:
             rs_data_dict (_dict_): 与机械臂通讯获取到的机械臂角度值
         """
-        self.q1, self.q2, self.q3, self.q4, self.q5, self.q6 = angle_data_list[1]
+        self.q1, self.q2, self.q3, self.q4, self.q5, self.q6 = angle_data_list
         display_q1 = str(round(self.q1, 3))
         display_q2 = str(round(self.q2, 3))
         display_q3 = str(round(self.q3, 3))
@@ -1157,7 +1157,7 @@ class TeachPage(QFrame, teach_page_frame):
      
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
-    def __init__(self, page_name: str, command_queue: PriorityQueue, command_response_queue: PriorityQueue, parent=None):
+    def __init__(self, page_name: str, command_queue: PriorityQueue, joints_angle_queue: Queue, joints_sync_move_time_queue: Queue, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
@@ -1165,7 +1165,8 @@ class ConnectPage(QFrame, connect_page_frame):
         
         # 开启 QT 线程池
         self.command_queue = command_queue
-        self.command_response_queue = command_response_queue
+        self.joints_sync_move_time_queue = joints_sync_move_time_queue
+        self.joints_angle_queue = joints_angle_queue
         
         self.init_task_thread()
         
@@ -1192,7 +1193,7 @@ class ConnectPage(QFrame, connect_page_frame):
         """初始化后台 线程任务"""
         self.angle_degree_thread = AgnleDegreeWatchTask()
         self.angle_degree_thread.command_signal.connect(self.put_get_joint_angle_command)
-        self.command_sender_thread = CommandSenderTask(self.command_queue, self.command_response_queue)
+        self.command_sender_thread = CommandSenderTask(self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue)
         
 
     def put_get_joint_angle_command(self, command_str: str):
@@ -1350,11 +1351,12 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
     def __init__(self):
         super().__init__()
         self.command_queue = PriorityQueue()  # 控件发送的命令队列
-        self.response_queue = PriorityQueue()  # 接收响应的命令队列
+        self.joints_angle_queue = Queue()  # 查询到关节角度信息的队列
+        self.joint_sync_move_time_queue = Queue()  # 所有关节同步移动需要的时间队列
         self.threadpool = QThreadPool()
         self.commandInterface = CommandPage('命令控制', self)
-        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.response_queue, self)
-        self.connectionInterface = ConnectPage('连接设置', self.command_queue, self.response_queue, self)
+        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.joints_angle_queue, self)
+        self.connectionInterface = ConnectPage('连接设置', self.command_queue, self.joints_angle_queue, self.joint_sync_move_time_queue, self)
         
         self.initNavigation()
         self.initWindow()
