@@ -19,12 +19,12 @@ class Worker(QRunnable):
     @Slot()
     def run(self):
         """运行需要作为线程运行的函数"""
-        logger.info("线程开始")
+        logger.warning("线程开始")
         try:
             self.fn(*self.args, **self.kwargs)
         except Exception as e:
             logger.error(str(e))
-        logger.info("线程结束")
+        logger.warning("线程结束")
 
 
 class ClientSocket:

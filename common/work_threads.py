@@ -74,11 +74,9 @@ class CommandSenderTask(QThread):
                         
                         # 发送命令
                         conn.send(command_str[1])
-                        # logger.debug(f"发送命令：{command_str[1].decode().strip()}")
                         
                         # 接收命令返回的信息
                         response = json.loads(conn.recv(1024).decode('utf-8').strip())
-                        # logger.debug(f"返回信息: {response}")
                         
                         # todo 命令返回的信息放入另外一个队列
                         # 解析机械臂角度获取返回的信息

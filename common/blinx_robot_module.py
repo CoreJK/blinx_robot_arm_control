@@ -152,7 +152,6 @@ if __name__ == "__main__":
         rs_ik.append(list(map(get_value, sol.q)))
 
     # 统计出逆解数据列表数据中，指定数据出现的次数
-    # 指定的数据为 [150.0, 70.0, 45.0, 150.0, 10.0, 0.0]
     specified_data = list(map(lambda d: round(degrees(d), 2), [q1, q2, q3, q4, q5, q6]))
     occurrences = rs_ik.count(specified_data)
     print("Occurrences:", occurrences)

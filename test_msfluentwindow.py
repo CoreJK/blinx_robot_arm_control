@@ -35,7 +35,7 @@ from spatialmath.base import rpy2tr
 
 # 日志模块
 from loguru import logger
-logger.add(settings.LOG_FILE_PATH, level="INFO")
+logger.add(settings.LOG_FILE_PATH, level="DEBUG", rotation="1 MB", retention="7 days")
 
 # 三方通讯模块
 from serial.tools import list_ports
@@ -156,8 +156,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.copied_row = None
 
 
-        # # 实例化机械臂关节控制回调函数绑定
-        
+        # 实例化机械臂关节控制回调函数绑定
         self.JointOneAddButton.clicked.connect(partial(self.modify_joint_angle, 1, -130, 135, increase=True))
         self.JointOneSubButton.clicked.connect(partial(self.modify_joint_angle, 1, -130, 135, increase=False))
         self.JointTwoAddButton.clicked.connect(partial(self.modify_joint_angle, 2, -86, 96, increase=True))
@@ -195,8 +194,8 @@ class TeachPage(QFrame, teach_page_frame):
         self.YAxisSubButton.clicked.connect(partial(self.tool_y_operate, action="sub"))
         self.ZAxisAddButton.clicked.connect(partial(self.tool_z_operate, action="add"))
         self.ZAxisSubButton.clicked.connect(partial(self.tool_z_operate, action="sub"))
-        self.CoordinateAddButton.clicked.connect(self.tool_coordinate_step_add)
-        self.CoordinateStepSubButton.clicked.connect(self.tool_coordinate_step_sub)
+        self.CoordinateAddButton.clicked.connect(partial(self.tool_coordinate_step_modify, action="add"))
+        self.CoordinateStepSubButton.clicked.connect(partial(self.tool_coordinate_step_modify, action="sub"))
         
         # 末端工具姿态增减回调函数绑定
         self.RxAxisAddButton.clicked.connect(partial(self.tool_rx_operate, action="add"))
@@ -205,8 +204,8 @@ class TeachPage(QFrame, teach_page_frame):
         self.RyAxisSubButton.clicked.connect(partial(self.tool_ry_operate, action="sub"))
         self.RzAxisAddButton.clicked.connect(partial(self.tool_rz_operate, action="add"))
         self.RzAxisSubButton.clicked.connect(partial(self.tool_rz_operate, action="sub"))
-        self.ApStepAddButton.clicked.connect(self.tool_pose_step_add)
-        self.ApStepSubButton.clicked.connect(self.tool_pose_step_sub)
+        self.ApStepAddButton.clicked.connect(partial(self.tool_pose_step_modify, action="add"))
+        self.ApStepSubButton.clicked.connect(partial(self.tool_pose_step_modify, action="sub"))
 
     def back_task_start(self):
         """后台任务启动"""
@@ -659,6 +658,7 @@ class TeachPage(QFrame, teach_page_frame):
             command = json.dumps(
                 {"command": "set_joint_angle", "data": [joint_number, speed_percentage, degrade]}) + '\r\n'
             self.command_queue.put((1.5, command.encode()))
+            logger.debug(f"机械臂关节 {joint_number} 转动 {round(degrade, 3)} 度")
             
             #  录制操作激活时
             if self.RecordActivateButton.isChecked():
@@ -669,11 +669,9 @@ class TeachPage(QFrame, teach_page_frame):
         """修改机械臂关节步长"""
         old_degrade = int(self.JointStepEdit.text().strip())
         degrade = old_degrade + 5 if increase else old_degrade - 5
-        if 0 < degrade <= 20:
-            self.JointStepEdit.setText(str(degrade))
-        else:
-            message = "步长不能超过 20" if increase else "步长不能为负!"
-            self.message_box.warning_message_box(message=message)
+        self.JointStepEdit.setText(str(degrade))
+        logger.debug(f"机械臂步长修改为: {degrade}")
+
     
     @Slot()
     def modify_joint_speed_percentage(self, increase=True):
@@ -684,6 +682,7 @@ class TeachPage(QFrame, teach_page_frame):
             new_speed_percentage = old_speed_percentage + 5 if increase else old_speed_percentage - 5
             if 0 <= new_speed_percentage <= 100:
                 self.JointSpeedEdit.setText(str(new_speed_percentage))
+                logger.debug(f"机械臂速度修改为: {new_speed_percentage}")
             else:
                 self.message_box.warning_message_box(message=f"关节速度范围 0 ~ 100")
         else:
@@ -698,6 +697,7 @@ class TeachPage(QFrame, teach_page_frame):
             new_delay_time = old_delay_time + 1 if increase else old_delay_time - 1
             if 0 <= new_delay_time <= 100:
                 self.JointDelayTimeEdit.setText(str(new_delay_time))
+                logger.debug(f"机械臂延时时间修改为: {new_delay_time}s")
             else:
                 self.message_box.warning_message_box(message=f"延时时间必须在 0-100s 之间")
         else:
@@ -743,6 +743,12 @@ class TeachPage(QFrame, teach_page_frame):
         type_of_tool = self.ArmToolComboBox.currentText()
         if type_of_tool == "吸盘":
             command = json.dumps({"command":"set_robot_io_interface", "data": [0, action]}) + '\r\n'
+            
+            if action:
+                logger.warning("吸盘开启!")
+            else:
+                logger.warning("吸盘关闭!")
+                
             self.command_queue.put((1, command.encode()))
         else:
             self.message_box.warning_message_box("末端工具未选择吸盘!")
@@ -772,6 +778,8 @@ class TeachPage(QFrame, teach_page_frame):
         else:
             new_x_coordinate = old_x_coordinate - change_value
             self.XAxisEdit.setText(str(new_x_coordinate))  
+        
+        logger.debug(f"末端工具坐标 X: {new_x_coordinate}")
         
         # 通过逆解算出机械臂各个关节角度值
         arm_ikine_solves = self.get_arm_ikine(new_x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose)
@@ -806,6 +814,8 @@ class TeachPage(QFrame, teach_page_frame):
             new_y_coordinate = old_y_coordinate - change_value
             self.YAxisEdit.setText(str(new_y_coordinate))  
         
+        logger.debug(f"末端工具坐标 Y: {new_y_coordinate}")
+        
         # 通过逆解算出机械臂各个关节角度值
         arm_ikine_solves = self.get_arm_ikine(x_coordinate, new_y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose)
         self.construct_and_send_command(arm_ikine_solves, speed_percentage)
@@ -839,6 +849,8 @@ class TeachPage(QFrame, teach_page_frame):
             new_z_coordinate = old_z_coordinate - change_value
             self.ZAxisEdit.setText(str(new_z_coordinate))  
         
+        logger.debug(f"末端工具坐标 Z: {new_z_coordinate}")
+        
         # 通过逆解算出机械臂各个关节角度值
         arm_ikine_solves = self.get_arm_ikine(x_coordinate, y_coordinate, new_z_coordinate, rx_pose, ry_pose, rz_pose)
         self.construct_and_send_command(arm_ikine_solves, speed_percentage)
@@ -848,22 +860,16 @@ class TeachPage(QFrame, teach_page_frame):
             self.add_item()
 
     @Slot()
-    def tool_coordinate_step_add(self):
-        """末端工具坐标步长增加"""
-        # 获取末端工具 edit 的值
-        old_coordiante_step = round(float(self.CoordinateStepEdit.text().strip()), 2)
-        now_coordiante_step = round(old_coordiante_step + 0.01, 2)
-        # 更新末端工具坐标步长值
-        self.CoordinateStepEdit.setText(str(now_coordiante_step))
-    
-    @Slot()
-    def tool_coordinate_step_sub(self):
-        """末端工具坐标步长减少"""
-        # 获取末端工具 edit 的值
-        old_coordiante_step = round(float(self.CoordinateStepEdit.text().strip()), 2)
-        new_coordiante_step = round(old_coordiante_step - 0.01, 2)
-        # 更新末端工具坐标步长值
-        self.CoordinateStepEdit.setText(str(new_coordiante_step))
+    def tool_coordinate_step_modify(self, action="add"):
+        """末端工具坐标步长增减函数"""
+        old_coordinate_step = round(float(self.CoordinateStepEdit.text().strip()), 2)
+        if action == "add":
+            new_coordinate_step = round(old_coordinate_step + 0.01, 2)
+        else:
+            new_coordinate_step = round(old_coordinate_step - 0.01, 2)
+            
+        logger.debug(f"末端工具坐标步长设置为: {new_coordinate_step}")
+        self.CoordinateStepEdit.setText(str(new_coordinate_step))
     
     @Slot()
     def tool_rx_operate(self, action="add"):
@@ -885,10 +891,13 @@ class TeachPage(QFrame, teach_page_frame):
         if action == "add":
             new_rx_pose = old_rx_pose + change_value
             self.RxAxisEdit.setText(str(new_rx_pose))  # 更新末端工具姿态 Rx
+            logger.debug(f"末端工具翻滚姿态 Rx: {new_rx_pose} 度")
         else:
             new_rx_pose = old_rx_pose - change_value
             self.RxAxisEdit.setText(str(new_rx_pose))  # 更新末端工具姿态 Rx
-            
+            logger.debug(f"末端工具翻滚姿态 Rx: {new_rx_pose} 度")
+        
+        
         # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
         arm_ikine_solves = self.get_arm_ikine(x_coordinate, y_coordinate, z_coordinate, new_rx_pose, ry_pose, rz_pose)
         self.construct_and_send_command(arm_ikine_solves, speed_percentage)
@@ -913,13 +922,17 @@ class TeachPage(QFrame, teach_page_frame):
         change_value = round(float(self.ApStepEdit.text().strip()), 2)  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
+        
+        
         # 根据按钮加减增减数值
         if action == "add":
             new_ry_pose = old_ry_pose + change_value
-            self.RyAxisEdit.setText(str(new_ry_pose))  # 更新末端工具姿态 Ry
+            self.RyAxisEdit.setText(str(new_ry_pose))
+            logger.debug(f"末端工具俯仰姿态 Ry: {new_ry_pose} 度")
         else:
             new_ry_pose = old_ry_pose - change_value
-            self.RyAxisEdit.setText(str(new_ry_pose))  # 更新末端工具姿态 Ry
+            self.RyAxisEdit.setText(str(new_ry_pose))
+            logger.debug(f"末端工具俯仰姿态 Ry: {new_ry_pose} 度")
             
         # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
         arm_ikine_solves = self.get_arm_ikine(x_coordinate, y_coordinate, z_coordinate, rx_pose, new_ry_pose, rz_pose)
@@ -945,13 +958,17 @@ class TeachPage(QFrame, teach_page_frame):
         change_value = round(float(self.ApStepEdit.text().strip()), 2)  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
+        
+        
         # 根据按钮加减增减数值
         if action == "add":
             new_rz_pose = old_rz_pose + change_value
             self.RzAxisEdit.setText(str(new_rz_pose))  # 更新末端工具姿态 Rz
+            logger.debug(f"末端工具偏航姿态 Rz: {new_rz_pose} 度")
         else:
             new_rz_pose = old_rz_pose - change_value
             self.RzAxisEdit.setText(str(new_rz_pose))  # 更新末端工具姿态 Rz
+            logger.debug(f"末端工具偏航姿态 Rz: {new_rz_pose} 度")
             
         # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
         arm_ikine_solves = self.get_arm_ikine(x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, new_rz_pose)
@@ -962,22 +979,17 @@ class TeachPage(QFrame, teach_page_frame):
             self.add_item()
     
     @Slot()
-    def tool_pose_step_add(self):
-        """末端工具姿态步长增加"""
-        # 获取末端工具姿态步长值
+    def tool_pose_step_modify(self, action="add"):
+        """末端工具姿态步长增减函数"""
         old_pose_step = round(float(self.ApStepEdit.text().strip()), 2)
-        new_poset_step = round(old_pose_step + 1, 2)
-        # 更新末端工具姿态步长值
-        self.ApStepEdit.setText(str(new_poset_step))
-    
-    @Slot()
-    def tool_pose_step_sub(self):
-        """末端工具姿态步长减少"""
-        # 校验末端工具姿态步长值，必须为数字
-        old_pose_step = round(float(self.ApStepEdit.text().strip()), 2)
-        new_poset_step = round(old_pose_step - 1, 2)
-        # 更新末端工具姿态步长值
-        self.ApStepEdit.setText(str(new_poset_step))
+        if action == "add":
+            new_pose_step = round(old_pose_step + 1, 2)
+        elif action == "sub":
+            new_pose_step = round(old_pose_step - 1, 2)
+        else:
+            raise ValueError("action 参数只能为 add 或 sub")
+        logger.debug(f"末端工具姿态步长设置为: {new_pose_step}")
+        self.ApStepEdit.setText(str(new_pose_step))
     
     # 一些 qt 界面的常用的抽象操作
     def update_table_cell_widget(self, row, col, widget):
@@ -1082,7 +1094,6 @@ class TeachPage(QFrame, teach_page_frame):
         self.JointFourEdit.setText(display_q4)
         self.JointFiveEdit.setText(display_q5)
         self.JointSixEdit.setText(display_q6)
-        # logger.debug(f"显示的角度值: {[display_q1, display_q2, display_q3, display_q4, display_q5, display_q6]}")
     
     def update_arm_pose_text(self, arm_pose_data: list):
         """更新界面上机械臂末端工具的坐标和姿态值"""
@@ -1120,9 +1131,9 @@ class TeachPage(QFrame, teach_page_frame):
                     self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
                     return
             elif i == 4:
-                if d < -180 or d > 10:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 10]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 10]")
+                if d < -180 or d > 45:
+                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 45]")
+                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 45]")
                     return
             elif i == 5:
                 if d < -180 or d > 180:
@@ -1132,17 +1143,15 @@ class TeachPage(QFrame, teach_page_frame):
                 
         speed_degree_data.extend(joint_degrees)
         command = json.dumps({"command": "set_joint_angle_all_time", "data": speed_degree_data}).replace(' ', "") + '\r\n'
-
+        logger.debug(f"逆解后的所有关节角度值: {joint_degrees}")
         # 发送命令
         self.command_queue.put((2, command.encode()))
         
     def get_arm_ikine(self, x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose) -> list:
         """计算机械臂的逆解"""
-        logger.debug(f"逆解算法参数: {x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose}")
         R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rx_pose, ry_pose, rz_pose], unit='deg', order='zyx')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         joint_degrees = [round(degrees(d), 3) for d in sol.q]
-        logger.debug(f"逆解算法结果: {joint_degrees}")
         return joint_degrees
     
      
@@ -1298,14 +1307,14 @@ class ConnectPage(QFrame, connect_page_frame):
                 
                 # 启用实时获取机械臂角度线程
                 self.angle_degree_thread.start()
-                logger.info("开始后台获取机械臂角度")
+                logger.info("后台获取机械臂角度开始")
                 
                 # 启用轮询队列中所有命令的线程
                 # 后台轮询命令队列，并发送的优先级最高的命令
                 self.command_sender_thread.start()
                     
-                logger.info("开启命令发送线程")
-                logger.warning("禁用连接机械臂按钮!")
+                logger.info("命令发送线程开启")
+                logger.warning("连接机械臂按钮禁用!")
                 
         except Exception as e:
             # 连接失败后，将连接机械臂按钮启用
