@@ -1288,7 +1288,6 @@ class ConnectPage(QFrame, connect_page_frame):
     def connect_to_robot_arm(self):
         """连接机械臂"""
         
-        # self.initialize_values()
         try:
             # 检查网络连接状态
             robot_arm_client = self.get_robot_arm_connector()

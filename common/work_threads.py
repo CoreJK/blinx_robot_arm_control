@@ -1,5 +1,4 @@
 import json
-import sys
 import shelve
 from queue import PriorityQueue, Queue
 
@@ -58,14 +57,13 @@ class AgnleDegreeWatchTask(QThread):
 class CommandSenderTask(QThread):
     """发送命令的线程"""
     
-    
     def __init__(self, command_queue: PriorityQueue, joints_angle_queue: Queue, joints_sync_move_time_queue: Queue):
         super().__init__()
         self.command_queue = command_queue
         self.joints_angle_queue = joints_angle_queue
         self.joints_sync_move_time_queue = joints_sync_move_time_queue
         self.is_on = True
-        
+    
     def run(self):
         with self.get_robot_arm_connector() as conn:
             while self.is_on:
