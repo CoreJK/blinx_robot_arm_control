@@ -85,6 +85,10 @@ class CommandSenderTask(QThread):
                             # 解析机械臂角度获取返回的信息
                             angle_data_list = response['data']
                             self.joints_angle_queue.put(angle_data_list)
+                        elif response["return"] == "set_joint_angle":
+                            joint_move_time = response['data']
+                            # todo 获取单个 joint 运动到目标位置所需的时间
+                            logger.debug(f"单个 joint 运动到目标位置预计耗时: {joint_move_time} s")
                         elif response["return"] == "set_joint_angle_all_time":
                             # 解析机械臂协同运动到目标位置所需耗时的信息
                             if response['data'] != False:
