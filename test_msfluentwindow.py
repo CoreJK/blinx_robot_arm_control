@@ -12,13 +12,13 @@ import common.settings as settings
 from common.blinx_robot_module import Mirobot
 from common.check_tools import check_robot_arm_connection
 from common.socket_client import ClientSocket, Worker
-from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask
+from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask, UpdateDelayTimeTask
 
 # UI 相关模块
 from PySide6.QtCore import Qt, QThreadPool, Slot, QUrl
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
-from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, NavigationItemPosition, MessageBox)
+from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, NavigationItemPosition, MessageBox, setThemeColor)
 from qfluentwidgets import FluentIcon as FIF
 
 # 导入子页面控件布局文件
@@ -89,7 +89,7 @@ class CommandPage(QFrame, command_page_frame):
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""
-    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: PriorityQueue, parent=None):
+    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: PriorityQueue, joints_sync_move_time_queue: Queue, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
@@ -99,6 +99,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
         self.joints_angle_queue = joints_angle_queue  # 查询到的机械臂关节角度队列
+        self.joints_sync_move_time_queue = joints_sync_move_time_queue # 机械臂协同运动到目标位置所需耗时队列
         self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
         self.message_box = BlinxMessageBox(self)
         
@@ -211,9 +212,12 @@ class TeachPage(QFrame, teach_page_frame):
         """后台任务启动"""
         logger.info("获取机械臂的关节角度信息线程启动!")
         self.update_joint_angles_thread = UpdateJointAnglesTask(self.joints_angle_queue)
+        self.update_delay_time_thread = UpdateDelayTimeTask(self.joints_sync_move_time_queue)
         self.update_joint_angles_thread.start()
+        self.update_delay_time_thread.start()
         self.update_joint_angles_thread.joint_angles_update_signal.connect(self.update_joint_degrees_text)
         self.update_joint_angles_thread.arm_endfactor_positions_update_signal.connect(self.update_arm_pose_text)
+        self.update_delay_time_thread.joint_sync_move_time_update_signal.connect(self.update_joint_sync_move_delay_time)
 
     # 顶部工具栏
     @Slot()                    
@@ -326,6 +330,7 @@ class TeachPage(QFrame, teach_page_frame):
         # todo 如果开始与结束行为空，则按顺序从头执行所有动作
         for row in range(self.ActionTableWidget.rowCount()):
             delay_time = self.run_action(row)
+            logger.warning(f"机械臂正在执行第 {row + 1} 个动作")
             self.TeachArmRunLogWindow.appendPlainText(f"机械臂正在执行第 {row + 1} 个动作")
             time.sleep(delay_time)  # 等待动作执行完成
     
@@ -363,8 +368,8 @@ class TeachPage(QFrame, teach_page_frame):
         self.command_queue.put((2, str_command.encode()))
         
         # 末端工具动作
-        logger.info("单次执行，开关控制")
         if type_of_tool == "吸盘":
+            logger.info("单次执行，开关控制")   
             tool_status = True if tool_switch == "开" else False
             json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
@@ -710,6 +715,7 @@ class TeachPage(QFrame, teach_page_frame):
         """
         command = json.dumps({"command": "set_joint_return_to_zero", "data": [0]}).replace('', "") + '\r\n'
         self.command_queue.put((1, command.encode()))
+        self.JointDelayTimeEdit.setText("0")  # 复位时延时时间设置为 0
         self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
         logger.warning("机械臂复位中!请注意手臂姿态")
         
@@ -718,6 +724,7 @@ class TeachPage(QFrame, teach_page_frame):
         """机械臂复位到初始位姿"""
         command = json.dumps({"command": "set_joint_angle_all", "data": [100, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}).replace(' ', "") + '\r\n'
         self.command_queue.put((1, command.encode()))
+        self.JointDelayTimeEdit.setText("0")  # 归零时延时时间设置为 0
         self.message_box.warning_message_box("机械臂回到初始角度中!\n请注意手臂姿态")
         logger.warning("机械臂回到初始位姿中!")
         
@@ -1106,52 +1113,32 @@ class TeachPage(QFrame, teach_page_frame):
         self.RyAxisEdit.setText(str(round(self.ry, 3)))
         self.RzAxisEdit.setText(str(round(self.rz, 3)))
 
+    def update_joint_sync_move_delay_time(self, delay_time: float):
+        """更新机械臂协同运动的延时时间"""
+        self.JointDelayTimeEdit.setText(str(delay_time))
+    
     def construct_and_send_command(self, joint_degrees, speed_percentage):
         """构造逆解后的发送命令"""
-        speed_degree_data = [speed_percentage]
-        for i, d in enumerate(joint_degrees):
-            if i == 0:
-                if d < -140 or d > 140:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-140, 140]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-140, 140]")
-                    return
-            elif i == 1:
-                if d < -70 or d > 70:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-70, 70]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-70, 70]")
-                    return
-            elif i == 2:
-                if d < -60 or d > 45:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-60, 45]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
-                    return
-            elif i == 3:
-                if d < -150 or d > 150:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-150, 150]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-60, 45]")
-                    return
-            elif i == 4:
-                if d < -180 or d > 45:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 45]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 45]")
-                    return
-            elif i == 5:
-                if d < -180 or d > 180:
-                    logger.warning(f"第{i + 1}关节角度超出范围: [-180, 180]")
-                    self.message_box.warning_message_box(message=f"第{i + 1}关节角度超出范围: [-180, 180]")
-                    return
-                
-        speed_degree_data.extend(joint_degrees)
-        command = json.dumps({"command": "set_joint_angle_all_time", "data": speed_degree_data}).replace(' ', "") + '\r\n'
-        logger.debug(f"逆解后的所有关节角度值: {joint_degrees}")
-        # 发送命令
-        self.command_queue.put((2, command.encode()))
+        if joint_degrees is not None:
+            speed_degree_data = [speed_percentage]
+            speed_degree_data.extend(joint_degrees)
+            command = json.dumps({"command": "set_joint_angle_all_time", "data": speed_degree_data}).replace(' ', "") + '\r\n'
+            logger.debug(f"逆解后的所有关节角度值: {joint_degrees}")
+            # 发送命令
+            self.command_queue.put((2, command.encode()))
+        else:
+            logger.error("关节运动范围超出关节运动范围!")
+            self.message_box.error_message_box("关节运动范围超限!")
         
     def get_arm_ikine(self, x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose) -> list:
         """计算机械臂的逆解"""
         R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rx_pose, ry_pose, rz_pose], unit='deg', order='zyx')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        joint_degrees = [round(degrees(d), 3) for d in sol.q]
+        if sol.success:
+            joint_degrees = [round(degrees(d), 3) for d in sol.q]
+        else:
+            joint_degrees = None
+        
         return joint_degrees
     
      
@@ -1165,8 +1152,8 @@ class ConnectPage(QFrame, connect_page_frame):
         
         # 开启 QT 线程池
         self.command_queue = command_queue
-        self.joints_sync_move_time_queue = joints_sync_move_time_queue
         self.joints_angle_queue = joints_angle_queue
+        self.joints_sync_move_time_queue = joints_sync_move_time_queue
         
         self.init_task_thread()
         
@@ -1351,11 +1338,11 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         super().__init__()
         self.command_queue = PriorityQueue()  # 控件发送的命令队列
         self.joints_angle_queue = Queue()  # 查询到关节角度信息的队列
-        self.joint_sync_move_time_queue = Queue()  # 所有关节同步移动需要的时间队列
+        self.joints_sync_move_time_queue = Queue()  # 所有关节同步移动需要的时间队列
         self.threadpool = QThreadPool()
         self.commandInterface = CommandPage('命令控制', self)
-        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.joints_angle_queue, self)
-        self.connectionInterface = ConnectPage('连接设置', self.command_queue, self.joints_angle_queue, self.joint_sync_move_time_queue, self)
+        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue, self)
+        self.connectionInterface = ConnectPage('连接设置', self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue, self)
         
         self.initNavigation()
         self.initWindow()

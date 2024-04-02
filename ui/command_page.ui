@@ -26,7 +26,11 @@
         </widget>
        </item>
        <item>
-        <widget class="PlainTextEdit" name="CommandSendWindow"/>
+        <widget class="PlainTextEdit" name="CommandSendWindow">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="StrongBodyLabel" name="ResponseLabel">
@@ -36,7 +40,11 @@
         </widget>
        </item>
        <item>
-        <widget class="PlainTextEdit" name="CommandResWindow"/>
+        <widget class="PlainTextEdit" name="CommandResWindow">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>

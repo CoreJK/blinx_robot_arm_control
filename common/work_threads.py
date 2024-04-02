@@ -37,7 +37,24 @@ class UpdateJointAnglesTask(QThread):
                 R_x, P_y, Y_z = translation_vector.rpy(unit='deg', order='zyx')  # 末端姿态
                 self.arm_endfactor_positions_update_signal.emit([X, Y, Z, R_x, P_y, Y_z])
             self.sleep(0.1)
+
+
+class UpdateDelayTimeTask(QThread):
+    """更新上位机控制机械臂运动到目标位置所需的时间"""
+    joint_sync_move_time_update_signal = Signal(float)
     
+    def __init__(self, joints_sync_move_time_queue: Queue):
+        super().__init__()
+        self.joints_sync_move_time_queue = joints_sync_move_time_queue
+        self.is_on = True
+        
+    def run(self):
+        while self.is_on:
+            if not self.joints_sync_move_time_queue.empty():
+                joint_sync_move_time = self.joints_sync_move_time_queue.get()
+                self.joint_sync_move_time_update_signal.emit(round(joint_sync_move_time, 3))
+            self.sleep(0.1)
+            
             
 class AgnleDegreeWatchTask(QThread):
     """获取关节角度值的线程"""
