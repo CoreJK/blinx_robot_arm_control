@@ -207,18 +207,60 @@ class connect_page_frame(object):
         self.TargetPortLabel.setText(QCoreApplication.translate("Frame", u"\u7aef\u53e3\u53f7", None))
         self.TargetIpLabel.setText(QCoreApplication.translate("Frame", u"\u76ee\u6807 IP", None))
         self.IpPortInfoRestButton.setText(QCoreApplication.translate("Frame", u"\u91cd\u7f6e", None))
+        self.IpPortInfoRestButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.IpPortInfoSubmitButton.setText(QCoreApplication.translate("Frame", u"\u786e\u5b9a", None))
+        self.IpPortInfoSubmitButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.RobotArmLinkButton.setText(QCoreApplication.translate("Frame", u"\u8fde\u63a5\u673a\u68b0\u81c2", None))
+        self.RobotArmLinkButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.HeaderCardWidget_2.setTitle(QCoreApplication.translate("Frame", u"\u673a\u68b0\u81c2 WiFi \u6a21\u5f0f\u914d\u7f6e", None))
         self.WiFiPasswdLabel.setText(QCoreApplication.translate("Frame", u"WiFi \u5bc6\u7801", None))
         self.WiFiSsidLabel.setText(QCoreApplication.translate("Frame", u"WiFi SSID", None))
         self.WiFiInfoReset.setText(QCoreApplication.translate("Frame", u"\u91cd\u7f6e", None))
+        self.WiFiInfoReset.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.WiFiInfoSubmit.setText(QCoreApplication.translate("Frame", u"\u786e\u5b9a", None))
+        self.WiFiInfoSubmit.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.HeaderCardWidget_3.setTitle(QCoreApplication.translate("Frame", u"\u673a\u68b0\u81c2\u4e32\u53e3\u8fde\u63a5\u914d\u7f6e", None))
         self.BaudRatesLabel.setText(QCoreApplication.translate("Frame", u"\u6ce2\u7279\u7387", None))
         self.SerialNumLabel.setText(QCoreApplication.translate("Frame", u"COM \u53e3", None))
         self.BaudRatesComboBox.setText(QCoreApplication.translate("Frame", u"115200", None))
         self.SbInfoFreshButton.setText(QCoreApplication.translate("Frame", u"\u5237\u65b0", None))
+        self.SbInfoFreshButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.SbInfoSubmitButton.setText(QCoreApplication.translate("Frame", u"\u786e\u5b9a", None))
+        self.SbInfoSubmitButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
     # retranslateUi
 

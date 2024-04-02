@@ -69,6 +69,14 @@
          <property name="text">
           <string>发送</string>
          </property>
+         <property name="lightCustomQss" stdset="0">
+          <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
+         </property>
         </widget>
        </item>
       </layout>

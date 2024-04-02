@@ -65,6 +65,14 @@
              <property name="hasIcon" stdset="0">
               <bool>false</bool>
              </property>
+             <property name="lightCustomQss" stdset="0">
+              <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
+             </property>
             </widget>
            </item>
            <item>
@@ -74,6 +82,14 @@
              </property>
              <property name="hasIcon" stdset="0">
               <bool>false</bool>
+             </property>
+             <property name="lightCustomQss" stdset="0">
+              <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
              </property>
             </widget>
            </item>
@@ -104,6 +120,14 @@
         </property>
         <property name="hasIcon" stdset="0">
          <bool>false</bool>
+        </property>
+        <property name="lightCustomQss" stdset="0">
+         <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
         </property>
        </widget>
       </widget>
@@ -154,12 +178,28 @@
              <property name="text">
               <string>重置</string>
              </property>
+             <property name="lightCustomQss" stdset="0">
+              <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
+             </property>
             </widget>
            </item>
            <item>
             <widget class="PushButton" name="WiFiInfoSubmit">
              <property name="text">
               <string>确定</string>
+             </property>
+             <property name="lightCustomQss" stdset="0">
+              <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
              </property>
             </widget>
            </item>
@@ -225,12 +265,28 @@
              <property name="text">
               <string>刷新</string>
              </property>
+             <property name="lightCustomQss" stdset="0">
+              <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
+             </property>
             </widget>
            </item>
            <item>
             <widget class="PushButton" name="SbInfoSubmitButton">
              <property name="text">
               <string>确定</string>
+             </property>
+             <property name="lightCustomQss" stdset="0">
+              <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
              </property>
             </widget>
            </item>

@@ -38,6 +38,7 @@ class command_page_frame(object):
 
         self.CommandSendWindow = PlainTextEdit(Frame)
         self.CommandSendWindow.setObjectName(u"CommandSendWindow")
+        self.CommandSendWindow.setReadOnly(True)
 
         self.verticalLayout.addWidget(self.CommandSendWindow)
 
@@ -48,6 +49,7 @@ class command_page_frame(object):
 
         self.CommandResWindow = PlainTextEdit(Frame)
         self.CommandResWindow.setObjectName(u"CommandResWindow")
+        self.CommandResWindow.setReadOnly(True)
 
         self.verticalLayout.addWidget(self.CommandResWindow)
 
@@ -94,5 +96,11 @@ class command_page_frame(object):
         self.ResponseLabel.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u63a5\u6536", None))
         self.CommandArmRunLogLabel.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u7f16\u8f91\u7a97\u53e3", None))
         self.CommandSendButton.setText(QCoreApplication.translate("Frame", u"\u53d1\u9001", None))
+        self.CommandSendButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
     # retranslateUi
 

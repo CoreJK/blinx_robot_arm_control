@@ -39,10 +39,18 @@ class teach_page_frame(object):
         self.TeachLayout.setObjectName(u"TeachLayout")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalSpacer_30 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer_30)
+
         self.ActionImportButton = ToolButton(Frame)
         self.ActionImportButton.setObjectName(u"ActionImportButton")
 
         self.horizontalLayout.addWidget(self.ActionImportButton)
+
+        self.horizontalSpacer_31 = QSpacerItem(5, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer_31)
 
         self.ActionOutputButton = ToolButton(Frame)
         self.ActionOutputButton.setObjectName(u"ActionOutputButton")
@@ -98,6 +106,10 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addWidget(self.ActionLoopTimes)
 
+        self.horizontalSpacer_27 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer_27)
+
 
         self.TeachLayout.addLayout(self.horizontalLayout)
 
@@ -134,6 +146,10 @@ class teach_page_frame(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalSpacer_29 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer_29)
+
         self.ActionDeleteButton = ToolButton(Frame)
         self.ActionDeleteButton.setObjectName(u"ActionDeleteButton")
 
@@ -173,6 +189,10 @@ class teach_page_frame(object):
         self.ActionUpdateColButton.setObjectName(u"ActionUpdateColButton")
 
         self.horizontalLayout_2.addWidget(self.ActionUpdateColButton)
+
+        self.horizontalSpacer_28 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer_28)
 
 
         self.TeachLayout.addLayout(self.horizontalLayout_2)
@@ -222,10 +242,18 @@ class teach_page_frame(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.JointOneLaylout = QHBoxLayout()
         self.JointOneLaylout.setObjectName(u"JointOneLaylout")
+        self.horizontalSpacer_40 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointOneLaylout.addItem(self.horizontalSpacer_40)
+
         self.JointOneLabel = StrongBodyLabel(self.ArmAngleControlCard)
         self.JointOneLabel.setObjectName(u"JointOneLabel")
 
         self.JointOneLaylout.addWidget(self.JointOneLabel)
+
+        self.horizontalSpacer_2 = QSpacerItem(22, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointOneLaylout.addItem(self.horizontalSpacer_2)
 
         self.JointOneSubButton = ToolButton(self.ArmAngleControlCard)
         self.JointOneSubButton.setObjectName(u"JointOneSubButton")
@@ -244,15 +272,27 @@ class teach_page_frame(object):
 
         self.JointOneLaylout.addWidget(self.JointOneAddButton)
 
+        self.horizontalSpacer_49 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointOneLaylout.addItem(self.horizontalSpacer_49)
+
 
         self.verticalLayout_2.addLayout(self.JointOneLaylout)
 
         self.JointTwolout = QHBoxLayout()
         self.JointTwolout.setObjectName(u"JointTwolout")
+        self.horizontalSpacer_41 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointTwolout.addItem(self.horizontalSpacer_41)
+
         self.JointTwoLabel = StrongBodyLabel(self.ArmAngleControlCard)
         self.JointTwoLabel.setObjectName(u"JointTwoLabel")
 
         self.JointTwolout.addWidget(self.JointTwoLabel)
+
+        self.horizontalSpacer_9 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointTwolout.addItem(self.horizontalSpacer_9)
 
         self.JointTwoSubButton = ToolButton(self.ArmAngleControlCard)
         self.JointTwoSubButton.setObjectName(u"JointTwoSubButton")
@@ -271,15 +311,27 @@ class teach_page_frame(object):
 
         self.JointTwolout.addWidget(self.JointTwoAddButton)
 
+        self.horizontalSpacer_50 = QSpacerItem(10, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+
+        self.JointTwolout.addItem(self.horizontalSpacer_50)
+
 
         self.verticalLayout_2.addLayout(self.JointTwolout)
 
         self.JointThreeLaylout = QHBoxLayout()
         self.JointThreeLaylout.setObjectName(u"JointThreeLaylout")
+        self.horizontalSpacer_42 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointThreeLaylout.addItem(self.horizontalSpacer_42)
+
         self.JointThreeLabel = StrongBodyLabel(self.ArmAngleControlCard)
         self.JointThreeLabel.setObjectName(u"JointThreeLabel")
 
         self.JointThreeLaylout.addWidget(self.JointThreeLabel)
+
+        self.horizontalSpacer_10 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointThreeLaylout.addItem(self.horizontalSpacer_10)
 
         self.JointThreeSubButton = ToolButton(self.ArmAngleControlCard)
         self.JointThreeSubButton.setObjectName(u"JointThreeSubButton")
@@ -298,15 +350,27 @@ class teach_page_frame(object):
 
         self.JointThreeLaylout.addWidget(self.JointThreeAddButton)
 
+        self.horizontalSpacer_51 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointThreeLaylout.addItem(self.horizontalSpacer_51)
+
 
         self.verticalLayout_2.addLayout(self.JointThreeLaylout)
 
         self.JointFourLaylout = QHBoxLayout()
         self.JointFourLaylout.setObjectName(u"JointFourLaylout")
+        self.horizontalSpacer_43 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointFourLaylout.addItem(self.horizontalSpacer_43)
+
         self.JointFourLabel = StrongBodyLabel(self.ArmAngleControlCard)
         self.JointFourLabel.setObjectName(u"JointFourLabel")
 
         self.JointFourLaylout.addWidget(self.JointFourLabel)
+
+        self.horizontalSpacer_11 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointFourLaylout.addItem(self.horizontalSpacer_11)
 
         self.JointFourSubButton = ToolButton(self.ArmAngleControlCard)
         self.JointFourSubButton.setObjectName(u"JointFourSubButton")
@@ -325,15 +389,27 @@ class teach_page_frame(object):
 
         self.JointFourLaylout.addWidget(self.JointFourAddButton)
 
+        self.horizontalSpacer_52 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointFourLaylout.addItem(self.horizontalSpacer_52)
+
 
         self.verticalLayout_2.addLayout(self.JointFourLaylout)
 
         self.JointFiveLaylout = QHBoxLayout()
         self.JointFiveLaylout.setObjectName(u"JointFiveLaylout")
+        self.horizontalSpacer_44 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointFiveLaylout.addItem(self.horizontalSpacer_44)
+
         self.JointFiveLabel = StrongBodyLabel(self.ArmAngleControlCard)
         self.JointFiveLabel.setObjectName(u"JointFiveLabel")
 
         self.JointFiveLaylout.addWidget(self.JointFiveLabel)
+
+        self.horizontalSpacer_12 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointFiveLaylout.addItem(self.horizontalSpacer_12)
 
         self.JointFiveSubButton = ToolButton(self.ArmAngleControlCard)
         self.JointFiveSubButton.setObjectName(u"JointFiveSubButton")
@@ -352,15 +428,27 @@ class teach_page_frame(object):
 
         self.JointFiveLaylout.addWidget(self.JointFiveAddButton)
 
+        self.horizontalSpacer_53 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointFiveLaylout.addItem(self.horizontalSpacer_53)
+
 
         self.verticalLayout_2.addLayout(self.JointFiveLaylout)
 
         self.JointSixLaylout = QHBoxLayout()
         self.JointSixLaylout.setObjectName(u"JointSixLaylout")
+        self.horizontalSpacer_45 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointSixLaylout.addItem(self.horizontalSpacer_45)
+
         self.JointSixLabel = StrongBodyLabel(self.ArmAngleControlCard)
         self.JointSixLabel.setObjectName(u"JointSixLabel")
 
         self.JointSixLaylout.addWidget(self.JointSixLabel)
+
+        self.horizontalSpacer_13 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointSixLaylout.addItem(self.horizontalSpacer_13)
 
         self.JointSixSubButton = ToolButton(self.ArmAngleControlCard)
         self.JointSixSubButton.setObjectName(u"JointSixSubButton")
@@ -379,15 +467,27 @@ class teach_page_frame(object):
 
         self.JointSixLaylout.addWidget(self.JointSixAddButton)
 
+        self.horizontalSpacer_54 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointSixLaylout.addItem(self.horizontalSpacer_54)
+
 
         self.verticalLayout_2.addLayout(self.JointSixLaylout)
 
         self.JointAngleStepLaylout = QHBoxLayout()
         self.JointAngleStepLaylout.setObjectName(u"JointAngleStepLaylout")
+        self.horizontalSpacer_46 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointAngleStepLaylout.addItem(self.horizontalSpacer_46)
+
         self.JointStepLabel = StrongBodyLabel(self.ArmAngleControlCard)
         self.JointStepLabel.setObjectName(u"JointStepLabel")
 
         self.JointAngleStepLaylout.addWidget(self.JointStepLabel)
+
+        self.horizontalSpacer_14 = QSpacerItem(27, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointAngleStepLaylout.addItem(self.horizontalSpacer_14)
 
         self.JointStepSubButton = ToolButton(self.ArmAngleControlCard)
         self.JointStepSubButton.setObjectName(u"JointStepSubButton")
@@ -405,15 +505,27 @@ class teach_page_frame(object):
 
         self.JointAngleStepLaylout.addWidget(self.JointStepAddButton)
 
+        self.horizontalSpacer_55 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointAngleStepLaylout.addItem(self.horizontalSpacer_55)
+
 
         self.verticalLayout_2.addLayout(self.JointAngleStepLaylout)
 
         self.JointSpeedLaylout = QHBoxLayout()
         self.JointSpeedLaylout.setObjectName(u"JointSpeedLaylout")
+        self.horizontalSpacer_47 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointSpeedLaylout.addItem(self.horizontalSpacer_47)
+
         self.JointSpeedLabel = StrongBodyLabel(self.ArmAngleControlCard)
         self.JointSpeedLabel.setObjectName(u"JointSpeedLabel")
 
         self.JointSpeedLaylout.addWidget(self.JointSpeedLabel)
+
+        self.horizontalSpacer_15 = QSpacerItem(27, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointSpeedLaylout.addItem(self.horizontalSpacer_15)
 
         self.JointSpeedDecButton = ToolButton(self.ArmAngleControlCard)
         self.JointSpeedDecButton.setObjectName(u"JointSpeedDecButton")
@@ -431,15 +543,27 @@ class teach_page_frame(object):
 
         self.JointSpeedLaylout.addWidget(self.JointSpeedUpButton)
 
+        self.horizontalSpacer_56 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointSpeedLaylout.addItem(self.horizontalSpacer_56)
+
 
         self.verticalLayout_2.addLayout(self.JointSpeedLaylout)
 
         self.JointDelayTimeLaylout = QHBoxLayout()
         self.JointDelayTimeLaylout.setObjectName(u"JointDelayTimeLaylout")
+        self.horizontalSpacer_48 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointDelayTimeLaylout.addItem(self.horizontalSpacer_48)
+
         self.JointDelayTimeLabel = StrongBodyLabel(self.ArmAngleControlCard)
         self.JointDelayTimeLabel.setObjectName(u"JointDelayTimeLabel")
 
         self.JointDelayTimeLaylout.addWidget(self.JointDelayTimeLabel)
+
+        self.horizontalSpacer_18 = QSpacerItem(27, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointDelayTimeLaylout.addItem(self.horizontalSpacer_18)
 
         self.JointDelayTimeSubButton = ToolButton(self.ArmAngleControlCard)
         self.JointDelayTimeSubButton.setObjectName(u"JointDelayTimeSubButton")
@@ -456,6 +580,10 @@ class teach_page_frame(object):
         self.JointDelayTimeAddButton.setObjectName(u"JointDelayTimeAddButton")
 
         self.JointDelayTimeLaylout.addWidget(self.JointDelayTimeAddButton)
+
+        self.horizontalSpacer_57 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.JointDelayTimeLaylout.addItem(self.horizontalSpacer_57)
 
 
         self.verticalLayout_2.addLayout(self.JointDelayTimeLaylout)
@@ -479,10 +607,18 @@ class teach_page_frame(object):
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.horizontalSpacer_32 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_10.addItem(self.horizontalSpacer_32)
+
         self.XLable = StrongBodyLabel(self.ArmEndToolsCoordinateControlCard)
         self.XLable.setObjectName(u"XLable")
 
         self.horizontalLayout_10.addWidget(self.XLable)
+
+        self.horizontalSpacer_19 = QSpacerItem(32, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_10.addItem(self.horizontalSpacer_19)
 
         self.XAxisSubButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
         self.XAxisSubButton.setObjectName(u"XAxisSubButton")
@@ -501,15 +637,27 @@ class teach_page_frame(object):
 
         self.horizontalLayout_10.addWidget(self.XAxisAddButton)
 
+        self.horizontalSpacer_36 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_10.addItem(self.horizontalSpacer_36)
+
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_10)
 
         self.horizontalLayout_11 = QHBoxLayout()
         self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.horizontalSpacer_33 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_11.addItem(self.horizontalSpacer_33)
+
         self.YLable = StrongBodyLabel(self.ArmEndToolsCoordinateControlCard)
         self.YLable.setObjectName(u"YLable")
 
         self.horizontalLayout_11.addWidget(self.YLable)
+
+        self.horizontalSpacer_20 = QSpacerItem(32, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_11.addItem(self.horizontalSpacer_20)
 
         self.YAxisSubButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
         self.YAxisSubButton.setObjectName(u"YAxisSubButton")
@@ -528,15 +676,27 @@ class teach_page_frame(object):
 
         self.horizontalLayout_11.addWidget(self.YAxisAddButton)
 
+        self.horizontalSpacer_37 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_11.addItem(self.horizontalSpacer_37)
+
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_11)
 
         self.horizontalLayout_13 = QHBoxLayout()
         self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
+        self.horizontalSpacer_34 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_13.addItem(self.horizontalSpacer_34)
+
         self.Zlable = StrongBodyLabel(self.ArmEndToolsCoordinateControlCard)
         self.Zlable.setObjectName(u"Zlable")
 
         self.horizontalLayout_13.addWidget(self.Zlable)
+
+        self.horizontalSpacer_21 = QSpacerItem(32, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_13.addItem(self.horizontalSpacer_21)
 
         self.ZAxisSubButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
         self.ZAxisSubButton.setObjectName(u"ZAxisSubButton")
@@ -555,15 +715,27 @@ class teach_page_frame(object):
 
         self.horizontalLayout_13.addWidget(self.ZAxisAddButton)
 
+        self.horizontalSpacer_38 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_13.addItem(self.horizontalSpacer_38)
+
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_13)
 
         self.horizontalLayout_14 = QHBoxLayout()
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.horizontalSpacer_35 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_14.addItem(self.horizontalSpacer_35)
+
         self.CoordinateStepLable = StrongBodyLabel(self.ArmEndToolsCoordinateControlCard)
         self.CoordinateStepLable.setObjectName(u"CoordinateStepLable")
 
         self.horizontalLayout_14.addWidget(self.CoordinateStepLable)
+
+        self.horizontalSpacer_22 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_14.addItem(self.horizontalSpacer_22)
 
         self.CoordinateStepSubButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
         self.CoordinateStepSubButton.setObjectName(u"CoordinateStepSubButton")
@@ -580,6 +752,10 @@ class teach_page_frame(object):
         self.CoordinateAddButton.setObjectName(u"CoordinateAddButton")
 
         self.horizontalLayout_14.addWidget(self.CoordinateAddButton)
+
+        self.horizontalSpacer_39 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_14.addItem(self.horizontalSpacer_39)
 
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_14)
@@ -603,10 +779,18 @@ class teach_page_frame(object):
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.horizontalLayout_15 = QHBoxLayout()
         self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+        self.horizontalSpacer_58 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_15.addItem(self.horizontalSpacer_58)
+
         self.RxLabel = StrongBodyLabel(self.ArmEndToolsPositionControlCard)
         self.RxLabel.setObjectName(u"RxLabel")
 
         self.horizontalLayout_15.addWidget(self.RxLabel)
+
+        self.horizontalSpacer_23 = QSpacerItem(25, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_15.addItem(self.horizontalSpacer_23)
 
         self.RxAxisSubButton = ToolButton(self.ArmEndToolsPositionControlCard)
         self.RxAxisSubButton.setObjectName(u"RxAxisSubButton")
@@ -625,15 +809,27 @@ class teach_page_frame(object):
 
         self.horizontalLayout_15.addWidget(self.RxAxisAddButton)
 
+        self.horizontalSpacer_62 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_15.addItem(self.horizontalSpacer_62)
+
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_15)
 
         self.horizontalLayout_16 = QHBoxLayout()
         self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
+        self.horizontalSpacer_59 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_16.addItem(self.horizontalSpacer_59)
+
         self.RyLabel = StrongBodyLabel(self.ArmEndToolsPositionControlCard)
         self.RyLabel.setObjectName(u"RyLabel")
 
         self.horizontalLayout_16.addWidget(self.RyLabel)
+
+        self.horizontalSpacer_24 = QSpacerItem(24, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_16.addItem(self.horizontalSpacer_24)
 
         self.RyAxisSubButton = ToolButton(self.ArmEndToolsPositionControlCard)
         self.RyAxisSubButton.setObjectName(u"RyAxisSubButton")
@@ -652,15 +848,27 @@ class teach_page_frame(object):
 
         self.horizontalLayout_16.addWidget(self.RyAxisAddButton)
 
+        self.horizontalSpacer_63 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_16.addItem(self.horizontalSpacer_63)
+
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_16)
 
         self.horizontalLayout_17 = QHBoxLayout()
         self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
+        self.horizontalSpacer_60 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_17.addItem(self.horizontalSpacer_60)
+
         self.RzLabel = StrongBodyLabel(self.ArmEndToolsPositionControlCard)
         self.RzLabel.setObjectName(u"RzLabel")
 
         self.horizontalLayout_17.addWidget(self.RzLabel)
+
+        self.horizontalSpacer_25 = QSpacerItem(24, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_17.addItem(self.horizontalSpacer_25)
 
         self.RzAxisSubButton = ToolButton(self.ArmEndToolsPositionControlCard)
         self.RzAxisSubButton.setObjectName(u"RzAxisSubButton")
@@ -679,15 +887,27 @@ class teach_page_frame(object):
 
         self.horizontalLayout_17.addWidget(self.RzAxisAddButton)
 
+        self.horizontalSpacer_64 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_17.addItem(self.horizontalSpacer_64)
+
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_17)
 
         self.horizontalLayout_18 = QHBoxLayout()
         self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
+        self.horizontalSpacer_61 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_18.addItem(self.horizontalSpacer_61)
+
         self.ApStepLabel = StrongBodyLabel(self.ArmEndToolsPositionControlCard)
         self.ApStepLabel.setObjectName(u"ApStepLabel")
 
         self.horizontalLayout_18.addWidget(self.ApStepLabel)
+
+        self.horizontalSpacer_26 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_18.addItem(self.horizontalSpacer_26)
 
         self.ApStepSubButton = ToolButton(self.ArmEndToolsPositionControlCard)
         self.ApStepSubButton.setObjectName(u"ApStepSubButton")
@@ -704,6 +924,10 @@ class teach_page_frame(object):
         self.ApStepAddButton.setObjectName(u"ApStepAddButton")
 
         self.horizontalLayout_18.addWidget(self.ApStepAddButton)
+
+        self.horizontalSpacer_65 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.horizontalLayout_18.addItem(self.horizontalSpacer_65)
 
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_18)
@@ -824,7 +1048,7 @@ class teach_page_frame(object):
 
         self.retranslateUi(Frame)
 
-        self.ArmActionControlStackWidget.setCurrentIndex(0)
+        self.ArmActionControlStackWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(Frame)
@@ -832,8 +1056,44 @@ class teach_page_frame(object):
 
     def retranslateUi(self, Frame):
         Frame.setWindowTitle(QCoreApplication.translate("Frame", u"Frame", None))
+        Frame.setProperty("lightCustomQss", "")
+        self.ActionImportButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.ActionOutputButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.RecordActivateButton.setText(QCoreApplication.translate("Frame", u"\u5f55\u5236\u6a21\u5f0f", None))
         self.RecordDeActivateButton.setText(QCoreApplication.translate("Frame", u"\u666e\u901a\u6a21\u5f0f", None))
+        self.ActionStepRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.ActionRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.ActionLoopRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.ActionLoopTimes.setText("")
         self.ActionLoopTimes.setPlaceholderText(QCoreApplication.translate("Frame", u"1~100", None))
         ___qtablewidgetitem = self.ActionTableWidget.horizontalHeaderItem(0)
@@ -858,34 +1118,334 @@ class teach_page_frame(object):
         ___qtablewidgetitem9.setText(QCoreApplication.translate("Frame", u"\u5ef6\u65f6", None));
         ___qtablewidgetitem10 = self.ActionTableWidget.horizontalHeaderItem(10)
         ___qtablewidgetitem10.setText(QCoreApplication.translate("Frame", u"\u5907\u6ce8", None));
+        self.ActionDeleteButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(229, 142, 138);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(229, 142, 138);\n"
+"}", None))
+        self.ActionAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(170, 211, 140);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(170, 211, 140);\n"
+"}", None))
+        self.ActionUpdateRowButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(240, 203, 98);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(240, 203, 98);\n"
+"}", None))
+        self.ActionUpdateColButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointOneLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82821", None))
+        self.JointOneSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.JointOneAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointTwoLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82822", None))
+        self.JointTwoSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.JointTwoAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointThreeLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82823", None))
+        self.JointThreeSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.JointThreeAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointFourLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82824", None))
+        self.JointFourSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.JointFourAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointFiveLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82825", None))
+        self.JointFiveSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.JointFiveAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointSixLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82826", None))
+        self.JointSixSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.JointSixAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointStepLabel.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
+        self.JointStepSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointStepEdit.setText(QCoreApplication.translate("Frame", u"5", None))
+        self.JointStepAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointSpeedLabel.setText(QCoreApplication.translate("Frame", u"\u901f\u5ea6", None))
+        self.JointSpeedDecButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointSpeedEdit.setText(QCoreApplication.translate("Frame", u"50", None))
+        self.JointSpeedUpButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointDelayTimeLabel.setText(QCoreApplication.translate("Frame", u"\u5ef6\u65f6", None))
+        self.JointDelayTimeSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.JointDelayTimeEdit.setText(QCoreApplication.translate("Frame", u"1", None))
-        self.XLable.setText(QCoreApplication.translate("Frame", u"X ", None))
-        self.YLable.setText(QCoreApplication.translate("Frame", u"Y ", None))
-        self.Zlable.setText(QCoreApplication.translate("Frame", u"Z ", None))
+        self.JointDelayTimeAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.XLable.setText(QCoreApplication.translate("Frame", u"X", None))
+        self.XLable.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {     background: rgb(0, 170, 255); }  PushButton:hover {     background: rgb(0, 170, 255); }", None))
+        self.XAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.XAxisAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.YLable.setText(QCoreApplication.translate("Frame", u"Y", None))
+        self.YAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.YAxisAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.Zlable.setText(QCoreApplication.translate("Frame", u"Z", None))
+        self.ZAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.ZAxisAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.CoordinateStepLable.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
+        self.CoordinateStepSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.CoordinateStepEdit.setText(QCoreApplication.translate("Frame", u"0.01", None))
+        self.CoordinateAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.RxLabel.setText(QCoreApplication.translate("Frame", u"Rx", None))
+        self.RxAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.RxAxisAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.RyLabel.setText(QCoreApplication.translate("Frame", u"Ry", None))
+        self.RyAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.RyAxisAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.RzLabel.setText(QCoreApplication.translate("Frame", u"Rz", None))
+        self.RzAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.RzAxisAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.ApStepLabel.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
+        self.ApStepSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.ApStepEdit.setText(QCoreApplication.translate("Frame", u"10", None))
+        self.ApStepAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"\n"
+"ToolButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.ArmToolLabel.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177", None))
         self.ArmControlLabel.setText(QCoreApplication.translate("Frame", u"\u63a7\u5236", None))
         self.ArmClawOpenButton.setText(QCoreApplication.translate("Frame", u"\u5f00", None))
+        self.ArmClawOpenButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.ArmClawCloseButton.setText(QCoreApplication.translate("Frame", u"\u5173", None))
+        self.ArmClawCloseButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(229, 142, 138);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(229, 142, 138);\n"
+"}", None))
         self.RobotArmResetButton.setText(QCoreApplication.translate("Frame", u"\u590d\u4f4d", None))
+        self.RobotArmResetButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(240, 203, 98);\n"
+"}\n"
+"\n"
+"PushButton:hover {\n"
+"    background: rgb(240, 203, 98);\n"
+"}", None))
         self.RobotArmZeroButton.setText(QCoreApplication.translate("Frame", u"\u5f52\u96f6", None))
+        self.RobotArmZeroButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(170, 211, 140);\n"
+"}\n"
+"\n"
+"PushButton:hover {\n"
+"    background: rgb(170, 211, 140);\n"
+"}", None))
         self.RobotArmStopButton.setText(QCoreApplication.translate("Frame", u"\u6025\u505c", None))
+        self.RobotArmStopButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(229, 142, 138);\n"
+"}\n"
+"\n"
+"PushButton:hover {\n"
+"    background: rgb(229, 142, 138);\n"
+"}", None))
     # retranslateUi
 
