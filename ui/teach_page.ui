@@ -447,7 +447,7 @@ ToolButton:hover {
        <item>
         <widget class="QStackedWidget" name="ArmActionControlStackWidget">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="ArmAngleControlPage">
           <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -1038,7 +1038,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>10</width>
+                      <width>14</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1061,7 +1061,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>27</width>
+                      <width>24</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1133,7 +1133,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>10</width>
+                      <width>14</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1156,7 +1156,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>27</width>
+                      <width>24</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1228,7 +1228,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>10</width>
+                      <width>14</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1251,7 +1251,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>27</width>
+                      <width>24</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1337,7 +1337,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>10</width>
+                      <width>20</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1363,7 +1363,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>32</width>
+                      <width>22</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1435,7 +1435,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>10</width>
+                      <width>20</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1458,7 +1458,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>32</width>
+                      <width>23</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1530,7 +1530,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>10</width>
+                      <width>21</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1553,7 +1553,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>32</width>
+                      <width>22</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1734,7 +1734,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>10</width>
+                      <width>18</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1757,7 +1757,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>25</width>
+                      <width>17</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1829,7 +1829,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>10</width>
+                      <width>18</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1852,7 +1852,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>24</width>
+                      <width>17</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1924,7 +1924,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>10</width>
+                      <width>18</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1947,7 +1947,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>24</width>
+                      <width>17</width>
                       <height>20</height>
                      </size>
                     </property>

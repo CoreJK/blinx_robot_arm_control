@@ -45,8 +45,8 @@ import faulthandler;faulthandler.enable()
 
 class CommandPage(QFrame, command_page_frame):
     """命令控制页面"""
-    def __init__(self, page_name: str, parent=None):
-        super().__init__(parent=parent)
+    def __init__(self, page_name: str):
+        super().__init__()
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.initButtonIcon()
@@ -89,8 +89,8 @@ class CommandPage(QFrame, command_page_frame):
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""
-    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: PriorityQueue, joints_sync_move_time_queue: Queue, parent=None):
-        super().__init__(parent=parent)
+    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: PriorityQueue, joints_sync_move_time_queue: Queue):
+        super().__init__()
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.initButtonIcon()
@@ -1127,7 +1127,7 @@ class TeachPage(QFrame, teach_page_frame):
             # 发送命令
             self.command_queue.put((2, command.encode()))
         else:
-            logger.error("关节运动范围超出关节运动范围!")
+            logger.error("关节运动范围超出超限!")
             self.message_box.error_message_box("关节运动范围超限!")
         
     def get_arm_ikine(self, x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose) -> list:
@@ -1145,7 +1145,7 @@ class TeachPage(QFrame, teach_page_frame):
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
     def __init__(self, page_name: str, command_queue: PriorityQueue, joints_angle_queue: Queue, joints_sync_move_time_queue: Queue, parent=None):
-        super().__init__(parent=parent)
+        super().__init__()
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.reload_ip_port_history()  # 加载上一次的配置
@@ -1340,9 +1340,9 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         self.joints_angle_queue = Queue()  # 查询到关节角度信息的队列
         self.joints_sync_move_time_queue = Queue()  # 所有关节同步移动需要的时间队列
         self.threadpool = QThreadPool()
-        self.commandInterface = CommandPage('命令控制', self)
-        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue, self)
-        self.connectionInterface = ConnectPage('连接设置', self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue, self)
+        self.commandInterface = CommandPage('命令控制')
+        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue)
+        self.connectionInterface = ConnectPage('连接设置', self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue)
         
         self.initNavigation()
         self.initWindow()

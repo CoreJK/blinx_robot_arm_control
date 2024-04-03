@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'teach_page.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.2
+## Created by: Qt User Interface Compiler version 6.6.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -39,7 +39,7 @@ class teach_page_frame(object):
         self.TeachLayout.setObjectName(u"TeachLayout")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalSpacer_30 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_30 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_30)
 
@@ -48,7 +48,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addWidget(self.ActionImportButton)
 
-        self.horizontalSpacer_31 = QSpacerItem(5, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_31 = QSpacerItem(5, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_31)
 
@@ -57,7 +57,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addWidget(self.ActionOutputButton)
 
-        self.horizontalSpacer = QSpacerItem(320, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(320, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
@@ -82,7 +82,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addWidget(self.ActionStepRunButton)
 
-        self.horizontalSpacer_3 = QSpacerItem(5, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(5, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_3)
 
@@ -91,7 +91,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addWidget(self.ActionRunButton)
 
-        self.horizontalSpacer_4 = QSpacerItem(5, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_4 = QSpacerItem(5, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_4)
 
@@ -106,7 +106,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addWidget(self.ActionLoopTimes)
 
-        self.horizontalSpacer_27 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_27 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_27)
 
@@ -146,7 +146,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalSpacer_29 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_29 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_29)
 
@@ -155,7 +155,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_2.addWidget(self.ActionDeleteButton)
 
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_5)
 
@@ -164,7 +164,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_2.addWidget(self.ActionAddButton)
 
-        self.horizontalSpacer_6 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_6 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_6)
 
@@ -181,7 +181,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_2.addWidget(self.ActionUpdateRowButton)
 
-        self.horizontalSpacer_7 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_7 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_7)
 
@@ -190,7 +190,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_2.addWidget(self.ActionUpdateColButton)
 
-        self.horizontalSpacer_28 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_28 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_28)
 
@@ -242,7 +242,7 @@ class teach_page_frame(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.JointOneLaylout = QHBoxLayout()
         self.JointOneLaylout.setObjectName(u"JointOneLaylout")
-        self.horizontalSpacer_40 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_40 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointOneLaylout.addItem(self.horizontalSpacer_40)
 
@@ -251,7 +251,7 @@ class teach_page_frame(object):
 
         self.JointOneLaylout.addWidget(self.JointOneLabel)
 
-        self.horizontalSpacer_2 = QSpacerItem(22, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(22, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointOneLaylout.addItem(self.horizontalSpacer_2)
 
@@ -272,7 +272,7 @@ class teach_page_frame(object):
 
         self.JointOneLaylout.addWidget(self.JointOneAddButton)
 
-        self.horizontalSpacer_49 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_49 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointOneLaylout.addItem(self.horizontalSpacer_49)
 
@@ -281,7 +281,7 @@ class teach_page_frame(object):
 
         self.JointTwolout = QHBoxLayout()
         self.JointTwolout.setObjectName(u"JointTwolout")
-        self.horizontalSpacer_41 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_41 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointTwolout.addItem(self.horizontalSpacer_41)
 
@@ -290,7 +290,7 @@ class teach_page_frame(object):
 
         self.JointTwolout.addWidget(self.JointTwoLabel)
 
-        self.horizontalSpacer_9 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_9 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointTwolout.addItem(self.horizontalSpacer_9)
 
@@ -311,7 +311,7 @@ class teach_page_frame(object):
 
         self.JointTwolout.addWidget(self.JointTwoAddButton)
 
-        self.horizontalSpacer_50 = QSpacerItem(10, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.horizontalSpacer_50 = QSpacerItem(10, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
         self.JointTwolout.addItem(self.horizontalSpacer_50)
 
@@ -320,7 +320,7 @@ class teach_page_frame(object):
 
         self.JointThreeLaylout = QHBoxLayout()
         self.JointThreeLaylout.setObjectName(u"JointThreeLaylout")
-        self.horizontalSpacer_42 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_42 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointThreeLaylout.addItem(self.horizontalSpacer_42)
 
@@ -329,7 +329,7 @@ class teach_page_frame(object):
 
         self.JointThreeLaylout.addWidget(self.JointThreeLabel)
 
-        self.horizontalSpacer_10 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_10 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointThreeLaylout.addItem(self.horizontalSpacer_10)
 
@@ -350,7 +350,7 @@ class teach_page_frame(object):
 
         self.JointThreeLaylout.addWidget(self.JointThreeAddButton)
 
-        self.horizontalSpacer_51 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_51 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointThreeLaylout.addItem(self.horizontalSpacer_51)
 
@@ -359,7 +359,7 @@ class teach_page_frame(object):
 
         self.JointFourLaylout = QHBoxLayout()
         self.JointFourLaylout.setObjectName(u"JointFourLaylout")
-        self.horizontalSpacer_43 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_43 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointFourLaylout.addItem(self.horizontalSpacer_43)
 
@@ -368,7 +368,7 @@ class teach_page_frame(object):
 
         self.JointFourLaylout.addWidget(self.JointFourLabel)
 
-        self.horizontalSpacer_11 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_11 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointFourLaylout.addItem(self.horizontalSpacer_11)
 
@@ -389,7 +389,7 @@ class teach_page_frame(object):
 
         self.JointFourLaylout.addWidget(self.JointFourAddButton)
 
-        self.horizontalSpacer_52 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_52 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointFourLaylout.addItem(self.horizontalSpacer_52)
 
@@ -398,7 +398,7 @@ class teach_page_frame(object):
 
         self.JointFiveLaylout = QHBoxLayout()
         self.JointFiveLaylout.setObjectName(u"JointFiveLaylout")
-        self.horizontalSpacer_44 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_44 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointFiveLaylout.addItem(self.horizontalSpacer_44)
 
@@ -407,7 +407,7 @@ class teach_page_frame(object):
 
         self.JointFiveLaylout.addWidget(self.JointFiveLabel)
 
-        self.horizontalSpacer_12 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_12 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointFiveLaylout.addItem(self.horizontalSpacer_12)
 
@@ -428,7 +428,7 @@ class teach_page_frame(object):
 
         self.JointFiveLaylout.addWidget(self.JointFiveAddButton)
 
-        self.horizontalSpacer_53 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_53 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointFiveLaylout.addItem(self.horizontalSpacer_53)
 
@@ -437,7 +437,7 @@ class teach_page_frame(object):
 
         self.JointSixLaylout = QHBoxLayout()
         self.JointSixLaylout.setObjectName(u"JointSixLaylout")
-        self.horizontalSpacer_45 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_45 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointSixLaylout.addItem(self.horizontalSpacer_45)
 
@@ -446,7 +446,7 @@ class teach_page_frame(object):
 
         self.JointSixLaylout.addWidget(self.JointSixLabel)
 
-        self.horizontalSpacer_13 = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_13 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointSixLaylout.addItem(self.horizontalSpacer_13)
 
@@ -467,7 +467,7 @@ class teach_page_frame(object):
 
         self.JointSixLaylout.addWidget(self.JointSixAddButton)
 
-        self.horizontalSpacer_54 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_54 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointSixLaylout.addItem(self.horizontalSpacer_54)
 
@@ -476,7 +476,7 @@ class teach_page_frame(object):
 
         self.JointAngleStepLaylout = QHBoxLayout()
         self.JointAngleStepLaylout.setObjectName(u"JointAngleStepLaylout")
-        self.horizontalSpacer_46 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_46 = QSpacerItem(14, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointAngleStepLaylout.addItem(self.horizontalSpacer_46)
 
@@ -485,7 +485,7 @@ class teach_page_frame(object):
 
         self.JointAngleStepLaylout.addWidget(self.JointStepLabel)
 
-        self.horizontalSpacer_14 = QSpacerItem(27, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_14 = QSpacerItem(24, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointAngleStepLaylout.addItem(self.horizontalSpacer_14)
 
@@ -505,7 +505,7 @@ class teach_page_frame(object):
 
         self.JointAngleStepLaylout.addWidget(self.JointStepAddButton)
 
-        self.horizontalSpacer_55 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_55 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointAngleStepLaylout.addItem(self.horizontalSpacer_55)
 
@@ -514,7 +514,7 @@ class teach_page_frame(object):
 
         self.JointSpeedLaylout = QHBoxLayout()
         self.JointSpeedLaylout.setObjectName(u"JointSpeedLaylout")
-        self.horizontalSpacer_47 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_47 = QSpacerItem(14, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointSpeedLaylout.addItem(self.horizontalSpacer_47)
 
@@ -523,7 +523,7 @@ class teach_page_frame(object):
 
         self.JointSpeedLaylout.addWidget(self.JointSpeedLabel)
 
-        self.horizontalSpacer_15 = QSpacerItem(27, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_15 = QSpacerItem(24, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointSpeedLaylout.addItem(self.horizontalSpacer_15)
 
@@ -543,7 +543,7 @@ class teach_page_frame(object):
 
         self.JointSpeedLaylout.addWidget(self.JointSpeedUpButton)
 
-        self.horizontalSpacer_56 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_56 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointSpeedLaylout.addItem(self.horizontalSpacer_56)
 
@@ -552,7 +552,7 @@ class teach_page_frame(object):
 
         self.JointDelayTimeLaylout = QHBoxLayout()
         self.JointDelayTimeLaylout.setObjectName(u"JointDelayTimeLaylout")
-        self.horizontalSpacer_48 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_48 = QSpacerItem(14, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointDelayTimeLaylout.addItem(self.horizontalSpacer_48)
 
@@ -561,7 +561,7 @@ class teach_page_frame(object):
 
         self.JointDelayTimeLaylout.addWidget(self.JointDelayTimeLabel)
 
-        self.horizontalSpacer_18 = QSpacerItem(27, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_18 = QSpacerItem(24, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointDelayTimeLaylout.addItem(self.horizontalSpacer_18)
 
@@ -581,7 +581,7 @@ class teach_page_frame(object):
 
         self.JointDelayTimeLaylout.addWidget(self.JointDelayTimeAddButton)
 
-        self.horizontalSpacer_57 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_57 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointDelayTimeLaylout.addItem(self.horizontalSpacer_57)
 
@@ -607,7 +607,7 @@ class teach_page_frame(object):
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
-        self.horizontalSpacer_32 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_32 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_10.addItem(self.horizontalSpacer_32)
 
@@ -616,7 +616,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_10.addWidget(self.XLable)
 
-        self.horizontalSpacer_19 = QSpacerItem(32, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_19 = QSpacerItem(22, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_10.addItem(self.horizontalSpacer_19)
 
@@ -637,7 +637,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_10.addWidget(self.XAxisAddButton)
 
-        self.horizontalSpacer_36 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_36 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_10.addItem(self.horizontalSpacer_36)
 
@@ -646,7 +646,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_11 = QHBoxLayout()
         self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
-        self.horizontalSpacer_33 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_33 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_11.addItem(self.horizontalSpacer_33)
 
@@ -655,7 +655,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_11.addWidget(self.YLable)
 
-        self.horizontalSpacer_20 = QSpacerItem(32, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_20 = QSpacerItem(23, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_11.addItem(self.horizontalSpacer_20)
 
@@ -676,7 +676,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_11.addWidget(self.YAxisAddButton)
 
-        self.horizontalSpacer_37 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_37 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_11.addItem(self.horizontalSpacer_37)
 
@@ -685,7 +685,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_13 = QHBoxLayout()
         self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
-        self.horizontalSpacer_34 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_34 = QSpacerItem(21, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_13.addItem(self.horizontalSpacer_34)
 
@@ -694,7 +694,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_13.addWidget(self.Zlable)
 
-        self.horizontalSpacer_21 = QSpacerItem(32, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_21 = QSpacerItem(22, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_13.addItem(self.horizontalSpacer_21)
 
@@ -715,7 +715,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_13.addWidget(self.ZAxisAddButton)
 
-        self.horizontalSpacer_38 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_38 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_13.addItem(self.horizontalSpacer_38)
 
@@ -724,7 +724,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_14 = QHBoxLayout()
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
-        self.horizontalSpacer_35 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_35 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_14.addItem(self.horizontalSpacer_35)
 
@@ -733,7 +733,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_14.addWidget(self.CoordinateStepLable)
 
-        self.horizontalSpacer_22 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_22 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_14.addItem(self.horizontalSpacer_22)
 
@@ -753,7 +753,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_14.addWidget(self.CoordinateAddButton)
 
-        self.horizontalSpacer_39 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_39 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_14.addItem(self.horizontalSpacer_39)
 
@@ -779,7 +779,7 @@ class teach_page_frame(object):
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.horizontalLayout_15 = QHBoxLayout()
         self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
-        self.horizontalSpacer_58 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_58 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_15.addItem(self.horizontalSpacer_58)
 
@@ -788,7 +788,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_15.addWidget(self.RxLabel)
 
-        self.horizontalSpacer_23 = QSpacerItem(25, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_23 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_15.addItem(self.horizontalSpacer_23)
 
@@ -809,7 +809,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_15.addWidget(self.RxAxisAddButton)
 
-        self.horizontalSpacer_62 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_62 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_15.addItem(self.horizontalSpacer_62)
 
@@ -818,7 +818,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_16 = QHBoxLayout()
         self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
-        self.horizontalSpacer_59 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_59 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_16.addItem(self.horizontalSpacer_59)
 
@@ -827,7 +827,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_16.addWidget(self.RyLabel)
 
-        self.horizontalSpacer_24 = QSpacerItem(24, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_24 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_16.addItem(self.horizontalSpacer_24)
 
@@ -848,7 +848,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_16.addWidget(self.RyAxisAddButton)
 
-        self.horizontalSpacer_63 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_63 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_16.addItem(self.horizontalSpacer_63)
 
@@ -857,7 +857,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_17 = QHBoxLayout()
         self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
-        self.horizontalSpacer_60 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_60 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_17.addItem(self.horizontalSpacer_60)
 
@@ -866,7 +866,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_17.addWidget(self.RzLabel)
 
-        self.horizontalSpacer_25 = QSpacerItem(24, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_25 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_17.addItem(self.horizontalSpacer_25)
 
@@ -887,7 +887,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_17.addWidget(self.RzAxisAddButton)
 
-        self.horizontalSpacer_64 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_64 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_17.addItem(self.horizontalSpacer_64)
 
@@ -896,7 +896,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_18 = QHBoxLayout()
         self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
-        self.horizontalSpacer_61 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_61 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_18.addItem(self.horizontalSpacer_61)
 
@@ -905,7 +905,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_18.addWidget(self.ApStepLabel)
 
-        self.horizontalSpacer_26 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_26 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_18.addItem(self.horizontalSpacer_26)
 
@@ -925,7 +925,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_18.addWidget(self.ApStepAddButton)
 
-        self.horizontalSpacer_65 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_65 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_18.addItem(self.horizontalSpacer_65)
 
@@ -949,7 +949,7 @@ class teach_page_frame(object):
         self.horizontalLayout_tools = QHBoxLayout()
         self.horizontalLayout_tools.setSpacing(6)
         self.horizontalLayout_tools.setObjectName(u"horizontalLayout_tools")
-        self.horizontalSpacer_16 = QSpacerItem(5, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_16 = QSpacerItem(5, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_tools.addItem(self.horizontalSpacer_16)
 
@@ -970,7 +970,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_tool_control = QHBoxLayout()
         self.horizontalLayout_tool_control.setObjectName(u"horizontalLayout_tool_control")
-        self.horizontalSpacer_17 = QSpacerItem(5, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_17 = QSpacerItem(5, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_tool_control.addItem(self.horizontalSpacer_17)
 
@@ -984,7 +984,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_tool_control.addWidget(self.ArmClawOpenButton)
 
-        self.horizontalSpacer_8 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_8 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_tool_control.addItem(self.horizontalSpacer_8)
 
@@ -1048,7 +1048,7 @@ class teach_page_frame(object):
 
         self.retranslateUi(Frame)
 
-        self.ArmActionControlStackWidget.setCurrentIndex(2)
+        self.ArmActionControlStackWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(Frame)
