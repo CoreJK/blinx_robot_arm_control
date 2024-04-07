@@ -213,11 +213,11 @@ class TeachPage(QFrame, teach_page_frame):
         logger.info("获取机械臂的关节角度信息线程启动!")
         self.update_joint_angles_thread = UpdateJointAnglesTask(self.joints_angle_queue)
         self.update_delay_time_thread = UpdateDelayTimeTask(self.joints_sync_move_time_queue)
-        self.update_joint_angles_thread.start()
-        self.update_delay_time_thread.start()
-        self.update_joint_angles_thread.joint_angles_update_signal.connect(self.update_joint_degrees_text)
-        self.update_joint_angles_thread.arm_endfactor_positions_update_signal.connect(self.update_arm_pose_text)
-        self.update_delay_time_thread.joint_sync_move_time_update_signal.connect(self.update_joint_sync_move_delay_time)
+        self.thread_pool.start(self.update_joint_angles_thread)
+        self.thread_pool.start(self.update_delay_time_thread)
+        self.update_joint_angles_thread.singal_emitter.joint_angles_update_signal.connect(self.update_joint_degrees_text)
+        self.update_joint_angles_thread.singal_emitter.arm_endfactor_positions_update_signal.connect(self.update_arm_pose_text)
+        self.update_delay_time_thread.singal_emitter.joint_sync_move_time_update_signal.connect(self.update_joint_sync_move_delay_time)
 
     # 顶部工具栏
     @Slot()                    
@@ -331,7 +331,6 @@ class TeachPage(QFrame, teach_page_frame):
         for row in range(self.ActionTableWidget.rowCount()):
             delay_time = self.run_action(row)
             logger.warning(f"机械臂正在执行第 {row + 1} 个动作")
-            self.TeachArmRunLogWindow.appendPlainText(f"机械臂正在执行第 {row + 1} 个动作")
             time.sleep(delay_time)  # 等待动作执行完成
     
     @Slot()
@@ -1144,13 +1143,14 @@ class TeachPage(QFrame, teach_page_frame):
      
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
-    def __init__(self, page_name: str, command_queue: PriorityQueue, joints_angle_queue: Queue, joints_sync_move_time_queue: Queue, parent=None):
+    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: Queue, joints_sync_move_time_queue: Queue):
         super().__init__()
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.reload_ip_port_history()  # 加载上一次的配置
         
         # 开启 QT 线程池
+        self.thread_pool = thread_pool
         self.command_queue = command_queue
         self.joints_angle_queue = joints_angle_queue
         self.joints_sync_move_time_queue = joints_sync_move_time_queue
@@ -1179,7 +1179,7 @@ class ConnectPage(QFrame, connect_page_frame):
     def init_task_thread(self):
         """初始化后台 线程任务"""
         self.angle_degree_thread = AgnleDegreeWatchTask()
-        self.angle_degree_thread.command_signal.connect(self.put_get_joint_angle_command)
+        self.angle_degree_thread.singal_emitter.command_signal.connect(self.put_get_joint_angle_command)
         self.command_sender_thread = CommandSenderTask(self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue)
         
 
@@ -1293,12 +1293,13 @@ class ConnectPage(QFrame, connect_page_frame):
                 # self.RobotArmStopButton.setEnabled(True)
                 
                 # 启用实时获取机械臂角度线程
-                self.angle_degree_thread.start()
+                
+                self.thread_pool.start(self.angle_degree_thread)
                 logger.info("后台获取机械臂角度开始")
                 
                 # 启用轮询队列中所有命令的线程
                 # 后台轮询命令队列，并发送的优先级最高的命令
-                self.command_sender_thread.start()
+                self.thread_pool.start(self.command_sender_thread)
                     
                 logger.info("命令发送线程开启")
                 logger.warning("连接机械臂按钮禁用!")
@@ -1342,7 +1343,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         self.threadpool = QThreadPool()
         self.commandInterface = CommandPage('命令控制')
         self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue)
-        self.connectionInterface = ConnectPage('连接设置', self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue)
+        self.connectionInterface = ConnectPage('连接设置', self.threadpool, self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue)
         
         self.initNavigation()
         self.initWindow()

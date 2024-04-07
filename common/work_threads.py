@@ -1,77 +1,88 @@
 import json
 import shelve
 from queue import PriorityQueue, Queue
+import time
 
 import numpy as np
 from loguru import logger
 from retrying import retry
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import QRunnable, Signal, QObject
 
 from common import settings
 from common.blinx_robot_module import Mirobot
 from common.socket_client import ClientSocket
 
 
-class UpdateJointAnglesTask(QThread):
-    """更新上位机发送的关节角度数据的线程"""
+class SingalEmitter(QObject):
+    """用于 QRunnable 线程发送信号的类"""
     joint_angles_update_signal = Signal(list)
     arm_endfactor_positions_update_signal = Signal(list)
+    joint_sync_move_time_update_signal = Signal(float)
+    command_signal = Signal(str)
+
+
+class UpdateJointAnglesTask(QRunnable):
+    """更新上位机发送的关节角度数据的线程"""
     
     def __init__(self, joints_angle_queue: Queue):
         super().__init__()
         self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
         self.joints_angle_queue = joints_angle_queue
+        self.singal_emitter = SingalEmitter()
         self.is_on = True
-        
+    
+    @logger.catch
     def run(self):
         while self.is_on:
+            time.sleep(0.1)
             if not self.joints_angle_queue.empty():
                 angle_data_list = self.joints_angle_queue.get()
                 # 关节角度更新信号
-                self.joint_angles_update_signal.emit(angle_data_list)
+                self.singal_emitter.joint_angles_update_signal.emit(angle_data_list)
                 
                 # 末端坐标与位姿更新信号
                 arm_joint_radians = np.radians(angle_data_list)
                 translation_vector = self.blinx_robot_arm.fkine(arm_joint_radians)
                 X, Y, Z = translation_vector.t  # 末端坐标
                 R_x, P_y, Y_z = translation_vector.rpy(unit='deg', order='zyx')  # 末端姿态
-                self.arm_endfactor_positions_update_signal.emit([X, Y, Z, R_x, P_y, Y_z])
-            self.sleep(0.1)
+                self.singal_emitter.arm_endfactor_positions_update_signal.emit([X, Y, Z, R_x, P_y, Y_z])
+            
 
-
-class UpdateDelayTimeTask(QThread):
+class UpdateDelayTimeTask(QRunnable):
     """更新上位机控制机械臂运动到目标位置所需的时间"""
-    joint_sync_move_time_update_signal = Signal(float)
     
     def __init__(self, joints_sync_move_time_queue: Queue):
         super().__init__()
         self.joints_sync_move_time_queue = joints_sync_move_time_queue
+        self.singal_emitter = SingalEmitter()    
         self.is_on = True
-        
+    
+    @logger.catch
     def run(self):
         while self.is_on:
+            time.sleep(0.1)
             if not self.joints_sync_move_time_queue.empty():
                 joint_sync_move_time = self.joints_sync_move_time_queue.get()
-                self.joint_sync_move_time_update_signal.emit(round(joint_sync_move_time, 3))
-            self.sleep(0.1)
+                self.singal_emitter.joint_sync_move_time_update_signal.emit(round(joint_sync_move_time, 3))
             
             
-class AgnleDegreeWatchTask(QThread):
+class AgnleDegreeWatchTask(QRunnable):
     """获取关节角度值的线程"""
-    command_signal = Signal(str)
     
     def __init__(self):
         super().__init__()
         self.is_on = True
-        
+        self.singal_emitter = SingalEmitter()
+    
+    @logger.catch        
     def run(self):
         while self.is_on:
+            time.sleep(0.1)
             command = json.dumps({"command": "get_joint_angle_all"}).replace(' ',"") + '\r\n'
-            self.command_signal.emit(command)        
-            self.sleep(0.5)
+            self.singal_emitter.command_signal.emit(command)        
+            
                 
-                
-class CommandSenderTask(QThread):
+class CommandSenderTask(QRunnable):
     """发送命令的线程"""
     
     def __init__(self, command_queue: PriorityQueue, joints_angle_queue: Queue, joints_sync_move_time_queue: Queue):
@@ -81,9 +92,11 @@ class CommandSenderTask(QThread):
         self.joints_sync_move_time_queue = joints_sync_move_time_queue
         self.is_on = True
     
+    @logger.catch
     def run(self):
         with self.get_robot_arm_connector() as conn:
             while self.is_on:
+                time.sleep(0.1)
                 if not self.command_queue.empty():
                     try:
                         command_str = self.command_queue.get()
@@ -116,7 +129,7 @@ class CommandSenderTask(QThread):
                     except Exception as e:
                         logger.error(f"解析命令处理异常: {e}")
                         logger.error(rf"异常命令: {original_response_str}")
-                    self.sleep(0.2)
+                
                     
     @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
@@ -133,7 +146,7 @@ class CommandSenderTask(QThread):
         return robot_arm_client
     
 
-class ActionTableTask(QThread):
+class ActionTableTask(QRunnable):
     """执行表格任务的线程"""
     def __init__(self, table_object, select_row, command_queue: PriorityQueue):
         super().__init__()
