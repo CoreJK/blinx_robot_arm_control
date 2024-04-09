@@ -1382,7 +1382,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         """初始化窗口"""
         self.resize(1247, 750)
         self.setWindowTitle("比邻星六轴机械臂上位机 v4.1.0")
-        self.setWindowIcon(QIcon('assets\icons\Robot_arm_log.png'))
+        self.setWindowIcon(QIcon(str(settings.WINDOWS_ICON_PATH)))
         setThemeColor('#00AAFF')
         
         # 根据屏幕大小居中显示
