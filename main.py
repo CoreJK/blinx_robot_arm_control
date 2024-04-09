@@ -244,6 +244,7 @@ class TeachPage(QFrame, teach_page_frame):
                         arm_tool_option = item.get("工具", "")
                         arm_tool_control = item.get("开关", "")
                         arm_action_delay_time = item.get("延时", "")
+                        note = item.get("备注", "")
 
                         row_position = self.ActionTableWidget.rowCount()
                         self.ActionTableWidget.insertRow(row_position)
@@ -269,6 +270,10 @@ class TeachPage(QFrame, teach_page_frame):
 
                         # 延时列
                         self.update_table_cell(row_position, 9, arm_action_delay_time)
+                        
+                        # 备注列
+                        self.update_table_cell(row_position, 10, note)
+                        
                     logger.info("完成导入动作文件!")
             else:
                 logger.warning("取消导入动作文件!")
@@ -292,10 +297,11 @@ class TeachPage(QFrame, teach_page_frame):
                 angle_4 = self.ActionTableWidget.item(row, 3).text()
                 angle_5 = self.ActionTableWidget.item(row, 4).text()
                 angle_6 = self.ActionTableWidget.item(row, 5).text()
-                speed_percentage = self.ActionTableWidget.item(row, 6).text()  # 速度列
-                arm_tool_widget = self.ActionTableWidget.cellWidget(row, 7)  # 工具列
+                speed_percentage = self.ActionTableWidget.item(row, 6).text()        # 速度列
+                arm_tool_widget = self.ActionTableWidget.cellWidget(row, 7)          # 工具列
                 arm_tool_control_widget = self.ActionTableWidget.cellWidget(row, 8)  # 开关列
-                arm_action_delay_time = self.ActionTableWidget.item(row, 9).text()  # 延时列
+                arm_action_delay_time = self.ActionTableWidget.item(row, 9).text()   # 延时列
+                note = self.ActionTableWidget.item(row, 10).text()                   # 备注列
 
                 if arm_tool_widget is not None:
                     arm_tool_option = arm_tool_widget.currentText()
@@ -318,6 +324,7 @@ class TeachPage(QFrame, teach_page_frame):
                     "工具": arm_tool_option,
                     "开关": arm_tool_control_widget,
                     "延时": arm_action_delay_time,
+                    "备注": note
                 })
 
             with open(file_name, "w", encoding="utf-8") as json_file:
@@ -325,12 +332,23 @@ class TeachPage(QFrame, teach_page_frame):
                 logger.info("导出配置文件成功!")
     
     def tale_action_thread(self):
-        # todo 获取开始与结束行
-        # todo 如果开始与结束行不为空，且没有超出当前行数，则执行指定行的动作
-        # todo 如果开始与结束行为空，则按顺序从头执行所有动作
+        """顺序执行示教动作线程"""
         for row in range(self.ActionTableWidget.rowCount()):
-            delay_time = self.run_action(row)
             logger.warning(f"机械臂正在执行第 {row + 1} 个动作")
+            arm_payload_data, tool_type_data, delay_time = self.get_arm_action_payload(row)
+            
+            json_command = {"command": "set_joint_angle_all_time", "data": arm_payload_data}
+            str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+            self.command_queue.put((2, str_command.encode()))
+        
+            # 末端工具动作
+            if tool_type_data[0] == "吸盘":
+                logger.info("单次执行，开关控制")   
+                tool_status = True if tool_type_data[1] == "开" else False
+                json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
+                str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+                self.command_queue.put((1, str_command.encode()))
+                
             time.sleep(delay_time)  # 等待动作执行完成
     
     @Slot()
@@ -340,14 +358,16 @@ class TeachPage(QFrame, teach_page_frame):
         run_all_action_thread = Worker(self.tale_action_thread)
         self.thread_pool.start(run_all_action_thread)
         
-    def run_action(self, row):
-        """机械臂示执行示教动作
+    def get_arm_action_payload(self, row):
+        """获取机械臂示执行示教动作的角度数据
 
         Args:
             row (QTableWidget): 用户在示教界面，点击选中的行
 
         Returns:
-            delay_time (int): 返回动作的执行耗时
+            arm_payload_data (list): 机械臂的关节角度数据
+            tool_type_data (list): 末端工具的类型数据
+            delay_time (float): 执行动作需要的时间
         """
         angle_1 = float(self.ActionTableWidget.item(row, 0).text())
         angle_2 = float(self.ActionTableWidget.item(row, 1).text())
@@ -361,21 +381,26 @@ class TeachPage(QFrame, teach_page_frame):
         delay_time = float(self.ActionTableWidget.item(row, 9).text())  # 执行动作需要的时间
         
         # 机械臂执行命令
-        json_command = {"command": "set_joint_angle_all_time",
-                                "data": [speed_percentage, angle_1, angle_2, angle_3, angle_4, angle_5, angle_6]}
+        arm_payload = [speed_percentage, angle_1, angle_2, angle_3, angle_4, angle_5, angle_6]
+        tool_payload = [type_of_tool, tool_switch]
+        return arm_payload, tool_payload, delay_time
+
+    def robot_arm_step_action_thread(self, row):
+        """机械臂单次执行示教动作线程"""
+        arm_payload_data, tool_type_data, _ = self.get_arm_action_payload(row)
+        
+        json_command = {"command": "set_joint_angle_all_time", "data": arm_payload_data}
         str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
         self.command_queue.put((2, str_command.encode()))
         
         # 末端工具动作
-        if type_of_tool == "吸盘":
+        if tool_type_data[0] == "吸盘":
             logger.info("单次执行，开关控制")   
-            tool_status = True if tool_switch == "开" else False
+            tool_status = True if tool_type_data[1] == "开" else False
             json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
             self.command_queue.put((1, str_command.encode()))
-                    
-        return delay_time
-
+    
     @Slot()
     def run_action_step(self):
         """单次执行选定的动作"""
@@ -384,9 +409,8 @@ class TeachPage(QFrame, teach_page_frame):
         if selected_row >= 0:
             self.TeachArmRunLogWindow.appendPlainText("正在执行第 " + str(selected_row + 1) + " 个动作")
             # 启动机械臂动作执行线程
-            run_action_step_thread = Worker(self.run_action, selected_row)
+            run_action_step_thread = Worker(self.robot_arm_step_action_thread, selected_row)
             self.thread_pool.start(run_action_step_thread)
-            
         else:
             self.message_box.warning_message_box("请选择需要执行的动作!")
 
