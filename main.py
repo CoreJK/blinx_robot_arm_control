@@ -414,14 +414,21 @@ class TeachPage(QFrame, teach_page_frame):
         else:
             self.message_box.warning_message_box("请选择需要执行的动作!")
 
+    def arm_action_loop_thread(self, loop_times):
+        """机械臂循环执行指定次数的示教动作线程"""
+        # 获取循环动作循环执行的次数
+        for loop_time in range(loop_times):
+            logger.warning(f"机械臂正在执行第 {loop_time + 1} 次循环动作")
+            self.tale_action_thread()
+            time.sleep(1)  # 循环组间的间隔时间
+
     @Slot()
     def run_action_loop(self):
         """循环执行动作"""
-        # 获取循环动作循环执行的次数
         if self.ActionLoopTimes.text().isdigit():
-            loop_times = int(self.ActionLoopTimes.text().strip()) 
-            for _ in range(loop_times):
-                self.tale_action_thread()
+            loop_times = int(self.ActionLoopTimes.text().strip())
+            loop_work_thread = Worker(self.arm_action_loop_thread, loop_times)
+            self.thread_pool.start(loop_work_thread)
         else:
             self.message_box.warning_message_box(f"请输入所以动作循环次数[0-9]")
     
@@ -429,7 +436,6 @@ class TeachPage(QFrame, teach_page_frame):
     def show_context_menu(self, pos):
         """右键复制粘贴菜单"""
         self.context_menu.exec_(self.ActionTableWidget.mapToGlobal(pos))
-
     
     @Slot()
     def add_item(self):
