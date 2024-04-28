@@ -100,7 +100,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.command_queue = command_queue  # 控制命令队列
         self.joints_angle_queue = joints_angle_queue  # 查询到的机械臂关节角度队列
         self.joints_sync_move_time_queue = joints_sync_move_time_queue # 机械臂协同运动到目标位置所需耗时队列
-        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
+        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH, param_type='MDH')
         self.message_box = BlinxMessageBox(self)
         
         # 开启角度更新与末端工具位姿的更新线程

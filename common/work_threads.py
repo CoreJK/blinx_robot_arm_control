@@ -26,7 +26,7 @@ class UpdateJointAnglesTask(QRunnable):
     
     def __init__(self, joints_angle_queue: Queue):
         super().__init__()
-        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
+        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH, param_type='MDH')
         self.joints_angle_queue = joints_angle_queue
         self.singal_emitter = SingalEmitter()
         self.is_on = True
