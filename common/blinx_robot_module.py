@@ -1,7 +1,7 @@
 from math import radians, degrees, pi
 import yaml
 import numpy as np
-from roboticstoolbox import DHRobot, RevoluteMDH
+from roboticstoolbox import DHRobot, RevoluteMDH, RevoluteDH
 from spatialmath import SE3
 from spatialmath.base import rpy2tr
 
@@ -18,19 +18,30 @@ class RobotArmConfig(object):
             print(f"打开配置文件 {self._config_file} 失败，错误信息：{e}")
         return config
     
-    def get_joint_mdh_parameters(self, joint_number):
+    def get_joint_mdh_parameters(self, joint_number, param_type='MDH'):
         """获取指定关节的 MDH 参数对象"""
         config = self.open_yaml_config()
         for each_joint in config:
             if each_joint.get('joint') == joint_number:
                 try:
-                    return RevoluteMDH(
-                        alpha = self.get_joint_alpha(each_joint),
-                        a = self.get_joint_a(each_joint),
-                        d = self.get_joint_d(each_joint),
-                        offset = self.get_joint_offset(each_joint),
-                        qlim= self.get_joint_qlim(each_joint)
-                    )
+                    if param_type == 'MDH':
+                        return RevoluteMDH(
+                            alpha = self.get_joint_alpha(each_joint),
+                            a = self.get_joint_a(each_joint),
+                            d = self.get_joint_d(each_joint),
+                            offset = self.get_joint_offset(each_joint),
+                            qlim= self.get_joint_qlim(each_joint)
+                        )
+                    elif param_type == 'DH':
+                        return RevoluteDH(
+                            alpha = self.get_joint_alpha(each_joint),
+                            a = self.get_joint_a(each_joint),
+                            d = self.get_joint_d(each_joint),
+                            offset = self.get_joint_offset(each_joint),
+                            qlim= self.get_joint_qlim(each_joint)
+                        )
+                    else:
+                        raise ValueError(f"未知的参数类型: {param_type}")
                 except Exception as e:
                     print(f"获取关节 {joint_number} 的 MDH 参数对象失败，错误信息：{e}")
                 
@@ -76,14 +87,15 @@ class RobotArmConfig(object):
 class Mirobot(DHRobot):
     """比邻星机械臂模型"""
 
-    def __init__(self, robot_module_config_file):
+    def __init__(self, robot_module_config_file, param_type='MDH'):
         self.config_parser = RobotArmConfig(robot_module_config_file)
-        L1 = self.config_parser.get_joint_mdh_parameters(1)
-        L2 = self.config_parser.get_joint_mdh_parameters(2)
-        L3 = self.config_parser.get_joint_mdh_parameters(3)
-        L4 = self.config_parser.get_joint_mdh_parameters(4)
-        L5 = self.config_parser.get_joint_mdh_parameters(5)
-        L6 = self.config_parser.get_joint_mdh_parameters(6)
+        self.param_type = param_type
+        L1 = self.config_parser.get_joint_mdh_parameters(1, self.param_type)
+        L2 = self.config_parser.get_joint_mdh_parameters(2, self.param_type)
+        L3 = self.config_parser.get_joint_mdh_parameters(3, self.param_type)
+        L4 = self.config_parser.get_joint_mdh_parameters(4, self.param_type)
+        L5 = self.config_parser.get_joint_mdh_parameters(5, self.param_type)
+        L6 = self.config_parser.get_joint_mdh_parameters(6, self.param_type)
         
         super().__init__(
             [L1, L2, L3, L4, L5, L6],
@@ -105,18 +117,18 @@ class Mirobot(DHRobot):
 if __name__ == "__main__":
     from pathlib import Path
     PROJECT_ROOT_PATH = Path(__file__).absolute().parent.parent
-    robot_arm_config_file = PROJECT_ROOT_PATH /  "config/robot_mdh_parameters.yaml"
+    robot_arm_config_file = PROJECT_ROOT_PATH /  "config/robot_dh_parameters.yaml"
     
-    mirobot = Mirobot(robot_arm_config_file)
+    mirobot = Mirobot(robot_arm_config_file, param_type='DH')
     print(mirobot)
 
     # 机械臂正运动解
-    q1 = radians(0)
-    q2 = radians(0)
-    q3 = radians(0)
-    q4 = radians(0)
-    q5 = radians(0)
-    q6 = radians(150)
+    q1 = radians(116)
+    q2 = radians(-56)
+    q3 = radians(30)
+    q4 = radians(-2)
+    q5 = radians(-32)
+    q6 = radians(-28)
     print("机械臂关节角度 = ", [round(degrees(i), 2) for i in [q1, q2, q3, q4, q5, q6]])
     arm_pose_degree = np.array([q1, q2, q3, q4, q5, q6])
     translation_vector = mirobot.fkine(arm_pose_degree)
