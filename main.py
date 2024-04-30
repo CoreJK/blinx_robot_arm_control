@@ -7,6 +7,7 @@ import time
 from functools import partial
 from queue import PriorityQueue, Queue
 from retrying import retry
+from pubsub import pub
 
 import common.settings as settings
 from common.blinx_robot_module import Mirobot
@@ -1419,7 +1420,11 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         w.cancelButton.setText('取消❌')
         if w.exec():
             QDesktopServices.openUrl(QUrl("http://www.blinx.cn/"))
-        
+    
+    def closeEvent(self, e):
+        pub.sendMessage("thread_work_flag", flag=False)
+        logger.warning("程序退出")
+        return super().closeEvent(e)    
     
 if __name__ == "__main__":
     app = QApplication(sys.argv)

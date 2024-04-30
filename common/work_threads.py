@@ -6,6 +6,7 @@ import time
 import numpy as np
 from loguru import logger
 from retrying import retry
+from pubsub import pub
 from PySide6.QtCore import QRunnable, Signal, QObject
 
 from common import settings
@@ -35,6 +36,7 @@ class UpdateJointAnglesTask(QRunnable):
     def run(self):
         while self.is_on:
             time.sleep(0.1)
+            pub.subscribe(self.check_flag, 'thread_work_flag')
             if not self.joints_angle_queue.empty():
                 angle_data_list = self.joints_angle_queue.get()
                 # 关节角度更新信号
@@ -48,6 +50,9 @@ class UpdateJointAnglesTask(QRunnable):
                 self.singal_emitter.arm_endfactor_positions_update_signal.emit([X, Y, Z, R_x, P_y, Y_z])
             
 
+    def check_flag(self, flag=True):
+        self.is_on = flag
+    
 class UpdateDelayTimeTask(QRunnable):
     """更新上位机控制机械臂运动到目标位置所需的时间"""
     
@@ -60,11 +65,14 @@ class UpdateDelayTimeTask(QRunnable):
     @logger.catch
     def run(self):
         while self.is_on:
+            pub.subscribe(self.check_flag, 'thread_work_flag')
             time.sleep(0.1)
             if not self.joints_sync_move_time_queue.empty():
                 joint_sync_move_time = self.joints_sync_move_time_queue.get()
                 self.singal_emitter.joint_sync_move_time_update_signal.emit(round(joint_sync_move_time, 3))
-            
+
+    def check_flag(self, flag=True):
+        self.is_on = flag
             
 class AgnleDegreeWatchTask(QRunnable):
     """获取关节角度值的线程"""
@@ -77,10 +85,13 @@ class AgnleDegreeWatchTask(QRunnable):
     @logger.catch        
     def run(self):
         while self.is_on:
+            pub.subscribe(self.check_flag, 'thread_work_flag')
             time.sleep(0.1)
             command = json.dumps({"command": "get_joint_angle_all"}).replace(' ',"") + '\r\n'
             self.singal_emitter.command_signal.emit(command)        
-            
+    
+    def check_flag(self, flag=True):
+        self.is_on = flag
                 
 class CommandSenderTask(QRunnable):
     """发送命令的线程"""
@@ -96,6 +107,7 @@ class CommandSenderTask(QRunnable):
     def run(self):
         with self.get_robot_arm_connector() as conn:
             while self.is_on:
+                pub.subscribe(self.check_flag, 'thread_work_flag')
                 time.sleep(0.1)
                 if not self.command_queue.empty():
                     try:
@@ -130,6 +142,8 @@ class CommandSenderTask(QRunnable):
                         logger.error(f"解析命令处理异常: {e}")
                         logger.error(rf"异常命令: {original_response_str}")
                 
+    def check_flag(self, flag=True):
+        self.is_on = flag
                     
     @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
