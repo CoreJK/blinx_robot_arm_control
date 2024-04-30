@@ -21,7 +21,6 @@ class SingalEmitter(QObject):
     joint_sync_move_time_update_signal = Signal(float)
     command_signal = Signal(str)
 
-
 class UpdateJointAnglesTask(QRunnable):
     """更新上位机发送的关节角度数据的线程"""
     
@@ -52,27 +51,6 @@ class UpdateJointAnglesTask(QRunnable):
 
     def check_flag(self, flag=True):
         self.is_on = flag
-    
-class UpdateDelayTimeTask(QRunnable):
-    """更新上位机控制机械臂运动到目标位置所需的时间"""
-    
-    def __init__(self, joints_sync_move_time_queue: Queue):
-        super().__init__()
-        self.joints_sync_move_time_queue = joints_sync_move_time_queue
-        self.singal_emitter = SingalEmitter()    
-        self.is_on = True
-    
-    @logger.catch
-    def run(self):
-        while self.is_on:
-            pub.subscribe(self.check_flag, 'thread_work_flag')
-            time.sleep(0.1)
-            if not self.joints_sync_move_time_queue.empty():
-                joint_sync_move_time = self.joints_sync_move_time_queue.get()
-                self.singal_emitter.joint_sync_move_time_update_signal.emit(round(joint_sync_move_time, 3))
-
-    def check_flag(self, flag=True):
-        self.is_on = flag
             
 class AgnleDegreeWatchTask(QRunnable):
     """获取关节角度值的线程"""
@@ -96,11 +74,10 @@ class AgnleDegreeWatchTask(QRunnable):
 class CommandSenderTask(QRunnable):
     """发送命令的线程"""
     
-    def __init__(self, command_queue: PriorityQueue, joints_angle_queue: Queue, joints_sync_move_time_queue: Queue):
+    def __init__(self, command_queue: PriorityQueue, joints_angle_queue: Queue):
         super().__init__()
         self.command_queue = command_queue
         self.joints_angle_queue = joints_angle_queue
-        self.joints_sync_move_time_queue = joints_sync_move_time_queue
         self.is_on = True
     
     @logger.catch
@@ -133,7 +110,6 @@ class CommandSenderTask(QRunnable):
                                 # 解析机械臂协同运动到目标位置所需耗时的信息
                                 if response['data'] != False:
                                     joint_sync_move_time = response['data']
-                                    self.joints_sync_move_time_queue.put(joint_sync_move_time)
                                     logger.debug(f"运动到目标位置预计耗时: {joint_sync_move_time} s")
                                 else:
                                     logger.warning("机械臂无法运动到目标位置!")
@@ -158,7 +134,4 @@ class CommandSenderTask(QRunnable):
         except Exception as e:
             logger.error(str(e))
         return robot_arm_client
-    
-            
-            
     
