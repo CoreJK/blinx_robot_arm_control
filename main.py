@@ -7,12 +7,13 @@ import time
 from functools import partial
 from queue import PriorityQueue, Queue
 from retrying import retry
+from pubsub import pub
 
 import common.settings as settings
 from common.blinx_robot_module import Mirobot
 from common.check_tools import check_robot_arm_connection
 from common.socket_client import ClientSocket, Worker
-from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask, UpdateDelayTimeTask
+from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask
 
 # UI 相关模块
 from PySide6.QtCore import Qt, QThreadPool, Slot, QUrl
@@ -89,7 +90,7 @@ class CommandPage(QFrame, command_page_frame):
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""
-    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: PriorityQueue, joints_sync_move_time_queue: Queue):
+    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: PriorityQueue):
         super().__init__()
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
@@ -99,8 +100,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
         self.joints_angle_queue = joints_angle_queue  # 查询到的机械臂关节角度队列
-        self.joints_sync_move_time_queue = joints_sync_move_time_queue # 机械臂协同运动到目标位置所需耗时队列
-        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
+        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH, param_type='MDH')
         self.message_box = BlinxMessageBox(self)
         
         # 开启角度更新与末端工具位姿的更新线程
@@ -212,12 +212,9 @@ class TeachPage(QFrame, teach_page_frame):
         """后台任务启动"""
         logger.info("获取机械臂的关节角度信息线程启动!")
         self.update_joint_angles_thread = UpdateJointAnglesTask(self.joints_angle_queue)
-        self.update_delay_time_thread = UpdateDelayTimeTask(self.joints_sync_move_time_queue)
         self.thread_pool.start(self.update_joint_angles_thread)
-        self.thread_pool.start(self.update_delay_time_thread)
         self.update_joint_angles_thread.singal_emitter.joint_angles_update_signal.connect(self.update_joint_degrees_text)
         self.update_joint_angles_thread.singal_emitter.arm_endfactor_positions_update_signal.connect(self.update_arm_pose_text)
-        self.update_delay_time_thread.singal_emitter.joint_sync_move_time_update_signal.connect(self.update_joint_sync_move_delay_time)
 
     # 顶部工具栏
     @Slot()                    
@@ -1142,10 +1139,6 @@ class TeachPage(QFrame, teach_page_frame):
         self.RyAxisEdit.setText(str(round(self.ry, 3)))
         self.RzAxisEdit.setText(str(round(self.rz, 3)))
 
-    def update_joint_sync_move_delay_time(self, delay_time: float):
-        """更新机械臂协同运动的延时时间"""
-        self.JointDelayTimeEdit.setText(str(delay_time))
-    
     def construct_and_send_command(self, joint_degrees, speed_percentage):
         """构造逆解后的发送命令"""
         if joint_degrees is not None:
@@ -1173,7 +1166,7 @@ class TeachPage(QFrame, teach_page_frame):
      
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
-    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: Queue, joints_sync_move_time_queue: Queue):
+    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: Queue):
         super().__init__()
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
@@ -1183,7 +1176,6 @@ class ConnectPage(QFrame, connect_page_frame):
         self.thread_pool = thread_pool
         self.command_queue = command_queue
         self.joints_angle_queue = joints_angle_queue
-        self.joints_sync_move_time_queue = joints_sync_move_time_queue
         
         self.init_task_thread()
         
@@ -1210,7 +1202,7 @@ class ConnectPage(QFrame, connect_page_frame):
         """初始化后台 线程任务"""
         self.angle_degree_thread = AgnleDegreeWatchTask()
         self.angle_degree_thread.singal_emitter.command_signal.connect(self.put_get_joint_angle_command)
-        self.command_sender_thread = CommandSenderTask(self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue)
+        self.command_sender_thread = CommandSenderTask(self.command_queue, self.joints_angle_queue)
         
 
     def put_get_joint_angle_command(self, command_str: str):
@@ -1369,11 +1361,10 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         super().__init__()
         self.command_queue = PriorityQueue()  # 控件发送的命令队列
         self.joints_angle_queue = Queue()  # 查询到关节角度信息的队列
-        self.joints_sync_move_time_queue = Queue()  # 所有关节同步移动需要的时间队列
         self.threadpool = QThreadPool()
         self.commandInterface = CommandPage('命令控制')
-        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue)
-        self.connectionInterface = ConnectPage('连接设置', self.threadpool, self.command_queue, self.joints_angle_queue, self.joints_sync_move_time_queue)
+        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.joints_angle_queue)
+        self.connectionInterface = ConnectPage('连接设置', self.threadpool, self.command_queue, self.joints_angle_queue)
         
         self.initNavigation()
         self.initWindow()
@@ -1419,7 +1410,12 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         w.cancelButton.setText('取消❌')
         if w.exec():
             QDesktopServices.openUrl(QUrl("http://www.blinx.cn/"))
-        
+    
+    def closeEvent(self, e):
+        pub.sendMessage("thread_work_flag", flag=False)
+        logger.warning("程序退出")
+        return super().closeEvent(e)    
+    
     
 if __name__ == "__main__":
     app = QApplication(sys.argv)

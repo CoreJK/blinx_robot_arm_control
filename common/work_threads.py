@@ -6,6 +6,7 @@ import time
 import numpy as np
 from loguru import logger
 from retrying import retry
+from pubsub import pub
 from PySide6.QtCore import QRunnable, Signal, QObject
 
 from common import settings
@@ -20,13 +21,12 @@ class SingalEmitter(QObject):
     joint_sync_move_time_update_signal = Signal(float)
     command_signal = Signal(str)
 
-
 class UpdateJointAnglesTask(QRunnable):
     """更新上位机发送的关节角度数据的线程"""
     
     def __init__(self, joints_angle_queue: Queue):
         super().__init__()
-        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH)
+        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH, param_type='MDH')
         self.joints_angle_queue = joints_angle_queue
         self.singal_emitter = SingalEmitter()
         self.is_on = True
@@ -35,6 +35,7 @@ class UpdateJointAnglesTask(QRunnable):
     def run(self):
         while self.is_on:
             time.sleep(0.1)
+            pub.subscribe(self.check_flag, 'thread_work_flag')
             if not self.joints_angle_queue.empty():
                 angle_data_list = self.joints_angle_queue.get()
                 # 关节角度更新信号
@@ -48,23 +49,8 @@ class UpdateJointAnglesTask(QRunnable):
                 self.singal_emitter.arm_endfactor_positions_update_signal.emit([X, Y, Z, R_x, P_y, Y_z])
             
 
-class UpdateDelayTimeTask(QRunnable):
-    """更新上位机控制机械臂运动到目标位置所需的时间"""
-    
-    def __init__(self, joints_sync_move_time_queue: Queue):
-        super().__init__()
-        self.joints_sync_move_time_queue = joints_sync_move_time_queue
-        self.singal_emitter = SingalEmitter()    
-        self.is_on = True
-    
-    @logger.catch
-    def run(self):
-        while self.is_on:
-            time.sleep(0.1)
-            if not self.joints_sync_move_time_queue.empty():
-                joint_sync_move_time = self.joints_sync_move_time_queue.get()
-                self.singal_emitter.joint_sync_move_time_update_signal.emit(round(joint_sync_move_time, 3))
-            
+    def check_flag(self, flag=True):
+        self.is_on = flag
             
 class AgnleDegreeWatchTask(QRunnable):
     """获取关节角度值的线程"""
@@ -77,25 +63,28 @@ class AgnleDegreeWatchTask(QRunnable):
     @logger.catch        
     def run(self):
         while self.is_on:
+            pub.subscribe(self.check_flag, 'thread_work_flag')
             time.sleep(0.1)
             command = json.dumps({"command": "get_joint_angle_all"}).replace(' ',"") + '\r\n'
             self.singal_emitter.command_signal.emit(command)        
-            
+    
+    def check_flag(self, flag=True):
+        self.is_on = flag
                 
 class CommandSenderTask(QRunnable):
     """发送命令的线程"""
     
-    def __init__(self, command_queue: PriorityQueue, joints_angle_queue: Queue, joints_sync_move_time_queue: Queue):
+    def __init__(self, command_queue: PriorityQueue, joints_angle_queue: Queue):
         super().__init__()
         self.command_queue = command_queue
         self.joints_angle_queue = joints_angle_queue
-        self.joints_sync_move_time_queue = joints_sync_move_time_queue
         self.is_on = True
     
     @logger.catch
     def run(self):
         with self.get_robot_arm_connector() as conn:
             while self.is_on:
+                pub.subscribe(self.check_flag, 'thread_work_flag')
                 time.sleep(0.1)
                 if not self.command_queue.empty():
                     try:
@@ -121,7 +110,6 @@ class CommandSenderTask(QRunnable):
                                 # 解析机械臂协同运动到目标位置所需耗时的信息
                                 if response['data'] != False:
                                     joint_sync_move_time = response['data']
-                                    self.joints_sync_move_time_queue.put(joint_sync_move_time)
                                     logger.debug(f"运动到目标位置预计耗时: {joint_sync_move_time} s")
                                 else:
                                     logger.warning("机械臂无法运动到目标位置!")
@@ -130,6 +118,8 @@ class CommandSenderTask(QRunnable):
                         logger.error(f"解析命令处理异常: {e}")
                         logger.error(rf"异常命令: {original_response_str}")
                 
+    def check_flag(self, flag=True):
+        self.is_on = flag
                     
     @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
@@ -144,7 +134,4 @@ class CommandSenderTask(QRunnable):
         except Exception as e:
             logger.error(str(e))
         return robot_arm_client
-    
-            
-            
     
