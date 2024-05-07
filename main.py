@@ -464,6 +464,9 @@ class TeachPage(QFrame, teach_page_frame):
         
         # 获取延时长短
         self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem(str(self.JointDelayTimeEdit.text())))
+        
+        # 备注列
+        self.ActionTableWidget.setItem(row_position, 10, QTableWidgetItem(""))
 
     @Slot()
     def remove_item(self):
