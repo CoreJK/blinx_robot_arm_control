@@ -464,6 +464,9 @@ class TeachPage(QFrame, teach_page_frame):
         
         # 获取延时长短
         self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem(str(self.JointDelayTimeEdit.text())))
+        
+        # 备注列
+        self.ActionTableWidget.setItem(row_position, 10, QTableWidgetItem(""))
 
     @Slot()
     def remove_item(self):
@@ -739,7 +742,7 @@ class TeachPage(QFrame, teach_page_frame):
         """机械臂复位
         :param mode:
         """
-        command = json.dumps({"command": "set_joint_return_to_zero", "data": [0]}).replace('', "") + '\r\n'
+        command = json.dumps({"command": "set_joint_initialize", "data": [0]}).replace('', "") + '\r\n'
         self.command_queue.put((1, command.encode()))
         self.JointDelayTimeEdit.setText("0")  # 复位时延时时间设置为 0
         self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
@@ -1115,12 +1118,12 @@ class TeachPage(QFrame, teach_page_frame):
             rs_data_dict (_dict_): 与机械臂通讯获取到的机械臂角度值
         """
         self.q1, self.q2, self.q3, self.q4, self.q5, self.q6 = angle_data_list
-        display_q1 = str(round(self.q1, 3))
-        display_q2 = str(round(self.q2, 3))
-        display_q3 = str(round(self.q3, 3))
-        display_q4 = str(round(self.q4, 3))
-        display_q5 = str(round(self.q5, 3))
-        display_q6 = str(round(self.q6, 3))
+        display_q1 = str(self.q1)
+        display_q2 = str(self.q2)
+        display_q3 = str(self.q3)
+        display_q4 = str(self.q4)
+        display_q5 = str(self.q5)
+        display_q6 = str(self.q6)
         self.JointOneEdit.setText(display_q1)
         self.JointTwoEdit.setText(display_q2)
         self.JointThreeEdit.setText(display_q3)
@@ -1132,12 +1135,12 @@ class TeachPage(QFrame, teach_page_frame):
         """更新界面上机械臂末端工具的坐标和姿态值"""
         self.X, self.Y, self.Z = arm_pose_data[:3]
         self.rx, self.ry, self.rz = arm_pose_data[3:]
-        self.XAxisEdit.setText(str(round(self.X, 3)))
-        self.YAxisEdit.setText(str(round(self.Y, 3)))
-        self.ZAxisEdit.setText(str(round(self.Z, 3)))
-        self.RxAxisEdit.setText(str(round(self.rx, 3)))
-        self.RyAxisEdit.setText(str(round(self.ry, 3)))
-        self.RzAxisEdit.setText(str(round(self.rz, 3)))
+        self.XAxisEdit.setText(str(self.X))
+        self.YAxisEdit.setText(str(self.Y))
+        self.ZAxisEdit.setText(str(self.Z))
+        self.RxAxisEdit.setText(str(self.rx))
+        self.RyAxisEdit.setText(str(self.ry))
+        self.RzAxisEdit.setText(str(self.rz))
 
     def construct_and_send_command(self, joint_degrees, speed_percentage):
         """构造逆解后的发送命令"""
@@ -1200,14 +1203,8 @@ class ConnectPage(QFrame, connect_page_frame):
 
     def init_task_thread(self):
         """初始化后台 线程任务"""
-        self.angle_degree_thread = AgnleDegreeWatchTask()
-        self.angle_degree_thread.singal_emitter.command_signal.connect(self.put_get_joint_angle_command)
-        self.command_sender_thread = CommandSenderTask(self.command_queue, self.joints_angle_queue)
-        
-
-    def put_get_joint_angle_command(self, command_str: str):
-        """向命令队列中添加获取机械臂角度的命令"""
-        self.command_queue.put((3, command_str.encode()))
+        self.angle_degree_thread = AgnleDegreeWatchTask(self.joints_angle_queue)
+        self.command_sender_thread = CommandSenderTask(self.command_queue)
     
     # 机械臂连接配置回调函数
     def reload_ip_port_history(self):
