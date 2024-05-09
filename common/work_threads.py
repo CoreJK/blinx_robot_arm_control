@@ -40,14 +40,14 @@ class UpdateJointAnglesTask(QRunnable):
             if not self.joints_angle_queue.empty():
                 angle_data_list = self.joints_angle_queue.get()
                 # 关节角度更新信号
-                self.singal_emitter.joint_angles_update_signal.emit(list(np.around(np.array(angle_data_list), 3)))
+                self.singal_emitter.joint_angles_update_signal.emit(list(map(lambda s: round(s, 3), angle_data_list)))
                 
                 # 末端坐标与位姿更新信号
                 arm_joint_radians = np.radians(angle_data_list)  # 正逆解需要弧度制
                 translation_vector = self.blinx_robot_arm.fkine(arm_joint_radians)
                 X, Y, Z = translation_vector.t  # 末端坐标
                 R_x, P_y, Y_z = translation_vector.rpy(unit='deg', order='zyx')  # 末端姿态
-                self.singal_emitter.arm_endfactor_positions_update_signal.emit(list(np.around(np.array([X, Y, Z, R_x, P_y, Y_z]), 3)))
+                self.singal_emitter.arm_endfactor_positions_update_signal.emit(list(map(lambda s: round(s, 3), [X, Y, Z, R_x, P_y, Y_z])))
             
 
     def check_flag(self, flag=True):
@@ -165,26 +165,32 @@ class CommandReceiverTask(QRunnable):
                 pub.subscribe(self.check_flag, 'thread_work_flag')
                 time.sleep(0.1)
                 try:
-                    response_str = conn.recv(1024).decode('utf-8')
+                    response_str = conn.recv(4096).decode('utf-8')
                     if response_str.startswith('{') and response_str.endswith('\r\n'):
                         # 命令缓冲区
                         recv_buffer = list(filter(lambda s: s and s.strip(), response_str.split('\r\n')))
-                        # 分流命令
-                        recv_joint_angle_datas = list(filter(self.exclude_joint_data_str, recv_buffer))
-                        # 剔除不需要的命令
-                        for recv in recv_joint_angle_datas:
-                            logger.warning(f"命令接收线程，接收的命令: {recv}")
+                        # todo 分流命令, 需要做并发处理
+                        self.get_joints_move_status(recv_buffer)
                             
                 except Exception as e:
                     logger.error(f"解析命令处理异常: {e}")
-                    logger.error(rf"异常命令: {recv}")
+                    logger.error(rf"异常命令: {recv_buffer}")
+
+    def get_joints_move_status(self, recv_buffer):
+        """获取并发布机械臂运动状态"""
+        recv_joint_angle_datas = list(filter(self.exclude_joint_data_str, recv_buffer))
+        # 剔除不需要的命令
+        for recv in recv_joint_angle_datas:
+            json_data = json.loads(recv)
+            logger.warning(f"机械臂运动状态: {json_data}")
+            pub.sendMessage('joints/move_status', move_status=json_data['data'])
     
     def check_flag(self, flag=True):
         """线程工作控制位"""
         self.is_on = flag
         
     def exclude_joint_data_str(self, json_str):
-        """排除关节角度值"""
+        """获取机械臂运动到位状态"""
         if 'move_in_place' in json_str:
             return True
         else:

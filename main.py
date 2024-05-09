@@ -97,6 +97,9 @@ class TeachPage(QFrame, teach_page_frame):
         self.initButtonIcon()
         self.initJointControlWidiget()
         
+        # 状态标志
+        self.move_status = True  # 机械臂运动状态
+        self.thread_is_on = True  # 线程工作标志位
         self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
         self.joints_angle_queue = joints_angle_queue  # 查询到的机械臂关节角度队列
@@ -185,8 +188,8 @@ class TeachPage(QFrame, teach_page_frame):
         self.RobotArmStopButton.clicked.connect(self.stop_robot_arm)
         
         # # 末端工具控制组回调函数绑定
-        self.ArmClawOpenButton.clicked.connect(partial(self.tool_control, action=True))
-        self.ArmClawCloseButton.clicked.connect(partial(self.tool_control, action=False))
+        self.ArmClawOpenButton.clicked.connect(partial(self.tool_control, action=1))
+        self.ArmClawCloseButton.clicked.connect(partial(self.tool_control, action=0))
         
         # 末端工具坐标增减回调函数绑定 
         self.XAxisAddButton.clicked.connect(partial(self.tool_x_operate, action="add"))
@@ -330,23 +333,48 @@ class TeachPage(QFrame, teach_page_frame):
     
     def tale_action_thread(self):
         """顺序执行示教动作线程"""
-        for row in range(self.ActionTableWidget.rowCount()):
-            logger.warning(f"机械臂正在执行第 {row + 1} 个动作")
-            arm_payload_data, tool_type_data, delay_time = self.get_arm_action_payload(row)
+        action_count = self.ActionTableWidget.rowCount()
+        logger.debug("机械臂动作数量: {}".format(action_count))
+        for robot_action_row in range(self.ActionTableWidget.rowCount()):
+            logger.warning(f"机械臂正在执行第 {robot_action_row + 1} 个动作")
+            arm_payload_data, tool_type_data, _ = self.get_arm_action_payload(robot_action_row)
             
+            # 订阅机械臂的角度信息，判断是否到达目标位置
+            logger.debug(f'运动状态: {self.move_status}')
+            
+            # 控制所有关节同时运动命令
             json_command = {"command": "set_joint_angle_all_time", "data": arm_payload_data}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
             self.command_queue.put(str_command.encode())
         
-            # 末端工具动作
-            if tool_type_data[0] == "吸盘" and tool_type_data[1] != None:
+            # 控制末端工具动作的命令
+            if tool_type_data[0] == "吸盘" and tool_type_data[1] != "":
                 logger.info("单次执行，开关控制")   
-                tool_status = True if tool_type_data[1] == "开" else False
-                json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
+                tool_status = 1 if tool_type_data[1] == "开" else 0
+                json_command = {"command":"set_end_tool", "data": [1, tool_status]}
                 str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
                 self.command_queue.put(str_command.encode())
-                
-            time.sleep(delay_time)  # 等待动作执行完成
+            
+            # 根据动作是否到位，以及线程是否工作判断是否执行
+            while not self.move_status and self.thread_is_on:
+                time.sleep(0.1)
+                pub.subscribe(self._joints_move_status, 'joints/move_status')
+                pub.subscribe(self._check_flag, 'thread_work_flag')  # 线程控制标识
+                logger.warning("等待上一个动作完成")
+                # 完成所有动作后，退出循环
+                if robot_action_row + 1 == action_count:
+                    logger.debug("所有动作执行完成")
+                    self.move_status = True
+            
+            self.move_status = False # 单个动作执行完成后需要重置状态，否则无法进入 while 循环
+            
+    def _check_flag(self, flag=True):
+        """线程工作控制位"""
+        self.thread_is_on = flag
+    
+    def _joints_move_status(self, move_status=True):
+        """订阅机械臂的关节运动状态"""
+        self.move_status = move_status
     
     @Slot()
     def run_all_action(self):
@@ -391,10 +419,10 @@ class TeachPage(QFrame, teach_page_frame):
         self.command_queue.put(str_command.encode())
         
         # 末端工具动作
-        if tool_type_data[0] == "吸盘" and tool_type_data[1] != None:
+        if tool_type_data[0] == "吸盘" and tool_type_data[1] != "":
             logger.info("单次执行，开关控制")   
-            tool_status = True if tool_type_data[1] == "开" else False
-            json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
+            tool_status = 1 if tool_type_data[1] == "开" else 0
+            json_command = {"command":"set_end_tool", "data": [1, tool_status]}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
             self.command_queue.put(str_command.encode())
     
@@ -760,6 +788,7 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def stop_robot_arm(self):
         """机械臂急停"""
+        pub.sendMessage('thread_work_flag', flag=False)
         # 线程标志设置为停止
         self.loop_flag = True
         # 清空队列中的命令
@@ -772,11 +801,11 @@ class TeachPage(QFrame, teach_page_frame):
         self.robot_arm_is_connected = False # 机械臂连接标志位设置为 False
     
     @Slot()
-    def tool_control(self, action=True):
+    def tool_control(self, action=1):
         """吸盘工具开"""
         type_of_tool = self.ArmToolComboBox.currentText()
         if type_of_tool == "吸盘":
-            command = json.dumps({"command":"set_robot_io_interface", "data": [0, action]}) + '\r\n'
+            command = json.dumps({"command":"set_end_tool", "data": [1, action]}) + '\r\n'
             
             if action:
                 logger.warning("吸盘开启!")
