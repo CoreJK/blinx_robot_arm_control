@@ -125,8 +125,8 @@ class CommandSenderTask(QRunnable):
                     try:
                         # 发送命令
                         command_str = self.command_queue.get()
-                        logger.debug(f"命令发送线程，发送的命令: {command_str[1]}")
-                        conn.sendall(command_str[1])
+                        logger.debug(f"命令发送线程，发送的命令: {command_str}")
+                        conn.sendall(command_str)
                                     
                     except Exception as e:
                         logger.error(f"命令发送异常: {e}")
