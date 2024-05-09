@@ -336,7 +336,7 @@ class TeachPage(QFrame, teach_page_frame):
             
             json_command = {"command": "set_joint_angle_all_time", "data": arm_payload_data}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
-            self.command_queue.put((2, str_command.encode()))
+            self.command_queue.put(str_command.encode())
         
             # 末端工具动作
             if tool_type_data[0] == "吸盘" and tool_type_data[1] != None:
@@ -344,7 +344,7 @@ class TeachPage(QFrame, teach_page_frame):
                 tool_status = True if tool_type_data[1] == "开" else False
                 json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
                 str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
-                self.command_queue.put((3, str_command.encode()))
+                self.command_queue.put(str_command.encode())
                 
             time.sleep(delay_time)  # 等待动作执行完成
     
@@ -388,7 +388,7 @@ class TeachPage(QFrame, teach_page_frame):
         
         json_command = {"command": "set_joint_angle_all_time", "data": arm_payload_data}
         str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
-        self.command_queue.put((2, str_command.encode()))
+        self.command_queue.put(str_command.encode())
         
         # 末端工具动作
         if tool_type_data[0] == "吸盘" and tool_type_data[1] != None:
@@ -396,7 +396,7 @@ class TeachPage(QFrame, teach_page_frame):
             tool_status = True if tool_type_data[1] == "开" else False
             json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
-            self.command_queue.put((3, str_command.encode()))
+            self.command_queue.put(str_command.encode())
     
     @Slot()
     def run_action_step(self):
@@ -691,7 +691,7 @@ class TeachPage(QFrame, teach_page_frame):
             # 构造发送命令
             command = json.dumps(
                 {"command": "set_joint_angle", "data": [joint_number, speed_percentage, degrade]}) + '\r\n'
-            self.command_queue.put((1.5, command.encode()))
+            self.command_queue.put(command.encode())
             logger.debug(f"机械臂关节 {joint_number} 转动 {round(degrade, 3)} 度")
             
             #  录制操作激活时
@@ -742,7 +742,7 @@ class TeachPage(QFrame, teach_page_frame):
         :param mode:
         """
         command = json.dumps({"command": "set_joint_initialize", "data": [0]}).replace('', "") + '\r\n'
-        self.command_queue.put((1, command.encode()))
+        self.command_queue.put(command.encode())
         self.JointDelayTimeEdit.setText("0")  # 复位时延时时间设置为 0
         self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
         logger.warning("机械臂复位中!请注意手臂姿态")
@@ -751,7 +751,7 @@ class TeachPage(QFrame, teach_page_frame):
     def reset_to_zero(self):
         """机械臂复位到初始位姿"""
         command = json.dumps({"command": "set_joint_angle_all", "data": [100, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}).replace(' ', "") + '\r\n'
-        self.command_queue.put((1, command.encode()))
+        self.command_queue.put(command.encode())
         self.JointDelayTimeEdit.setText("0")  # 归零时延时时间设置为 0
         self.message_box.warning_message_box("机械臂回到初始角度中!\n请注意手臂姿态")
         logger.warning("机械臂回到初始位姿中!")
@@ -783,7 +783,7 @@ class TeachPage(QFrame, teach_page_frame):
             else:
                 logger.warning("吸盘关闭!")
                 
-            self.command_queue.put((1, command.encode()))
+            self.command_queue.put(command.encode())
         else:
             self.message_box.warning_message_box("末端工具未选择吸盘!")
     
@@ -1146,7 +1146,7 @@ class TeachPage(QFrame, teach_page_frame):
             command = json.dumps({"command": "set_joint_angle_all_time", "data": speed_degree_data}).replace(' ', "") + '\r\n'
             logger.debug(f"逆解后的所有关节角度值: {joint_degrees}")
             # 发送命令
-            self.command_queue.put((2, command.encode()))
+            self.command_queue.put(command.encode())
         else:
             logger.error("关节运动范围超出超限!")
             self.message_box.error_message_box("关节运动范围超限!")
@@ -1165,7 +1165,7 @@ class TeachPage(QFrame, teach_page_frame):
      
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
-    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: Queue):
+    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: Queue, joints_angle_queue: Queue):
         super().__init__()
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
@@ -1328,7 +1328,7 @@ class ConnectPage(QFrame, connect_page_frame):
             # 连接失败后，将连接机械臂按钮启用
             self.RobotArmLinkButton.setEnabled(True)
             # 清空队列
-            self.command_queue = PriorityQueue(maxsize=100)
+            self.command_queue = Queue()
             # 关闭线程池
             self.loop_flag = True
             # 弹出错误提示框
@@ -1357,7 +1357,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
     """上位机主窗口"""    
     def __init__(self):
         super().__init__()
-        self.command_queue = PriorityQueue()  # 控件发送的命令队列
+        self.command_queue = Queue()  # 控件发送的命令队列
         self.joints_angle_queue = Queue()  # 查询到关节角度信息的队列
         self.threadpool = QThreadPool()
         self.commandInterface = CommandPage('命令控制')
