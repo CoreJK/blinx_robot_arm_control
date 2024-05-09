@@ -13,7 +13,7 @@ import common.settings as settings
 from common.blinx_robot_module import Mirobot
 from common.check_tools import check_robot_arm_connection
 from common.socket_client import ClientSocket, Worker
-from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask
+from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask, CommandReceiverTask
 
 # UI 相关模块
 from PySide6.QtCore import Qt, QThreadPool, Slot, QUrl
@@ -339,12 +339,12 @@ class TeachPage(QFrame, teach_page_frame):
             self.command_queue.put((2, str_command.encode()))
         
             # 末端工具动作
-            if tool_type_data[0] == "吸盘":
+            if tool_type_data[0] == "吸盘" and tool_type_data[1] != None:
                 logger.info("单次执行，开关控制")   
                 tool_status = True if tool_type_data[1] == "开" else False
                 json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
                 str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
-                self.command_queue.put((1, str_command.encode()))
+                self.command_queue.put((3, str_command.encode()))
                 
             time.sleep(delay_time)  # 等待动作执行完成
     
@@ -391,12 +391,12 @@ class TeachPage(QFrame, teach_page_frame):
         self.command_queue.put((2, str_command.encode()))
         
         # 末端工具动作
-        if tool_type_data[0] == "吸盘":
+        if tool_type_data[0] == "吸盘" and tool_type_data[1] != None:
             logger.info("单次执行，开关控制")   
             tool_status = True if tool_type_data[1] == "开" else False
             json_command = {"command":"set_robot_io_interface", "data": [0, tool_status]}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
-            self.command_queue.put((1, str_command.encode()))
+            self.command_queue.put((3, str_command.encode()))
     
     @Slot()
     def run_action_step(self):
@@ -706,7 +706,6 @@ class TeachPage(QFrame, teach_page_frame):
         self.JointStepEdit.setText(str(degrade))
         logger.debug(f"机械臂步长修改为: {degrade}")
 
-    
     @Slot()
     def modify_joint_speed_percentage(self, increase=True):
         """修改关节运动速度百分比"""
@@ -772,7 +771,6 @@ class TeachPage(QFrame, teach_page_frame):
         self.loop_flag = False  # 恢复线程池的初始标志位
         self.robot_arm_is_connected = False # 机械臂连接标志位设置为 False
     
-    
     @Slot()
     def tool_control(self, action=True):
         """吸盘工具开"""
@@ -788,7 +786,6 @@ class TeachPage(QFrame, teach_page_frame):
             self.command_queue.put((1, command.encode()))
         else:
             self.message_box.warning_message_box("末端工具未选择吸盘!")
-
     
     @Slot()
     def tool_x_operate(self, action="add"):
@@ -824,7 +821,6 @@ class TeachPage(QFrame, teach_page_frame):
         #  录制操作激活时
         if self.RecordActivateButton.isChecked():
             self.add_item()
-
 
     @Slot()
     def tool_y_operate(self, action="add"):
@@ -1205,6 +1201,7 @@ class ConnectPage(QFrame, connect_page_frame):
         """初始化后台 线程任务"""
         self.angle_degree_thread = AgnleDegreeWatchTask(self.joints_angle_queue)
         self.command_sender_thread = CommandSenderTask(self.command_queue)
+        self.command_recver_thread = CommandReceiverTask()
     
     # 机械臂连接配置回调函数
     def reload_ip_port_history(self):
@@ -1322,6 +1319,10 @@ class ConnectPage(QFrame, connect_page_frame):
                     
                 logger.info("命令发送线程开启")
                 logger.warning("连接机械臂按钮禁用!")
+                
+                # 启动命令接收线程
+                self.thread_pool.start(self.command_recver_thread)
+                logger.info("命令接收线程开启")
                 
         except Exception as e:
             # 连接失败后，将连接机械臂按钮启用
