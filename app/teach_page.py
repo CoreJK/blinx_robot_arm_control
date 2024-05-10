@@ -20,9 +20,9 @@ from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QHeaderView,
     QVBoxLayout, QWidget)
 
 from qfluentwidgets import (CardWidget, ComboBox, HorizontalSeparator, LineEdit,
-    Pivot, PlainTextEdit, PushButton, RadioButton,
-    SegmentedWidget, StrongBodyLabel, TableWidget, ToolButton,
-    VerticalSeparator)
+    Pivot, PlainTextEdit, ProgressBar, PushButton,
+    RadioButton, SegmentedWidget, StrongBodyLabel, TableWidget,
+    ToolButton, VerticalSeparator)
 
 class teach_page_frame(object):
     def setupUi(self, Frame):
@@ -205,6 +205,11 @@ class teach_page_frame(object):
 
         self.verticalLayout_10.addWidget(self.HorizontalSeparator)
 
+        self.ProgressBar = ProgressBar(Frame)
+        self.ProgressBar.setObjectName(u"ProgressBar")
+
+        self.verticalLayout_10.addWidget(self.ProgressBar)
+
         self.TeachArmRunLogWindow = PlainTextEdit(Frame)
         self.TeachArmRunLogWindow.setObjectName(u"TeachArmRunLogWindow")
         self.TeachArmRunLogWindow.setReadOnly(True)
@@ -212,7 +217,7 @@ class teach_page_frame(object):
         self.verticalLayout_10.addWidget(self.TeachArmRunLogWindow)
 
         self.verticalLayout_10.setStretch(0, 7)
-        self.verticalLayout_10.setStretch(2, 1)
+        self.verticalLayout_10.setStretch(3, 1)
 
         self.horizontalLayout_4.addLayout(self.verticalLayout_10)
 
@@ -601,10 +606,10 @@ class teach_page_frame(object):
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.ArmEndToolsCoordinateControlCard = CardWidget(self.ArmEndToolsCoordinateControlPage)
         self.ArmEndToolsCoordinateControlCard.setObjectName(u"ArmEndToolsCoordinateControlCard")
-        self.horizontalLayout_21 = QHBoxLayout(self.ArmEndToolsCoordinateControlCard)
-        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
-        self.verticalLayout_4 = QVBoxLayout()
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.horizontalLayout_7 = QHBoxLayout(self.ArmEndToolsCoordinateControlCard)
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.verticalLayout_3 = QVBoxLayout()
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
         self.horizontalSpacer_32 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
@@ -642,7 +647,7 @@ class teach_page_frame(object):
         self.horizontalLayout_10.addItem(self.horizontalSpacer_36)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_10)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_10)
 
         self.horizontalLayout_11 = QHBoxLayout()
         self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
@@ -681,7 +686,7 @@ class teach_page_frame(object):
         self.horizontalLayout_11.addItem(self.horizontalSpacer_37)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_11)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_11)
 
         self.horizontalLayout_13 = QHBoxLayout()
         self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
@@ -720,7 +725,7 @@ class teach_page_frame(object):
         self.horizontalLayout_13.addItem(self.horizontalSpacer_38)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_13)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_13)
 
         self.horizontalLayout_14 = QHBoxLayout()
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
@@ -758,10 +763,170 @@ class teach_page_frame(object):
         self.horizontalLayout_14.addItem(self.horizontalSpacer_39)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_14)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_14)
+
+        self.HorizontalSeparator_2 = HorizontalSeparator(self.ArmEndToolsCoordinateControlCard)
+        self.HorizontalSeparator_2.setObjectName(u"HorizontalSeparator_2")
+
+        self.verticalLayout_3.addWidget(self.HorizontalSeparator_2)
+
+        self.horizontalLayout_24 = QHBoxLayout()
+        self.horizontalLayout_24.setObjectName(u"horizontalLayout_24")
+        self.horizontalSpacer_23 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_24.addItem(self.horizontalSpacer_23)
+
+        self.RxLabel = StrongBodyLabel(self.ArmEndToolsCoordinateControlCard)
+        self.RxLabel.setObjectName(u"RxLabel")
+
+        self.horizontalLayout_24.addWidget(self.RxLabel)
+
+        self.horizontalSpacer_79 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_24.addItem(self.horizontalSpacer_79)
+
+        self.RxAxisSubButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
+        self.RxAxisSubButton.setObjectName(u"RxAxisSubButton")
+
+        self.horizontalLayout_24.addWidget(self.RxAxisSubButton)
+
+        self.RxAxisEdit = LineEdit(self.ArmEndToolsCoordinateControlCard)
+        self.RxAxisEdit.setObjectName(u"RxAxisEdit")
+        self.RxAxisEdit.setAlignment(Qt.AlignCenter)
+        self.RxAxisEdit.setReadOnly(True)
+
+        self.horizontalLayout_24.addWidget(self.RxAxisEdit)
+
+        self.RxAxisAddButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
+        self.RxAxisAddButton.setObjectName(u"RxAxisAddButton")
+
+        self.horizontalLayout_24.addWidget(self.RxAxisAddButton)
+
+        self.horizontalSpacer_80 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_24.addItem(self.horizontalSpacer_80)
 
 
-        self.horizontalLayout_21.addLayout(self.verticalLayout_4)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_24)
+
+        self.horizontalLayout_25 = QHBoxLayout()
+        self.horizontalLayout_25.setObjectName(u"horizontalLayout_25")
+        self.horizontalSpacer_81 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_25.addItem(self.horizontalSpacer_81)
+
+        self.RyLabel = StrongBodyLabel(self.ArmEndToolsCoordinateControlCard)
+        self.RyLabel.setObjectName(u"RyLabel")
+
+        self.horizontalLayout_25.addWidget(self.RyLabel)
+
+        self.horizontalSpacer_82 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_25.addItem(self.horizontalSpacer_82)
+
+        self.RyAxisSubButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
+        self.RyAxisSubButton.setObjectName(u"RyAxisSubButton")
+
+        self.horizontalLayout_25.addWidget(self.RyAxisSubButton)
+
+        self.RyAxisEdit = LineEdit(self.ArmEndToolsCoordinateControlCard)
+        self.RyAxisEdit.setObjectName(u"RyAxisEdit")
+        self.RyAxisEdit.setAlignment(Qt.AlignCenter)
+        self.RyAxisEdit.setReadOnly(True)
+
+        self.horizontalLayout_25.addWidget(self.RyAxisEdit)
+
+        self.RyAxisAddButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
+        self.RyAxisAddButton.setObjectName(u"RyAxisAddButton")
+
+        self.horizontalLayout_25.addWidget(self.RyAxisAddButton)
+
+        self.horizontalSpacer_83 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_25.addItem(self.horizontalSpacer_83)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_25)
+
+        self.horizontalLayout_26 = QHBoxLayout()
+        self.horizontalLayout_26.setObjectName(u"horizontalLayout_26")
+        self.horizontalSpacer_84 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_26.addItem(self.horizontalSpacer_84)
+
+        self.RzLabel = StrongBodyLabel(self.ArmEndToolsCoordinateControlCard)
+        self.RzLabel.setObjectName(u"RzLabel")
+
+        self.horizontalLayout_26.addWidget(self.RzLabel)
+
+        self.horizontalSpacer_85 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_26.addItem(self.horizontalSpacer_85)
+
+        self.RzAxisSubButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
+        self.RzAxisSubButton.setObjectName(u"RzAxisSubButton")
+
+        self.horizontalLayout_26.addWidget(self.RzAxisSubButton)
+
+        self.RzAxisEdit = LineEdit(self.ArmEndToolsCoordinateControlCard)
+        self.RzAxisEdit.setObjectName(u"RzAxisEdit")
+        self.RzAxisEdit.setAlignment(Qt.AlignCenter)
+        self.RzAxisEdit.setReadOnly(True)
+
+        self.horizontalLayout_26.addWidget(self.RzAxisEdit)
+
+        self.RzAxisAddButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
+        self.RzAxisAddButton.setObjectName(u"RzAxisAddButton")
+
+        self.horizontalLayout_26.addWidget(self.RzAxisAddButton)
+
+        self.horizontalSpacer_86 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_26.addItem(self.horizontalSpacer_86)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_26)
+
+        self.horizontalLayout_27 = QHBoxLayout()
+        self.horizontalLayout_27.setObjectName(u"horizontalLayout_27")
+        self.horizontalSpacer_87 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_27.addItem(self.horizontalSpacer_87)
+
+        self.ApStepLabel = StrongBodyLabel(self.ArmEndToolsCoordinateControlCard)
+        self.ApStepLabel.setObjectName(u"ApStepLabel")
+
+        self.horizontalLayout_27.addWidget(self.ApStepLabel)
+
+        self.horizontalSpacer_88 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_27.addItem(self.horizontalSpacer_88)
+
+        self.ApStepSubButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
+        self.ApStepSubButton.setObjectName(u"ApStepSubButton")
+
+        self.horizontalLayout_27.addWidget(self.ApStepSubButton)
+
+        self.ApStepEdit = LineEdit(self.ArmEndToolsCoordinateControlCard)
+        self.ApStepEdit.setObjectName(u"ApStepEdit")
+        self.ApStepEdit.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_27.addWidget(self.ApStepEdit)
+
+        self.ApStepAddButton = ToolButton(self.ArmEndToolsCoordinateControlCard)
+        self.ApStepAddButton.setObjectName(u"ApStepAddButton")
+
+        self.horizontalLayout_27.addWidget(self.ApStepAddButton)
+
+        self.horizontalSpacer_89 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_27.addItem(self.horizontalSpacer_89)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_27)
+
+
+        self.horizontalLayout_7.addLayout(self.verticalLayout_3)
 
 
         self.horizontalLayout_6.addWidget(self.ArmEndToolsCoordinateControlCard)
@@ -771,173 +936,6 @@ class teach_page_frame(object):
         self.ArmEndToolsPositionControlPage.setObjectName(u"ArmEndToolsPositionControlPage")
         self.verticalLayout = QVBoxLayout(self.ArmEndToolsPositionControlPage)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.ArmEndToolsPositionControlCard = CardWidget(self.ArmEndToolsPositionControlPage)
-        self.ArmEndToolsPositionControlCard.setObjectName(u"ArmEndToolsPositionControlCard")
-        self.horizontalLayout_23 = QHBoxLayout(self.ArmEndToolsPositionControlCard)
-        self.horizontalLayout_23.setObjectName(u"horizontalLayout_23")
-        self.verticalLayout_5 = QVBoxLayout()
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.horizontalLayout_15 = QHBoxLayout()
-        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
-        self.horizontalSpacer_58 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_15.addItem(self.horizontalSpacer_58)
-
-        self.RxLabel = StrongBodyLabel(self.ArmEndToolsPositionControlCard)
-        self.RxLabel.setObjectName(u"RxLabel")
-
-        self.horizontalLayout_15.addWidget(self.RxLabel)
-
-        self.horizontalSpacer_23 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_15.addItem(self.horizontalSpacer_23)
-
-        self.RxAxisSubButton = ToolButton(self.ArmEndToolsPositionControlCard)
-        self.RxAxisSubButton.setObjectName(u"RxAxisSubButton")
-
-        self.horizontalLayout_15.addWidget(self.RxAxisSubButton)
-
-        self.RxAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
-        self.RxAxisEdit.setObjectName(u"RxAxisEdit")
-        self.RxAxisEdit.setAlignment(Qt.AlignCenter)
-        self.RxAxisEdit.setReadOnly(True)
-
-        self.horizontalLayout_15.addWidget(self.RxAxisEdit)
-
-        self.RxAxisAddButton = ToolButton(self.ArmEndToolsPositionControlCard)
-        self.RxAxisAddButton.setObjectName(u"RxAxisAddButton")
-
-        self.horizontalLayout_15.addWidget(self.RxAxisAddButton)
-
-        self.horizontalSpacer_62 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_15.addItem(self.horizontalSpacer_62)
-
-
-        self.verticalLayout_5.addLayout(self.horizontalLayout_15)
-
-        self.horizontalLayout_16 = QHBoxLayout()
-        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
-        self.horizontalSpacer_59 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_16.addItem(self.horizontalSpacer_59)
-
-        self.RyLabel = StrongBodyLabel(self.ArmEndToolsPositionControlCard)
-        self.RyLabel.setObjectName(u"RyLabel")
-
-        self.horizontalLayout_16.addWidget(self.RyLabel)
-
-        self.horizontalSpacer_24 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_16.addItem(self.horizontalSpacer_24)
-
-        self.RyAxisSubButton = ToolButton(self.ArmEndToolsPositionControlCard)
-        self.RyAxisSubButton.setObjectName(u"RyAxisSubButton")
-
-        self.horizontalLayout_16.addWidget(self.RyAxisSubButton)
-
-        self.RyAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
-        self.RyAxisEdit.setObjectName(u"RyAxisEdit")
-        self.RyAxisEdit.setAlignment(Qt.AlignCenter)
-        self.RyAxisEdit.setReadOnly(True)
-
-        self.horizontalLayout_16.addWidget(self.RyAxisEdit)
-
-        self.RyAxisAddButton = ToolButton(self.ArmEndToolsPositionControlCard)
-        self.RyAxisAddButton.setObjectName(u"RyAxisAddButton")
-
-        self.horizontalLayout_16.addWidget(self.RyAxisAddButton)
-
-        self.horizontalSpacer_63 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_16.addItem(self.horizontalSpacer_63)
-
-
-        self.verticalLayout_5.addLayout(self.horizontalLayout_16)
-
-        self.horizontalLayout_17 = QHBoxLayout()
-        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
-        self.horizontalSpacer_60 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_17.addItem(self.horizontalSpacer_60)
-
-        self.RzLabel = StrongBodyLabel(self.ArmEndToolsPositionControlCard)
-        self.RzLabel.setObjectName(u"RzLabel")
-
-        self.horizontalLayout_17.addWidget(self.RzLabel)
-
-        self.horizontalSpacer_25 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_17.addItem(self.horizontalSpacer_25)
-
-        self.RzAxisSubButton = ToolButton(self.ArmEndToolsPositionControlCard)
-        self.RzAxisSubButton.setObjectName(u"RzAxisSubButton")
-
-        self.horizontalLayout_17.addWidget(self.RzAxisSubButton)
-
-        self.RzAxisEdit = LineEdit(self.ArmEndToolsPositionControlCard)
-        self.RzAxisEdit.setObjectName(u"RzAxisEdit")
-        self.RzAxisEdit.setAlignment(Qt.AlignCenter)
-        self.RzAxisEdit.setReadOnly(True)
-
-        self.horizontalLayout_17.addWidget(self.RzAxisEdit)
-
-        self.RzAxisAddButton = ToolButton(self.ArmEndToolsPositionControlCard)
-        self.RzAxisAddButton.setObjectName(u"RzAxisAddButton")
-
-        self.horizontalLayout_17.addWidget(self.RzAxisAddButton)
-
-        self.horizontalSpacer_64 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_17.addItem(self.horizontalSpacer_64)
-
-
-        self.verticalLayout_5.addLayout(self.horizontalLayout_17)
-
-        self.horizontalLayout_18 = QHBoxLayout()
-        self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
-        self.horizontalSpacer_61 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_18.addItem(self.horizontalSpacer_61)
-
-        self.ApStepLabel = StrongBodyLabel(self.ArmEndToolsPositionControlCard)
-        self.ApStepLabel.setObjectName(u"ApStepLabel")
-
-        self.horizontalLayout_18.addWidget(self.ApStepLabel)
-
-        self.horizontalSpacer_26 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_18.addItem(self.horizontalSpacer_26)
-
-        self.ApStepSubButton = ToolButton(self.ArmEndToolsPositionControlCard)
-        self.ApStepSubButton.setObjectName(u"ApStepSubButton")
-
-        self.horizontalLayout_18.addWidget(self.ApStepSubButton)
-
-        self.ApStepEdit = LineEdit(self.ArmEndToolsPositionControlCard)
-        self.ApStepEdit.setObjectName(u"ApStepEdit")
-        self.ApStepEdit.setAlignment(Qt.AlignCenter)
-
-        self.horizontalLayout_18.addWidget(self.ApStepEdit)
-
-        self.ApStepAddButton = ToolButton(self.ArmEndToolsPositionControlCard)
-        self.ApStepAddButton.setObjectName(u"ApStepAddButton")
-
-        self.horizontalLayout_18.addWidget(self.ApStepAddButton)
-
-        self.horizontalSpacer_65 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_18.addItem(self.horizontalSpacer_65)
-
-
-        self.verticalLayout_5.addLayout(self.horizontalLayout_18)
-
-
-        self.horizontalLayout_23.addLayout(self.verticalLayout_5)
-
-
-        self.verticalLayout.addWidget(self.ArmEndToolsPositionControlCard)
-
         self.ArmActionControlStackWidget.addWidget(self.ArmEndToolsPositionControlPage)
 
         self.verticalLayout_11.addWidget(self.ArmActionControlStackWidget)
@@ -1048,7 +1046,7 @@ class teach_page_frame(object):
 
         self.retranslateUi(Frame)
 
-        self.ArmActionControlStackWidget.setCurrentIndex(0)
+        self.ArmActionControlStackWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(Frame)
@@ -1391,7 +1389,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(125, 214, 249);\n"
 "}", None))
-        self.ApStepLabel.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
+        self.ApStepLabel.setText(QCoreApplication.translate("Frame", u"\u89d2\u5ea6", None))
         self.ApStepSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(125, 214, 249);\n"
 "}\n"

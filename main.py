@@ -44,6 +44,7 @@ from serial.tools import list_ports
 # 遇到异常退出时，解除注释下面的代码，查看异常信息
 import faulthandler;faulthandler.enable()
 
+
 class CommandPage(QFrame, command_page_frame):
     """命令控制页面"""
     def __init__(self, page_name: str):
@@ -337,6 +338,7 @@ class TeachPage(QFrame, teach_page_frame):
         logger.debug("机械臂动作数量: {}".format(action_count))
         for robot_action_row in range(self.ActionTableWidget.rowCount()):
             logger.warning(f"机械臂正在执行第 {robot_action_row + 1} 个动作")
+            self.ProgressBar.setVal(100 * (robot_action_row + 1) / action_count)
             arm_payload_data, tool_type_data, _ = self.get_arm_action_payload(robot_action_row)
             
             # 订阅机械臂的角度信息，判断是否到达目标位置
@@ -366,7 +368,8 @@ class TeachPage(QFrame, teach_page_frame):
                     logger.debug("所有动作执行完成")
                     self.move_status = True
             
-            self.move_status = False # 单个动作执行完成后需要重置状态，否则无法进入 while 循环
+            self.move_status = False  # 单个动作执行完成后需要重置状态，否则无法进入 while 循环
+            self.ProgressBar.setVal(0)  # 进度条清零
             
     def _check_flag(self, flag=True):
         """线程工作控制位"""
@@ -1065,8 +1068,7 @@ class TeachPage(QFrame, teach_page_frame):
     def initJointControlWidiget(self):
         """分段导航栏添加子页面控件"""
         self.addSubInterface(self.ArmAngleControlCard, 'ArmAngleControlCard', '关节角度控制')
-        self.addSubInterface(self.ArmEndToolsCoordinateControlCard, 'ArmEndToolsCoordinateControlCard', '工具坐标控制')
-        self.addSubInterface(self.ArmEndToolsPositionControlCard, 'ArmEndToolsPositionControlCard', '工具姿态控制')
+        self.addSubInterface(self.ArmEndToolsCoordinateControlCard, 'ArmEndToolsCoordinateControlCard', '末端坐标/姿态控制')
 
         self.ArmActionControlStackWidget.currentChanged.connect(self.onCurrentIndexChanged)
         self.ArmActionControlStackWidget.setCurrentWidget(self.ArmAngleControlCard)
@@ -1399,7 +1401,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
     def initWindow(self):
         """初始化窗口"""
         self.resize(1247, 750)
-        self.setWindowTitle("比邻星六轴机械臂上位机 v4.1.0")
+        self.setWindowTitle("比邻星六轴机械臂上位机 v4.3.0")
         self.setWindowIcon(QIcon(str(settings.WINDOWS_ICON_PATH)))
         setThemeColor('#00AAFF')
         
