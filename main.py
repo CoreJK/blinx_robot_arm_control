@@ -101,7 +101,7 @@ class TeachPage(QFrame, teach_page_frame):
         # 状态标志
         self.move_status = True  # 机械臂运动状态
         self.thread_is_on = True  # 线程工作标志位
-        self.robot_model = True  # 用于示教执行命令时，判断机械臂的命令模式的标志位 True: SEQ(顺序指令), False: INT(实时指令)
+        self.command_model = "SEQ"  # 用于示教执行命令时，判断机械臂的命令模式的标志位 SEQ(顺序指令), INT(实时指令)
         self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
         self.joints_angle_queue = joints_angle_queue  # 查询到的机械臂关节角度队列
@@ -337,12 +337,11 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def change_command_model(self, isChecked: bool):
         """切换命令模式"""
-        # SEQ: 顺序执行模式(False)
         # INT: 实时指令模式(True)
-        command_model = "INT" if isChecked else "SEQ"
-        self.robot_model = True if isChecked else False
-        logger.warning(f"命令模式切换: {command_model} !")
-        command_model_payload = {"command": "set_robot_mode", "data": [command_model]}
+        # SEQ: 顺序执行模式(False)
+        self.command_model = "SEQ" if isChecked else "INT"
+        logger.warning(f"命令模式切换: {self.command_model} !")
+        command_model_payload = {"command": "set_robot_mode", "data": [self.command_model]}
         command_model_payload_str = json.dumps(command_model_payload).replace(' ', "") + '\r\n'
         self.command_queue.put(command_model_payload_str.encode('utf-8'))
     
@@ -372,15 +371,16 @@ class TeachPage(QFrame, teach_page_frame):
                 self.command_queue.put(str_command.encode())
             
             # 根据动作是否到位，以及线程是否工作判断是否执行
-            while self.robot_model and not self.move_status and self.thread_is_on:
-                time.sleep(0.1)
-                pub.subscribe(self._joints_move_status, 'joints/move_status')
-                pub.subscribe(self._check_flag, 'thread_work_flag')  # 线程控制标识
-                logger.warning("等待上一个动作完成")
-                # 完成所有动作后，退出循环
-                if robot_action_row + 1 == action_count:
-                    logger.debug("所有动作执行完成")
-                    self.move_status = True
+            if self.command_model == "INT":
+                while not self.move_status and self.thread_is_on:
+                    time.sleep(0.1)
+                    pub.subscribe(self._joints_move_status, 'joints/move_status')
+                    pub.subscribe(self._check_flag, 'thread_work_flag')  # 线程控制标识
+                    logger.warning("等待上一个动作完成")
+                    # 完成所有动作后，退出循环
+                    if robot_action_row + 1 == action_count:
+                        logger.debug("所有动作执行完成")
+                        self.move_status = True
             
             self.move_status = False  # 单个动作执行完成后需要重置状态，否则无法进入 while 循环
             self.ProgressBar.setVal(0)  # 进度条清零

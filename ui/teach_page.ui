@@ -101,11 +101,17 @@ ToolButton:hover {
            </item>
            <item>
             <widget class="SwitchButton" name="ActionModelSwitchButton">
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>顺序指令</string>
+             </property>
              <property name="onText">
-              <string>实时指令</string>
+              <string>顺序指令</string>
              </property>
              <property name="offText">
-              <string>顺序指令</string>
+              <string>实时指令</string>
              </property>
             </widget>
            </item>

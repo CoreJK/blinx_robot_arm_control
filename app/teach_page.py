@@ -63,6 +63,7 @@ class teach_page_frame(object):
 
         self.ActionModelSwitchButton = SwitchButton(Frame)
         self.ActionModelSwitchButton.setObjectName(u"ActionModelSwitchButton")
+        self.ActionModelSwitchButton.setChecked(True)
 
         self.horizontalLayout.addWidget(self.ActionModelSwitchButton)
 
@@ -1068,8 +1069,9 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(125, 214, 249);\n"
 "}", None))
-        self.ActionModelSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u5b9e\u65f6\u6307\u4ee4", None))
-        self.ActionModelSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u987a\u5e8f\u6307\u4ee4", None))
+        self.ActionModelSwitchButton.setText(QCoreApplication.translate("Frame", u"\u987a\u5e8f\u6307\u4ee4", None))
+        self.ActionModelSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u987a\u5e8f\u6307\u4ee4", None))
+        self.ActionModelSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u5b9e\u65f6\u6307\u4ee4", None))
         self.RecordActivateSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u5f55\u5236\u6a21\u5f0f", None))
         self.RecordActivateSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u666e\u901a\u6a21\u5f0f", None))
         self.ActionStepRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
