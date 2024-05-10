@@ -726,7 +726,7 @@ class TeachPage(QFrame, teach_page_frame):
             logger.debug(f"机械臂关节 {joint_number} 转动 {round(degrade, 3)} 度")
             
             #  录制操作激活时
-            if self.RecordActivateButton.isChecked():
+            if self.RecordActivateSwitchButton.isChecked():
                 self.add_item()
     
     @Slot()
@@ -851,7 +851,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
-        if self.RecordActivateButton.isChecked():
+        if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
 
     @Slot()
@@ -885,7 +885,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
-        if self.RecordActivateButton.isChecked():
+        if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
 
     @Slot()
@@ -920,7 +920,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
-        if self.RecordActivateButton.isChecked():
+        if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
 
     @Slot()
@@ -967,7 +967,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
-        if self.RecordActivateButton.isChecked():
+        if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
     
     @Slot()           
@@ -1003,7 +1003,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
-        if self.RecordActivateButton.isChecked():
+        if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
             
     @Slot()    
@@ -1039,7 +1039,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.construct_and_send_command(arm_ikine_solves, speed_percentage)
         
         #  录制操作激活时
-        if self.RecordActivateButton.isChecked():
+        if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
     
     @Slot()
@@ -1400,7 +1400,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         
     def initWindow(self):
         """初始化窗口"""
-        self.resize(1247, 750)
+        self.resize(1330, 750)
         self.setWindowTitle("比邻星六轴机械臂上位机 v4.3.0")
         self.setWindowIcon(QIcon(str(settings.WINDOWS_ICON_PATH)))
         setThemeColor('#00AAFF')

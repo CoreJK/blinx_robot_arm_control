@@ -100,19 +100,22 @@ ToolButton:hover {
             </spacer>
            </item>
            <item>
-            <widget class="RadioButton" name="RecordActivateButton">
-             <property name="text">
-              <string>录制模式</string>
+            <widget class="SwitchButton" name="ActionModelSwitchButton">
+             <property name="onText">
+              <string>实时指令</string>
+             </property>
+             <property name="offText">
+              <string>顺序指令</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="RadioButton" name="RecordDeActivateButton">
-             <property name="text">
-              <string>普通模式</string>
+            <widget class="SwitchButton" name="RecordActivateSwitchButton">
+             <property name="onText">
+              <string>录制模式</string>
              </property>
-             <property name="checked">
-              <bool>true</bool>
+             <property name="offText">
+              <string>普通模式</string>
              </property>
             </widget>
            </item>
@@ -450,7 +453,7 @@ ToolButton:hover {
        <item>
         <widget class="QStackedWidget" name="ArmActionControlStackWidget">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="ArmAngleControlPage">
           <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -2305,8 +2308,8 @@ PushButton:hover {
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
-   <class>RadioButton</class>
-   <extends>QRadioButton</extends>
+   <class>SwitchButton</class>
+   <extends>QWidget</extends>
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>

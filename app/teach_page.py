@@ -21,7 +21,7 @@ from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QHeaderView,
 
 from qfluentwidgets import (CardWidget, ComboBox, HorizontalSeparator, LineEdit,
     Pivot, PlainTextEdit, ProgressBar, PushButton,
-    RadioButton, SegmentedWidget, StrongBodyLabel, TableWidget,
+    SegmentedWidget, StrongBodyLabel, SwitchButton, TableWidget,
     ToolButton, VerticalSeparator)
 
 class teach_page_frame(object):
@@ -61,16 +61,15 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
-        self.RecordActivateButton = RadioButton(Frame)
-        self.RecordActivateButton.setObjectName(u"RecordActivateButton")
+        self.ActionModelSwitchButton = SwitchButton(Frame)
+        self.ActionModelSwitchButton.setObjectName(u"ActionModelSwitchButton")
 
-        self.horizontalLayout.addWidget(self.RecordActivateButton)
+        self.horizontalLayout.addWidget(self.ActionModelSwitchButton)
 
-        self.RecordDeActivateButton = RadioButton(Frame)
-        self.RecordDeActivateButton.setObjectName(u"RecordDeActivateButton")
-        self.RecordDeActivateButton.setChecked(True)
+        self.RecordActivateSwitchButton = SwitchButton(Frame)
+        self.RecordActivateSwitchButton.setObjectName(u"RecordActivateSwitchButton")
 
-        self.horizontalLayout.addWidget(self.RecordDeActivateButton)
+        self.horizontalLayout.addWidget(self.RecordActivateSwitchButton)
 
         self.VerticalSeparator_4 = VerticalSeparator(Frame)
         self.VerticalSeparator_4.setObjectName(u"VerticalSeparator_4")
@@ -1046,7 +1045,7 @@ class teach_page_frame(object):
 
         self.retranslateUi(Frame)
 
-        self.ArmActionControlStackWidget.setCurrentIndex(1)
+        self.ArmActionControlStackWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(Frame)
@@ -1069,8 +1068,10 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(125, 214, 249);\n"
 "}", None))
-        self.RecordActivateButton.setText(QCoreApplication.translate("Frame", u"\u5f55\u5236\u6a21\u5f0f", None))
-        self.RecordDeActivateButton.setText(QCoreApplication.translate("Frame", u"\u666e\u901a\u6a21\u5f0f", None))
+        self.ActionModelSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u5b9e\u65f6\u6307\u4ee4", None))
+        self.ActionModelSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u987a\u5e8f\u6307\u4ee4", None))
+        self.RecordActivateSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u5f55\u5236\u6a21\u5f0f", None))
+        self.RecordActivateSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u666e\u901a\u6a21\u5f0f", None))
         self.ActionStepRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(125, 214, 249);\n"
 "}\n"
