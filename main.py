@@ -101,6 +101,7 @@ class TeachPage(QFrame, teach_page_frame):
         # 状态标志
         self.move_status = True  # 机械臂运动状态
         self.thread_is_on = True  # 线程工作标志位
+        self.robot_model = True  # 用于示教执行命令时，判断机械臂的命令模式的标志位 True: SEQ(顺序指令), False: INT(实时指令)
         self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
         self.joints_angle_queue = joints_angle_queue  # 查询到的机械臂关节角度队列
@@ -136,6 +137,7 @@ class TeachPage(QFrame, teach_page_frame):
         # 示教控制操作按钮槽函数绑定
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
+        self.ActionModelSwitchButton.checkedChanged.connect(self.change_command_model)
         self.ActionStepRunButton.clicked.connect(self.run_action_step)
         self.ActionRunButton.clicked.connect(self.run_all_action)
         self.ActionLoopRunButton.clicked.connect(self.run_action_loop)
@@ -332,6 +334,18 @@ class TeachPage(QFrame, teach_page_frame):
                 json.dump(data, json_file, indent=4, ensure_ascii=False)
                 logger.info("导出配置文件成功!")
     
+    @Slot()
+    def change_command_model(self, isChecked: bool):
+        """切换命令模式"""
+        # SEQ: 顺序执行模式(False)
+        # INT: 实时指令模式(True)
+        command_model = "INT" if isChecked else "SEQ"
+        self.robot_model = True if isChecked else False
+        logger.warning(f"命令模式切换: {command_model} !")
+        command_model_payload = {"command": "set_robot_mode", "data": [command_model]}
+        command_model_payload_str = json.dumps(command_model_payload).replace(' ', "") + '\r\n'
+        self.command_queue.put(command_model_payload_str.encode('utf-8'))
+    
     def tale_action_thread(self):
         """顺序执行示教动作线程"""
         action_count = self.ActionTableWidget.rowCount()
@@ -358,7 +372,7 @@ class TeachPage(QFrame, teach_page_frame):
                 self.command_queue.put(str_command.encode())
             
             # 根据动作是否到位，以及线程是否工作判断是否执行
-            while not self.move_status and self.thread_is_on:
+            while self.robot_model and not self.move_status and self.thread_is_on:
                 time.sleep(0.1)
                 pub.subscribe(self._joints_move_status, 'joints/move_status')
                 pub.subscribe(self._check_flag, 'thread_work_flag')  # 线程控制标识
