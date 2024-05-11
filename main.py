@@ -91,7 +91,7 @@ class CommandPage(QFrame, command_page_frame):
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""
-    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: PriorityQueue, joints_angle_queue: PriorityQueue):
+    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: Queue, joints_angle_queue: Queue):
         super().__init__()
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
@@ -101,6 +101,7 @@ class TeachPage(QFrame, teach_page_frame):
         # 状态标志
         self.move_status = True  # 机械臂运动状态
         self.thread_is_on = True  # 线程工作标志位
+        self.table_action_thread_flag = True  # 顺序执行示教动作线程标志位
         self.command_model = "SEQ"  # 用于示教执行命令时，判断机械臂的命令模式的标志位 SEQ(顺序指令), INT(实时指令)
         self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
@@ -350,59 +351,70 @@ class TeachPage(QFrame, teach_page_frame):
         action_count = self.ActionTableWidget.rowCount()
         logger.debug("机械臂动作数量: {}".format(action_count))
         for robot_action_row in range(self.ActionTableWidget.rowCount()):
-            logger.warning(f"机械臂正在执行第 {robot_action_row + 1} 个动作")
-            
-            # 更新任务执行的进度条
-            self.ProgressBar.setVal(100 * (robot_action_row + 1) / action_count)
-            
-            # 构造机械臂执行动作的数据
-            arm_payload_data, tool_type_data, delay_time = self.get_arm_action_payload(robot_action_row)
-            
-            # 订阅机械臂的角度信息，判断是否到达目标位置
-            logger.debug(f'运动状态: {self.move_status}')
-            
-            # 发送机械臂执行动作的命令
-            json_command = {"command": "set_joint_angle_all_time", "data": arm_payload_data}
-            str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
-            self.command_queue.put(str_command.encode())
-        
-            # 控制末端工具动作的命令
-            if tool_type_data[0] == "吸盘" and tool_type_data[1] != "":
-                logger.info("单次执行，开关控制")   
-                tool_status = 1 if tool_type_data[1] == "开" else 0
-                json_command = {"command":"set_end_tool", "data": [1, tool_status]}
+            if self.table_action_thread_flag:
+                pub.subscribe(self._check_tale_action_thread_flag, 'tale_action_thread_flag')
+                logger.warning(f"机械臂正在执行第 {robot_action_row + 1} 个动作")
+                
+                # 更新任务执行的进度条
+                self.ProgressBar.setVal(100 * (robot_action_row + 1) / action_count)
+                
+                # 构造机械臂执行动作的数据
+                arm_payload_data, tool_type_data, delay_time = self.get_arm_action_payload(robot_action_row)
+                
+                # 订阅机械臂的角度信息，判断是否到达目标位置
+                logger.debug(f'运动状态: {self.move_status}')
+                
+                # 发送机械臂执行动作的命令
+                json_command = {"command": "set_joint_angle_all_time", "data": arm_payload_data}
                 str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
                 self.command_queue.put(str_command.encode())
             
-            # SEQ 顺序模式下，发送延时命令，实时模式不支持延时
-            if self.command_model == 'SEQ' and delay_time != 0:
-                set_delay_time = int(delay_time * 1000)
-                if set_delay_time <= 30000:
-                    json_command = {"command": "set_time_delay", "data": [set_delay_time]}
+                # 控制末端工具动作的命令
+                if tool_type_data[0] == "吸盘" and tool_type_data[1] != "":
+                    logger.info("单次执行，开关控制")   
+                    tool_status = 1 if tool_type_data[1] == "开" else 0
+                    json_command = {"command":"set_end_tool", "data": [1, tool_status]}
                     str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
                     self.command_queue.put(str_command.encode())
-                else:
-                    self.message_box.warning_message_box("延时时间太长，系统动作无法执行!")
-                    break
-            
-            # 根据动作是否到位，以及线程是否工作判断是否执行
-            if self.command_model == "INT":
-                while not self.move_status and self.thread_is_on:
-                    time.sleep(0.1)
-                    pub.subscribe(self._joints_move_status, 'joints/move_status')
-                    pub.subscribe(self._check_flag, 'thread_work_flag')  # 线程控制标识
-                    logger.warning("等待上一个动作完成")
-                    # 完成所有动作后，退出循环
-                    if robot_action_row + 1 == action_count:
-                        logger.debug("所有动作执行完成")
-                        self.move_status = True
-            
-            self.move_status = False  # 单个动作执行完成后需要重置状态，否则无法进入 while 循环
-            self.ProgressBar.setVal(0)  # 进度条清零
+                
+                # SEQ 顺序模式下，发送延时命令，INT 模式不发送延时命令
+                if self.command_model == 'SEQ' and delay_time != 0:
+                    set_delay_time = int(delay_time * 1000)
+                    if set_delay_time <= 30000:
+                        json_command = {"command": "set_time_delay", "data": [set_delay_time]}
+                        str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+                        self.command_queue.put(str_command.encode())
+                    else:
+                        self.message_box.warning_message_box("延时时间太长，系统动作无法执行!")
+                        break
+                
+                # 根据动作是否到位，以及线程是否工作判断是否执行
+                if self.command_model == "INT":
+                    while not self.move_status and self.table_action_thread_flag and self.thread_is_on:
+                        time.sleep(0.1)
+                        pub.subscribe(self._joints_move_status, 'joints/move_status')
+                        pub.subscribe(self._check_flag, 'thread_work_flag')  # 线程控制标识
+                        pub.subscribe(self._check_tale_action_thread_flag, 'tale_action_thread_flag')  # 示教线程运动标识
+                        logger.warning("等待上一个动作完成")
+                        # 完成所有动作后，退出循环
+                        if robot_action_row + 1 == action_count:
+                            logger.debug("所有动作执行完成")
+                            self.move_status = True
+                
+                self.move_status = False  # 单个动作执行完成后需要重置状态，否则无法进入 while 循环
+                self.ProgressBar.setVal(0)  # 进度条清零
+            else:
+                logger.warning("急停, 线程退出!")
+                self.ProgressBar.setVal(0)  # 重置进度条
+                break
             
     def _check_flag(self, flag=True):
         """线程工作控制位"""
         self.thread_is_on = flag
+    
+    def _check_tale_action_thread_flag(self, flag=True):
+        """示教线程工作控制位"""
+        self.table_action_thread_flag = flag
     
     def _joints_move_status(self, move_status=True):
         """订阅机械臂的关节运动状态"""
@@ -476,8 +488,12 @@ class TeachPage(QFrame, teach_page_frame):
         # 获取循环动作循环执行的次数
         for loop_time in range(loop_times):
             logger.warning(f"机械臂正在执行第 {loop_time + 1} 次循环动作")
-            self.tale_action_thread()
-            time.sleep(1)  # 循环组间的间隔时间
+            if self.table_action_thread_flag:
+                self.tale_action_thread()
+                time.sleep(1)  # 循环组间的间隔时间
+            else:
+                logger.warning("急停, 循环执行任务退出!")
+                break
 
     @Slot()
     def run_action_loop(self):
@@ -804,6 +820,7 @@ class TeachPage(QFrame, teach_page_frame):
         command = json.dumps({"command": "set_joint_initialize", "data": [0]}).replace('', "") + '\r\n'
         self.command_queue.put(command.encode())
         self.JointDelayTimeEdit.setText("0")  # 复位时延时时间设置为 0
+        self.table_action_thread_flag = True
         self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
         logger.warning("机械臂复位中!请注意手臂姿态")
         
@@ -820,17 +837,15 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def stop_robot_arm(self):
         """机械臂急停"""
-        pub.sendMessage('thread_work_flag', flag=False)
-        # 线程标志设置为停止
-        self.loop_flag = True
-        # 清空队列中的命令
-        self.command_queue.queue.clear()
-        # 禁用急停按钮
-        self.RobotArmStopButton.setEnabled(False)
+        # 发送急停命令
+        emergency_stop_command = json.dumps({"command": "set_joint_emergency_stop", "data": [0]}).replace(' ', "") + '\r\n'
+        with self.get_robot_arm_connector() as robot_arm_connector:
+            robot_arm_connector.send(emergency_stop_command.encode())
         
-        self.message_box.error_message_box("机械臂急停!")
-        self.loop_flag = False  # 恢复线程池的初始标志位
+        # 重置线程工作状态
         self.robot_arm_is_connected = False # 机械臂连接标志位设置为 False
+        pub.sendMessage('tale_action_thread_flag', flag=False)  # 示教线程标志位设置为 False
+        self.message_box.error_message_box("机械臂急停! \n请排除完问题后, 点击两次: 初始化 按钮")
     
     @Slot()
     def tool_control(self, action=1):
@@ -1052,7 +1067,6 @@ class TeachPage(QFrame, teach_page_frame):
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
         
-        
         # 根据按钮加减增减数值
         if action == "add":
             new_rz_pose = old_rz_pose + change_value
@@ -1222,6 +1236,21 @@ class TeachPage(QFrame, teach_page_frame):
         
         return joint_degrees
     
+    @retry(stop_max_attempt_number=3, wait_fixed=1000)
+    @logger.catch
+    def get_robot_arm_connector(self):
+        """获取与机械臂的连接对象"""
+        try:
+            socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
+            host = socket_info['target_ip']
+            port = int(socket_info['target_port'])
+            robot_arm_client = ClientSocket(host, port)
+            socket_info.close()
+        except Exception as e:
+            logger.error(str(e))
+            self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
+        return robot_arm_client
+     
      
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
@@ -1238,8 +1267,7 @@ class ConnectPage(QFrame, connect_page_frame):
         
         self.init_task_thread()
         
-        # 机械臂的查询循环控制位
-        self.loop_flag = False
+        # 机械臂的连接状态
         self.robot_arm_is_connected = False
         
         self.message_box = BlinxMessageBox(self)
@@ -1350,7 +1378,6 @@ class ConnectPage(QFrame, connect_page_frame):
     @Slot()
     def connect_to_robot_arm(self):
         """连接机械臂"""
-        
         try:
             # 检查网络连接状态
             robot_arm_client = self.get_robot_arm_connector()
@@ -1360,8 +1387,8 @@ class ConnectPage(QFrame, connect_page_frame):
                 self.message_box.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
                 
             if self.RobotArmLinkButton.isEnabled() and remote_address:
-                # 机械臂连接成功标志
                 self.RobotArmLinkButton.setText("已连接")
+                # 机械臂连接成功标志
                 self.robot_arm_is_connected = True
                 # 连接成功后，将连接机械臂按钮禁用，避免用户操作重复发起连接
                 self.RobotArmLinkButton.setEnabled(False)
@@ -1369,12 +1396,10 @@ class ConnectPage(QFrame, connect_page_frame):
                 # self.RobotArmStopButton.setEnabled(True)
                 
                 # 启用实时获取机械臂角度线程
-                
                 self.thread_pool.start(self.angle_degree_thread)
                 logger.info("后台获取机械臂角度开始")
                 
                 # 启用轮询队列中所有命令的线程
-                # 后台轮询命令队列，并发送的优先级最高的命令
                 self.thread_pool.start(self.command_sender_thread)
                     
                 logger.info("命令发送线程开启")
@@ -1390,12 +1415,9 @@ class ConnectPage(QFrame, connect_page_frame):
             # 清空队列
             self.command_queue = Queue()
             # 关闭线程池
-            self.loop_flag = True
             # 弹出错误提示框
             logger.error(f"机械臂连接失败: {e}")
             self.message_box.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
-            # 恢复线程池的初始标志位
-            self.loop_flag = False
     
     @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
