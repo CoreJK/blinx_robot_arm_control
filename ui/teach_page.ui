@@ -2234,7 +2234,7 @@ PushButton:hover {
              <item>
               <widget class="PushButton" name="RobotArmResetButton">
                <property name="text">
-                <string>复位</string>
+                <string>初始化</string>
                </property>
                <property name="lightCustomQss" stdset="0">
                 <string>PushButton {
@@ -2250,7 +2250,7 @@ PushButton:hover {
              <item>
               <widget class="PushButton" name="RobotArmZeroButton">
                <property name="text">
-                <string>归零</string>
+                <string>回零</string>
                </property>
                <property name="lightCustomQss" stdset="0">
                 <string>PushButton {

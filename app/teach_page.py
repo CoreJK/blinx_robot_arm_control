@@ -1424,7 +1424,7 @@ class teach_page_frame(object):
 "PushButton:hover {\n"
 "    background: rgb(229, 142, 138);\n"
 "}", None))
-        self.RobotArmResetButton.setText(QCoreApplication.translate("Frame", u"\u590d\u4f4d", None))
+        self.RobotArmResetButton.setText(QCoreApplication.translate("Frame", u"\u521d\u59cb\u5316", None))
         self.RobotArmResetButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(240, 203, 98);\n"
 "}\n"
@@ -1432,7 +1432,7 @@ class teach_page_frame(object):
 "PushButton:hover {\n"
 "    background: rgb(240, 203, 98);\n"
 "}", None))
-        self.RobotArmZeroButton.setText(QCoreApplication.translate("Frame", u"\u5f52\u96f6", None))
+        self.RobotArmZeroButton.setText(QCoreApplication.translate("Frame", u"\u56de\u96f6", None))
         self.RobotArmZeroButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(170, 211, 140);\n"
 "}\n"

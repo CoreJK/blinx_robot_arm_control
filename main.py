@@ -351,13 +351,17 @@ class TeachPage(QFrame, teach_page_frame):
         logger.debug("机械臂动作数量: {}".format(action_count))
         for robot_action_row in range(self.ActionTableWidget.rowCount()):
             logger.warning(f"机械臂正在执行第 {robot_action_row + 1} 个动作")
+            
+            # 更新任务执行的进度条
             self.ProgressBar.setVal(100 * (robot_action_row + 1) / action_count)
-            arm_payload_data, tool_type_data, _ = self.get_arm_action_payload(robot_action_row)
+            
+            # 构造机械臂执行动作的数据
+            arm_payload_data, tool_type_data, delay_time = self.get_arm_action_payload(robot_action_row)
             
             # 订阅机械臂的角度信息，判断是否到达目标位置
             logger.debug(f'运动状态: {self.move_status}')
             
-            # 控制所有关节同时运动命令
+            # 发送机械臂执行动作的命令
             json_command = {"command": "set_joint_angle_all_time", "data": arm_payload_data}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
             self.command_queue.put(str_command.encode())
@@ -369,6 +373,17 @@ class TeachPage(QFrame, teach_page_frame):
                 json_command = {"command":"set_end_tool", "data": [1, tool_status]}
                 str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
                 self.command_queue.put(str_command.encode())
+            
+            # SEQ 顺序模式下，发送延时命令，实时模式不支持延时
+            if self.command_model == 'SEQ' and delay_time != 0:
+                set_delay_time = int(delay_time * 1000)
+                if set_delay_time <= 30000:
+                    json_command = {"command": "set_time_delay", "data": [set_delay_time]}
+                    str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+                    self.command_queue.put(str_command.encode())
+                else:
+                    self.message_box.warning_message_box("延时时间太长，系统动作无法执行!")
+                    break
             
             # 根据动作是否到位，以及线程是否工作判断是否执行
             if self.command_model == "INT":
@@ -442,7 +457,7 @@ class TeachPage(QFrame, teach_page_frame):
             json_command = {"command":"set_end_tool", "data": [1, tool_status]}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
             self.command_queue.put(str_command.encode())
-    
+
     @Slot()
     def run_action_step(self):
         """单次执行选定的动作"""
@@ -794,7 +809,7 @@ class TeachPage(QFrame, teach_page_frame):
         
     @Slot()
     def reset_to_zero(self):
-        """机械臂复位到初始位姿"""
+        """机械臂回零"""
         command = json.dumps({"command": "set_joint_angle_all", "data": [100, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}).replace(' ', "") + '\r\n'
         self.command_queue.put(command.encode())
         self.JointDelayTimeEdit.setText("0")  # 归零时延时时间设置为 0
