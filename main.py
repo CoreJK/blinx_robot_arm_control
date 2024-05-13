@@ -16,7 +16,7 @@ from common.socket_client import ClientSocket, Worker
 from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask, CommandReceiverTask
 
 # UI 相关模块
-from PySide6.QtCore import Qt, QThreadPool, Slot, QUrl
+from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
 from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, NavigationItemPosition, MessageBox, setThemeColor)
@@ -111,6 +111,7 @@ class TeachPage(QFrame, teach_page_frame):
         
         # 开启角度更新与末端工具位姿的更新线程
         self.back_task_start()
+        self.init_cmd_status()
         
         # 角度初始值
         self.q1 = 0.0
@@ -138,6 +139,7 @@ class TeachPage(QFrame, teach_page_frame):
         # 示教控制操作按钮槽函数绑定
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
+        
         self.ActionModelSwitchButton.checkedChanged.connect(self.change_command_model)
         self.ActionStepRunButton.clicked.connect(self.run_action_step)
         self.ActionRunButton.clicked.connect(self.run_all_action)
@@ -188,7 +190,6 @@ class TeachPage(QFrame, teach_page_frame):
         # # 复位和急停按钮绑定
         self.RobotArmResetButton.clicked.connect(self.reset_robot_arm)
         self.RobotArmZeroButton.clicked.connect(self.reset_to_zero)
-        # self.RobotArmStopButton.setEnabled(False) # 禁用急停按钮
         self.RobotArmStopButton.clicked.connect(self.stop_robot_arm)
         
         # # 末端工具控制组回调函数绑定
@@ -222,6 +223,12 @@ class TeachPage(QFrame, teach_page_frame):
         self.thread_pool.start(self.update_joint_angles_thread)
         self.update_joint_angles_thread.singal_emitter.joint_angles_update_signal.connect(self.update_joint_degrees_text)
         self.update_joint_angles_thread.singal_emitter.arm_endfactor_positions_update_signal.connect(self.update_arm_pose_text)
+
+    def init_cmd_status(self):
+        """初始化功能按钮的状态"""
+        # 根据机械臂的状态，初始化命令模式按钮状态
+        self.get_current_cmd_model()
+        self.ActionModelSwitchButton.checkedChanged.connect(self.change_command_model)
 
     # 顶部工具栏
     @Slot()                    
@@ -1250,7 +1257,19 @@ class TeachPage(QFrame, teach_page_frame):
             logger.error(str(e))
             self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
         return robot_arm_client
-     
+    
+    def get_current_cmd_model(self):
+        """连接上机械臂后，获取当前的命令模式并更新"""
+        get_cmd_model_payload = json.dumps({"command": "get_robot_mode"}).replace(' ', "") + '\r\n'
+        with self.get_robot_arm_connector() as conn:
+            conn.send(get_cmd_model_payload.encode())
+            cmd_model = json.loads(conn.recv(1024).decode())['data']
+            if cmd_model == "SEQ":
+                logger.warning(f"机械臂当前为 SEQ 顺序模式!")
+                self.ActionModelSwitchButton.setChecked(True)
+            else:
+                logger.warning(f"机械臂当前为 INT 实时模式!")
+                self.ActionModelSwitchButton.setChecked(False)
      
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""

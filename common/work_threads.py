@@ -53,7 +53,7 @@ class UpdateJointAnglesTask(QRunnable):
     def check_flag(self, flag=True):
         self.is_on = flag
             
-            
+
 class AgnleDegreeWatchTask(QRunnable):
     """订阅关节角度值的线程"""
     
