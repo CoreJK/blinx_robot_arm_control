@@ -111,7 +111,7 @@ class TeachPage(QFrame, teach_page_frame):
         
         # 开启角度更新与末端工具位姿的更新线程
         self.back_task_start()
-        self.init_cmd_status()
+        self.get_current_cmd_model()
         
         # 角度初始值
         self.q1 = 0.0
@@ -139,7 +139,6 @@ class TeachPage(QFrame, teach_page_frame):
         # 示教控制操作按钮槽函数绑定
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
-        
         self.ActionModelSwitchButton.checkedChanged.connect(self.change_command_model)
         self.ActionStepRunButton.clicked.connect(self.run_action_step)
         self.ActionRunButton.clicked.connect(self.run_all_action)
@@ -397,6 +396,7 @@ class TeachPage(QFrame, teach_page_frame):
                 
                 # 根据动作是否到位，以及线程是否工作判断是否执行
                 if self.command_model == "INT":
+                    pub.subscribe(self._check_tale_action_thread_flag, 'tale_action_thread_flag')
                     while not self.move_status and self.table_action_thread_flag and self.thread_is_on:
                         time.sleep(0.1)
                         pub.subscribe(self._joints_move_status, 'joints/move_status')
@@ -1267,9 +1267,11 @@ class TeachPage(QFrame, teach_page_frame):
             if cmd_model == "SEQ":
                 logger.warning(f"机械臂当前为 SEQ 顺序模式!")
                 self.ActionModelSwitchButton.setChecked(True)
+                self.command_model = "SEQ"
             else:
                 logger.warning(f"机械臂当前为 INT 实时模式!")
                 self.ActionModelSwitchButton.setChecked(False)
+                self.command_model = "INT"
      
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
