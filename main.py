@@ -898,7 +898,6 @@ class TeachPage(QFrame, teach_page_frame):
             robot_arm_connector.send(emergency_stop_command.encode())
         
         # 重置线程工作状态
-        self.robot_arm_is_connected = False # 机械臂连接标志位设置为 False
         pub.sendMessage('tale_action_thread_flag', flag=False)  # 示教线程标志位设置为 False
         self.message_box.error_message_box("机械臂急停! \n请排除完问题后, 点击两次: 初始化 按钮")
     
