@@ -5,7 +5,7 @@ import shelve
 import sys
 import time
 from functools import partial
-from queue import PriorityQueue, Queue
+from queue import Queue
 from retrying import retry
 from pubsub import pub
 
