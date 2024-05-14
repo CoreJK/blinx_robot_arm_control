@@ -30,13 +30,13 @@ class UpdateJointAnglesTask(QRunnable):
         self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH, param_type='MDH')
         self.joints_angle_queue = joints_angle_queue
         self.singal_emitter = SingalEmitter()
-        self.is_on = True
+        self.update_joint_angles_thread_flag = True
     
     @logger.catch
     def run(self):
-        while self.is_on:
+        while self.update_joint_angles_thread_flag:
             time.sleep(0.1)
-            pub.subscribe(self.check_flag, 'thread_work_flag')
+            pub.subscribe(self.check_update_joint_angles_thread_flag, 'update_joint_angles_thread_flag')
             if not self.joints_angle_queue.empty():
                 angle_data_list = self.joints_angle_queue.get()
                 # 关节角度更新信号
@@ -50,8 +50,8 @@ class UpdateJointAnglesTask(QRunnable):
                 self.singal_emitter.arm_endfactor_positions_update_signal.emit(list(map(lambda s: round(s, 3), [X, Y, Z, R_x, P_y, Y_z])))
             
 
-    def check_flag(self, flag=True):
-        self.is_on = flag
+    def check_update_joint_angles_thread_flag(self, flag=True):
+        self.update_joint_angles_thread_flag = flag
             
 
 class AgnleDegreeWatchTask(QRunnable):

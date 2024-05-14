@@ -1643,6 +1643,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
     
     def closeEvent(self, e):
         pub.sendMessage("thread_work_flag", flag=False)
+        pub.sendMessage("update_joint_angles_thread_flag", flag=False)
         logger.warning("程序退出")
         return super().closeEvent(e)    
     
