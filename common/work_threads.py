@@ -71,14 +71,15 @@ class AgnleDegreeWatchTask(QRunnable):
                 try:
                     response_str = coon.recv(1024).decode('utf-8')
                     if response_str.startswith('{') and response_str.endswith('\r\n'):
-                        # 命令缓冲区
-                        recv_buffer = self.split_by_symbol(response_str)
+                        recv_buffer = self.split_by_symbol(response_str)  # 命令缓冲区
                         recv_joint_angle_datas = list(filter(self.keep_joint_datas_str, recv_buffer))  # 保留关节角度值
                         for recv in recv_joint_angle_datas:
                             joints_angle = json.loads(recv)
                             joints_angle_list = joints_angle['data']
                             self.joints_angle_queue.put(joints_angle_list)
-                            
+                    else:
+                        logger.warning(f"数据不完整: {response_str}")
+                        
                 except Exception as e:
                     logger.error(f"解析命令处理异常: {e}")
                     logger.error(rf"异常命令: {recv}")
@@ -167,27 +168,18 @@ class CommandReceiverTask(QRunnable):
     def run(self):
         """接收命令并发布对应的响应数据"""
         with self.get_robot_arm_connector() as conn:
-            temp_buffer = []
             while self.is_on:
                 pub.subscribe(self.check_flag, 'thread_work_flag')
-                time.sleep(0.01)
+                time.sleep(0.1)
                 try:
-                    response_str = conn.recv(4096).decode('utf-8')
+                    response_str = conn.recv(1024).decode('utf-8')
                     if response_str.startswith('{') and response_str.endswith('\r\n'):
                         # 命令缓冲区
                         recv_buffer = self.split_by_symbol(response_str, split_symbol='\r\n')
                         # todo 分流命令, 需要做并发处理
                         self.get_joints_move_status(recv_buffer)
                     else:
-                        # 拼接不完整的 json 命令
-                        temp_buffer.append(response_str)
-                        for item in temp_buffer:
-                            if item.endswith('\r\n'):
-                                temp_buffer_str = ''.join(temp_buffer)
-                                if "move_in_place" in temp_buffer_str:
-                                    temp_buffer_list = self.split_by_symbol(temp_buffer_str)
-                                    self.get_joints_move_status(temp_buffer_list)
-                                    temp_buffer.clear()
+                        logger.warning(f"数据不完整: {response_str}")
 
                 except Exception as e:
                     logger.error(f"解析命令处理异常: {e}")
@@ -200,22 +192,23 @@ class CommandReceiverTask(QRunnable):
 
     def get_joints_move_status(self, recv_buffer: list):
         """获取并发布机械臂运动状态"""
-        recv_joint_angle_datas = list(filter(self.exclude_joint_data_str, recv_buffer))
         # 剔除不需要的命令
-        for recv in recv_joint_angle_datas:
-            json_data = json.loads(recv)
-            logger.warning(f"机械臂运动状态: {json_data}")
-            pub.sendMessage('joints/move_status', move_status=json_data['data'])
+        recv_arm_move_status = list(filter(self.exclude_joint_data_str, recv_buffer))
+        try:
+            for move_status in recv_arm_move_status:
+                json_data = json.loads(move_status)
+                logger.warning(f"机械臂运动状态: {json_data}")
+                pub.sendMessage('joints/move_status', move_status=json_data['data'])
+        except Exception as e:
+            logger.error(f"解析命令处理异常: {e}")
+            logger.error(rf"异常命令: {move_status}")
     
     def exclude_joint_data_str(self, json_str):
         """获取机械臂运动到位状态"""
-        if isinstance(json_str, str):
-            if'move_in_place' in json_str:
-                return True
-            else:
-                return False
+        if'move_in_place' in json_str:
+            return True
         else:
-            raise ValueError("传入的数据不是字符串")
+            return False
         
     def check_flag(self, flag=True):
         """线程工作控制位"""

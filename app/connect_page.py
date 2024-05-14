@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'connect_page.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.2
+## Created by: Qt User Interface Compiler version 6.6.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -44,6 +44,11 @@ class connect_page_frame(object):
 
         self.gridLayout.addWidget(self.TargetPortLabel, 1, 0, 1, 1)
 
+        self.TargetPortEdit = LineEdit(self.layoutWidget)
+        self.TargetPortEdit.setObjectName(u"TargetPortEdit")
+
+        self.gridLayout.addWidget(self.TargetPortEdit, 1, 1, 1, 1)
+
         self.TargetIpEdit = LineEdit(self.layoutWidget)
         self.TargetIpEdit.setObjectName(u"TargetIpEdit")
 
@@ -54,37 +59,39 @@ class connect_page_frame(object):
 
         self.gridLayout.addWidget(self.TargetIpLabel, 0, 0, 1, 1)
 
-        self.TargetPortEdit = LineEdit(self.layoutWidget)
-        self.TargetPortEdit.setObjectName(u"TargetPortEdit")
+        self.IpPortInfoSubmitButton = PushButton(self.layoutWidget)
+        self.IpPortInfoSubmitButton.setObjectName(u"IpPortInfoSubmitButton")
+        self.IpPortInfoSubmitButton.setProperty("hasIcon", False)
 
-        self.gridLayout.addWidget(self.TargetPortEdit, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.IpPortInfoSubmitButton, 0, 2, 1, 1)
+
+        self.IpPortInfoRestButton = PushButton(self.layoutWidget)
+        self.IpPortInfoRestButton.setObjectName(u"IpPortInfoRestButton")
+        self.IpPortInfoRestButton.setProperty("hasIcon", False)
+
+        self.gridLayout.addWidget(self.IpPortInfoRestButton, 1, 2, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridLayout)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.IpPortInfoRestButton = PushButton(self.layoutWidget)
-        self.IpPortInfoRestButton.setObjectName(u"IpPortInfoRestButton")
-        self.IpPortInfoRestButton.setProperty("hasIcon", False)
+        self.RobotArmLinkButton = PushButton(self.layoutWidget)
+        self.RobotArmLinkButton.setObjectName(u"RobotArmLinkButton")
+        self.RobotArmLinkButton.setMaximumSize(QSize(200, 16777215))
+        self.RobotArmLinkButton.setLayoutDirection(Qt.LeftToRight)
+        self.RobotArmLinkButton.setProperty("hasIcon", False)
 
-        self.horizontalLayout.addWidget(self.IpPortInfoRestButton)
+        self.horizontalLayout.addWidget(self.RobotArmLinkButton)
 
-        self.IpPortInfoSubmitButton = PushButton(self.layoutWidget)
-        self.IpPortInfoSubmitButton.setObjectName(u"IpPortInfoSubmitButton")
-        self.IpPortInfoSubmitButton.setProperty("hasIcon", False)
+        self.RobotArmDisconnectButton = PushButton(self.layoutWidget)
+        self.RobotArmDisconnectButton.setObjectName(u"RobotArmDisconnectButton")
 
-        self.horizontalLayout.addWidget(self.IpPortInfoSubmitButton)
+        self.horizontalLayout.addWidget(self.RobotArmDisconnectButton)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.RobotArmLinkButton = PushButton(self.HeaderCardWidget)
-        self.RobotArmLinkButton.setObjectName(u"RobotArmLinkButton")
-        self.RobotArmLinkButton.setGeometry(QRect(520, 190, 110, 31))
-        self.RobotArmLinkButton.setMaximumSize(QSize(200, 16777215))
-        self.RobotArmLinkButton.setLayoutDirection(Qt.LeftToRight)
-        self.RobotArmLinkButton.setProperty("hasIcon", False)
 
         self.verticalLayout_4.addWidget(self.HeaderCardWidget)
 
@@ -206,13 +213,6 @@ class connect_page_frame(object):
         self.HeaderCardWidget.setTitle(QCoreApplication.translate("Frame", u"\u673a\u68b0\u81c2\u8fde\u63a5\u914d\u7f6e", None))
         self.TargetPortLabel.setText(QCoreApplication.translate("Frame", u"\u7aef\u53e3\u53f7", None))
         self.TargetIpLabel.setText(QCoreApplication.translate("Frame", u"\u76ee\u6807 IP", None))
-        self.IpPortInfoRestButton.setText(QCoreApplication.translate("Frame", u"\u91cd\u7f6e", None))
-        self.IpPortInfoRestButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
-"    background: rgb(125, 214, 249);\n"
-"}\n"
-"PushButton:hover {\n"
-"    background: rgb(125, 214, 249);\n"
-"}", None))
         self.IpPortInfoSubmitButton.setText(QCoreApplication.translate("Frame", u"\u786e\u5b9a", None))
         self.IpPortInfoSubmitButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(125, 214, 249);\n"
@@ -220,8 +220,22 @@ class connect_page_frame(object):
 "PushButton:hover {\n"
 "    background: rgb(125, 214, 249);\n"
 "}", None))
+        self.IpPortInfoRestButton.setText(QCoreApplication.translate("Frame", u"\u91cd\u7f6e", None))
+        self.IpPortInfoRestButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
         self.RobotArmLinkButton.setText(QCoreApplication.translate("Frame", u"\u8fde\u63a5\u673a\u68b0\u81c2", None))
         self.RobotArmLinkButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
+"    background: rgb(125, 214, 249);\n"
+"}\n"
+"PushButton:hover {\n"
+"    background: rgb(125, 214, 249);\n"
+"}", None))
+        self.RobotArmDisconnectButton.setText(QCoreApplication.translate("Frame", u"\u65ad\u5f00\u8fde\u63a5", None))
+        self.RobotArmDisconnectButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(125, 214, 249);\n"
 "}\n"
 "PushButton:hover {\n"

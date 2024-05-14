@@ -19,7 +19,8 @@ from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, Com
 from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
-from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, NavigationItemPosition, MessageBox, setThemeColor)
+from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, 
+                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition)
 from qfluentwidgets import FluentIcon as FIF
 
 # 导入子页面控件布局文件
@@ -52,6 +53,8 @@ class CommandPage(QFrame, command_page_frame):
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
         self.initButtonIcon()
+        self.robot_arm_is_connected = False
+        self.initGetRobotArmStatusTask()
         self.message_box = BlinxMessageBox(self)
         self.CommandSendButton.clicked.connect(self.send_json_command)
         
@@ -60,6 +63,14 @@ class CommandPage(QFrame, command_page_frame):
         self.CommandSendButton.setIcon(FIF.SEND)
         self.CommandSendButton.setText('发送')
 
+    def initGetRobotArmStatusTask(self):
+        """初始化获取机械臂连接状态定时器"""
+        logger.warning("命令页面获取机械臂连接状态定时器启动!")
+        self.get_robot_arm_status_timer = QTimer()
+        self.get_robot_arm_status_timer.timeout.connect(self.get_robot_arm_connect_status)
+        self.get_robot_arm_status_timer.start(100)
+        
+    @check_robot_arm_connection
     @Slot()
     def send_json_command(self):
         """json数据发送按钮"""
@@ -72,6 +83,14 @@ class CommandPage(QFrame, command_page_frame):
             rac.send(json_data.encode('utf-8'))
             rs_data = json.loads(rac.recv(1024).decode('utf-8').strip())
             self.CommandResWindow.appendPlainText(json.dumps(rs_data))  # 命令响应填入到响应窗口
+    
+    def get_robot_arm_connect_status(self):
+        """获取机械臂连接状态"""
+        pub.subscribe(self._check_robot_arm_connect_status, 'robot_arm_connect_status')
+        
+    def _check_robot_arm_connect_status(self, status: bool):
+        """订阅机械臂连接状态"""
+        self.robot_arm_is_connected = status
     
     @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
@@ -102,6 +121,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.move_status = True  # 机械臂运动状态
         self.thread_is_on = True  # 线程工作标志位
         self.table_action_thread_flag = True  # 顺序执行示教动作线程标志位
+        self.robot_arm_is_connected = False  # 机械臂连接状态
         self.command_model = "SEQ"  # 用于示教执行命令时，判断机械臂的命令模式的标志位 SEQ(顺序指令), INT(实时指令)
         self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
@@ -111,7 +131,6 @@ class TeachPage(QFrame, teach_page_frame):
         
         # 开启角度更新与末端工具位姿的更新线程
         self.back_task_start()
-        self.get_current_cmd_model()
         
         # 角度初始值
         self.q1 = 0.0
@@ -217,20 +236,25 @@ class TeachPage(QFrame, teach_page_frame):
 
     def back_task_start(self):
         """后台任务启动"""
+        logger.warning("获取机械臂连接状态定时器启动!")
+        self.get_arm_connect_status_timer = QTimer()
+        self.get_arm_connect_status_timer.timeout.connect(self.get_robot_arm_connect_status_timer)
+        self.get_arm_connect_status_timer.start(100)
+        
+        logger.info("获取机械臂命令模式线程启动!")
+        self.update_connect_status_timer = QTimer()
+        self.update_connect_status_timer.timeout.connect(self.get_current_cmd_model)
+        self.update_connect_status_timer.start(1000)
+        
         logger.info("获取机械臂的关节角度信息线程启动!")
         self.update_joint_angles_thread = UpdateJointAnglesTask(self.joints_angle_queue)
         self.thread_pool.start(self.update_joint_angles_thread)
         self.update_joint_angles_thread.singal_emitter.joint_angles_update_signal.connect(self.update_joint_degrees_text)
         self.update_joint_angles_thread.singal_emitter.arm_endfactor_positions_update_signal.connect(self.update_arm_pose_text)
 
-    def init_cmd_status(self):
-        """初始化功能按钮的状态"""
-        # 根据机械臂的状态，初始化命令模式按钮状态
-        self.get_current_cmd_model()
-        self.ActionModelSwitchButton.checkedChanged.connect(self.change_command_model)
-
     # 顶部工具栏
-    @Slot()                    
+    @check_robot_arm_connection                    
+    @Slot()
     def import_data(self):
         """导入动作"""
         file_name, _ = QFileDialog.getOpenFileName(self, "导入动作文件", "",
@@ -290,7 +314,8 @@ class TeachPage(QFrame, teach_page_frame):
         except Exception as e:
             logger.error(f"导入动作文件失败: {e}")
             self.message_box.error_message_box(message="导入动作文件失败!")
-            
+    
+    @check_robot_arm_connection
     @Slot()                    
     def export_data(self):
         """导出动作"""
@@ -341,6 +366,7 @@ class TeachPage(QFrame, teach_page_frame):
                 json.dump(data, json_file, indent=4, ensure_ascii=False)
                 logger.info("导出配置文件成功!")
     
+    @check_robot_arm_connection
     @Slot()
     def change_command_model(self, isChecked: bool):
         """切换命令模式"""
@@ -397,12 +423,20 @@ class TeachPage(QFrame, teach_page_frame):
                 # 根据动作是否到位，以及线程是否工作判断是否执行
                 if self.command_model == "INT":
                     pub.subscribe(self._check_tale_action_thread_flag, 'tale_action_thread_flag')
+                    delay_count = 0  # 动作超时计数器
                     while not self.move_status and self.table_action_thread_flag and self.thread_is_on:
                         time.sleep(0.1)
-                        pub.subscribe(self._joints_move_status, 'joints/move_status')
+                        pub.subscribe(self._joints_move_status, 'joints/move_status')  # 机械臂动作执行状态标识
                         pub.subscribe(self._check_flag, 'thread_work_flag')  # 线程控制标识
                         pub.subscribe(self._check_tale_action_thread_flag, 'tale_action_thread_flag')  # 示教线程运动标识
+                        
                         logger.warning("等待上一个动作完成")
+                        delay_count += 1
+                        logger.debug(f"等待次数: {delay_count}")
+                        if delay_count >= 100:
+                            logger.warning("等待时间过长，默认完成!")
+                            self.move_status = True
+                            
                         # 完成所有动作后，退出循环
                         if robot_action_row + 1 == action_count:
                             logger.debug("所有动作执行完成")
@@ -427,6 +461,7 @@ class TeachPage(QFrame, teach_page_frame):
         """订阅机械臂的关节运动状态"""
         self.move_status = move_status
     
+    @check_robot_arm_connection
     @Slot()
     def run_all_action(self):
         """顺序执行示教动作"""
@@ -477,6 +512,7 @@ class TeachPage(QFrame, teach_page_frame):
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
             self.command_queue.put(str_command.encode())
 
+    @check_robot_arm_connection
     @Slot()
     def run_action_step(self):
         """单次执行选定的动作"""
@@ -501,7 +537,8 @@ class TeachPage(QFrame, teach_page_frame):
             else:
                 logger.warning("急停, 循环执行任务退出!")
                 break
-
+    
+    @check_robot_arm_connection
     @Slot()
     def run_action_loop(self):
         """循环执行动作"""
@@ -517,6 +554,7 @@ class TeachPage(QFrame, teach_page_frame):
         """右键复制粘贴菜单"""
         self.context_menu.exec_(self.ActionTableWidget.mapToGlobal(pos))
     
+    @check_robot_arm_connection
     @Slot()
     def add_item(self):
         """示教控制添加一行动作"""
@@ -551,6 +589,7 @@ class TeachPage(QFrame, teach_page_frame):
         # 备注列
         self.ActionTableWidget.setItem(row_position, 10, QTableWidgetItem(""))
 
+    @check_robot_arm_connection
     @Slot()
     def remove_item(self):
         """示教控制删除一行动作"""
@@ -565,6 +604,7 @@ class TeachPage(QFrame, teach_page_frame):
             for row in reversed(selected_rows):
                 self.ActionTableWidget.removeRow(row.row())
 
+    @check_robot_arm_connection
     @Slot()
     def update_row(self):
         """示教控制更新指定行的动作"""
@@ -596,6 +636,7 @@ class TeachPage(QFrame, teach_page_frame):
         else:
             self.message_box.warning_message_box(message="请选择需要更新的行! \n点击表格左侧行号即可选中行")
     
+    @check_robot_arm_connection
     @Slot()
     def update_column(self):
         """更新选中的列"""
@@ -750,6 +791,7 @@ class TeachPage(QFrame, teach_page_frame):
                 elif col == 9:
                     self.update_table_cell(row_position, col, self.JointDelayTimeEdit.text())
     
+    @check_robot_arm_connection
     @Slot()
     def modify_joint_angle(self, joint_number, min_degrade, max_degrade, increase=True):
         """机械臂关节角度增减操作"""
@@ -781,6 +823,7 @@ class TeachPage(QFrame, teach_page_frame):
             if self.RecordActivateSwitchButton.isChecked():
                 self.add_item()
     
+    @check_robot_arm_connection
     @Slot()
     def modify_joint_angle_step(self, increase=True):
         """修改机械臂关节步长"""
@@ -789,6 +832,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.JointStepEdit.setText(str(degrade))
         logger.debug(f"机械臂步长修改为: {degrade}")
 
+    @check_robot_arm_connection
     @Slot()
     def modify_joint_speed_percentage(self, increase=True):
         """修改关节运动速度百分比"""
@@ -804,6 +848,7 @@ class TeachPage(QFrame, teach_page_frame):
         else:
             self.message_box.error_message_box(message="请输入整数字符!")
 
+    @check_robot_arm_connection
     @Slot()
     def modify_joint_delay_time(self, increase=True):
         """修改机械臂延时时间"""
@@ -818,7 +863,8 @@ class TeachPage(QFrame, teach_page_frame):
                 self.message_box.warning_message_box(message=f"延时时间必须在 0-100s 之间")
         else:
             self.message_box.error_message_box(message="请输入整数字符!")
-              
+    
+    @check_robot_arm_connection
     @Slot()
     def reset_robot_arm(self):
         """机械臂复位
@@ -830,7 +876,8 @@ class TeachPage(QFrame, teach_page_frame):
         self.table_action_thread_flag = True
         self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
         logger.warning("机械臂复位中!请注意手臂姿态")
-        
+    
+    @check_robot_arm_connection
     @Slot()
     def reset_to_zero(self):
         """机械臂回零"""
@@ -839,7 +886,8 @@ class TeachPage(QFrame, teach_page_frame):
         self.JointDelayTimeEdit.setText("0")  # 归零时延时时间设置为 0
         self.message_box.warning_message_box("机械臂回到初始角度中!\n请注意手臂姿态")
         logger.warning("机械臂回到初始位姿中!")
-        
+    
+    @check_robot_arm_connection
     # 机械臂急停按钮回调函数
     @Slot()
     def stop_robot_arm(self):
@@ -854,6 +902,7 @@ class TeachPage(QFrame, teach_page_frame):
         pub.sendMessage('tale_action_thread_flag', flag=False)  # 示教线程标志位设置为 False
         self.message_box.error_message_box("机械臂急停! \n请排除完问题后, 点击两次: 初始化 按钮")
     
+    @check_robot_arm_connection
     @Slot()
     def tool_control(self, action=1):
         """吸盘工具开"""
@@ -870,6 +919,7 @@ class TeachPage(QFrame, teach_page_frame):
         else:
             self.message_box.warning_message_box("末端工具未选择吸盘!")
     
+    @check_robot_arm_connection
     @Slot()
     def tool_x_operate(self, action="add"):
         """末端工具坐标 x 增减函数"""
@@ -905,6 +955,7 @@ class TeachPage(QFrame, teach_page_frame):
         if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
 
+    @check_robot_arm_connection
     @Slot()
     def tool_y_operate(self, action="add"):
         """末端工具坐标 y 增减函数"""
@@ -939,6 +990,7 @@ class TeachPage(QFrame, teach_page_frame):
         if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
 
+    @check_robot_arm_connection
     @Slot()
     def tool_z_operate(self, action="add"):
         """末端工具坐标 z 增减函数"""
@@ -974,6 +1026,7 @@ class TeachPage(QFrame, teach_page_frame):
         if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
 
+    @check_robot_arm_connection
     @Slot()
     def tool_coordinate_step_modify(self, action="add"):
         """末端工具坐标步长增减函数"""
@@ -986,6 +1039,7 @@ class TeachPage(QFrame, teach_page_frame):
         logger.debug(f"末端工具坐标步长设置为: {new_coordinate_step}")
         self.CoordinateStepEdit.setText(str(new_coordinate_step))
     
+    @check_robot_arm_connection
     @Slot()
     def tool_rx_operate(self, action="add"):
         """末端工具坐标 Rx 增减函数"""
@@ -1021,6 +1075,7 @@ class TeachPage(QFrame, teach_page_frame):
         if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
     
+    @check_robot_arm_connection
     @Slot()           
     def tool_ry_operate(self, action="add"):
         """末端工具坐标 Ry 增减函数"""
@@ -1056,7 +1111,8 @@ class TeachPage(QFrame, teach_page_frame):
         #  录制操作激活时
         if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
-            
+    
+    @check_robot_arm_connection
     @Slot()    
     def tool_rz_operate(self, action="add"):
         """末端工具坐标 Rz 增减函数"""
@@ -1092,6 +1148,7 @@ class TeachPage(QFrame, teach_page_frame):
         if self.RecordActivateSwitchButton.isChecked():
             self.add_item()
     
+    @check_robot_arm_connection
     @Slot()
     def tool_pose_step_modify(self, action="add"):
         """末端工具姿态步长增减函数"""
@@ -1260,19 +1317,41 @@ class TeachPage(QFrame, teach_page_frame):
     
     def get_current_cmd_model(self):
         """连接上机械臂后，获取当前的命令模式并更新"""
-        get_cmd_model_payload = json.dumps({"command": "get_robot_mode"}).replace(' ', "") + '\r\n'
-        with self.get_robot_arm_connector() as conn:
-            conn.send(get_cmd_model_payload.encode())
-            cmd_model = json.loads(conn.recv(1024).decode())['data']
-            if cmd_model == "SEQ":
-                logger.warning(f"机械臂当前为 SEQ 顺序模式!")
-                self.ActionModelSwitchButton.setChecked(True)
-                self.command_model = "SEQ"
-            else:
-                logger.warning(f"机械臂当前为 INT 实时模式!")
-                self.ActionModelSwitchButton.setChecked(False)
-                self.command_model = "INT"
-     
+        pub.subscribe(self._get_robot_arm_connect_status, 'robot_arm_connect_status')
+        if self.robot_arm_is_connected:
+            get_cmd_model_payload = json.dumps({"command": "get_robot_mode"}).replace(' ', "") + '\r\n'
+            
+            with self.get_robot_arm_connector() as conn:
+                conn.send(get_cmd_model_payload.encode())
+                try:
+                    cmd_model_str = conn.recv(1024).decode()
+                    cmd_model = json.loads(cmd_model_str)['data']
+                    logger.debug(f"机械臂当前的命令模式为: {cmd_model}")
+                    
+                    if cmd_model == "SEQ":
+                        logger.warning(f"机械臂当前为 SEQ 顺序模式!")
+                        self.ActionModelSwitchButton.setChecked(True)
+                        self.command_model = "SEQ"
+                    else:
+                        logger.warning(f"机械臂当前为 INT 实时模式!")
+                        self.ActionModelSwitchButton.setChecked(False)
+                        self.command_model = "INT"
+                        
+                    logger.warning("更新机械臂命令模式定时器停止!")
+                    self.update_connect_status_timer.stop()
+                    
+                except Exception as e:
+                    logger.error(str(e))
+                    self.message_box.error_message_box("获取机械臂命令模式失败!")
+                
+    def get_robot_arm_connect_status_timer(self):
+        """获取机械臂连接状态的定时器"""
+        pub.subscribe(self._get_robot_arm_connect_status, 'robot_arm_connect_status')
+    
+    def _get_robot_arm_connect_status(self, status: bool):
+        self.robot_arm_is_connected = status
+        
+    
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
     def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: Queue, joints_angle_queue: Queue):
@@ -1290,7 +1369,7 @@ class ConnectPage(QFrame, connect_page_frame):
         
         # 机械臂的连接状态
         self.robot_arm_is_connected = False
-        
+          
         self.message_box = BlinxMessageBox(self)
         self.IpPortInfoSubmitButton.clicked.connect(self.submit_ip_port_info)
         self.IpPortInfoRestButton.clicked.connect(self.reset_ip_port_info)
@@ -1305,9 +1384,11 @@ class ConnectPage(QFrame, connect_page_frame):
 
         # 连接机械臂按钮回调函数绑定
         self.RobotArmLinkButton.clicked.connect(self.connect_to_robot_arm)
+        self.RobotArmDisconnectButton.clicked.connect(self.disconnect_to_robot_arm)
+        self.RobotArmDisconnectButton.setEnabled(False)
 
     def init_task_thread(self):
-        """初始化后台 线程任务"""
+        """初始化后台线程任务"""
         self.angle_degree_thread = AgnleDegreeWatchTask(self.joints_angle_queue)
         self.command_sender_thread = CommandSenderTask(self.command_queue)
         self.command_recver_thread = CommandReceiverTask()
@@ -1405,22 +1486,35 @@ class ConnectPage(QFrame, connect_page_frame):
             with robot_arm_client as rac:
                 remote_address = rac.getpeername()
                 logger.info("机械臂连接成功!")
-                self.message_box.success_message_box(message=f"机械臂连接成功！\nIP：{remote_address[0]} \nPort: {remote_address[1]}")
                 
             if self.RobotArmLinkButton.isEnabled() and remote_address:
+                # 发布连接机械臂成功状态
+                pub.sendMessage("robot_arm_connect_status", status=True)
                 self.RobotArmLinkButton.setText("已连接")
+                
+                InfoBar.success(
+                    title='连接成功',
+                    content=f"机械臂连接成功 !\nIP: {remote_address[0]}\nPort: {remote_address[1]}",
+                    orient=Qt.Horizontal,
+                    isClosable=True,   # disable close button
+                    position=InfoBarPosition.BOTTOM_RIGHT,
+                    duration=5000,
+                    parent=self
+                )
+                
                 # 机械臂连接成功标志
                 self.robot_arm_is_connected = True
                 # 连接成功后，将连接机械臂按钮禁用，避免用户操作重复发起连接
                 self.RobotArmLinkButton.setEnabled(False)
-                # 启用急停按钮
-                # self.RobotArmStopButton.setEnabled(True)
+                self.RobotArmDisconnectButton.setEnabled(True)
                 
                 # 启用实时获取机械臂角度线程
+                self.joints_angle_queue.queue.clear()  # 清空队列
                 self.thread_pool.start(self.angle_degree_thread)
                 logger.info("后台获取机械臂角度开始")
                 
                 # 启用轮询队列中所有命令的线程
+                self.command_queue.queue.clear()  # 清空队列
                 self.thread_pool.start(self.command_sender_thread)
                     
                 logger.info("命令发送线程开启")
@@ -1434,12 +1528,47 @@ class ConnectPage(QFrame, connect_page_frame):
             # 连接失败后，将连接机械臂按钮启用
             self.RobotArmLinkButton.setEnabled(True)
             # 清空队列
-            self.command_queue = Queue()
+            self.command_queue.queue.clear()
             # 关闭线程池
             # 弹出错误提示框
             logger.error(f"机械臂连接失败: {e}")
-            self.message_box.error_message_box(message="机械臂连接失败！\n请检查设备网络连接状态！")
+            InfoBar.error(
+                title='连接失败',
+                content="机械臂连接失败 !",
+                orient=Qt.Horizontal,
+                isClosable=False,   # disable close button
+                duration=-1,
+                parent=self
+            )
     
+    @Slot()
+    def disconnect_to_robot_arm(self):
+        """断开与机械臂的连接"""
+        # 清空命令、角度队列
+        self.command_queue.queue.clear()
+        self.joints_angle_queue.queue.clear()
+        
+        # 关闭线程池
+        pub.sendMessage("thread_work_flag", flag=False)
+        pub.sendMessage("robot_arm_connect_status", status=False)
+        
+        InfoBar.warning(
+            title='连接断开',
+            content="机械臂连接断开 !",
+            orient=Qt.Horizontal,
+            isClosable=False,   # disable close button
+            position=InfoBarPosition.TOP_RIGHT,
+            duration=2000,
+            parent=self
+        )
+        
+        self.RobotArmLinkButton.setEnabled(True)
+        self.RobotArmLinkButton.setText("连接机械臂")
+        self.RobotArmDisconnectButton.setEnabled(False)
+        
+        # 创建新的线程对象
+        self.init_task_thread()
+        
     @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
     def get_robot_arm_connector(self):
