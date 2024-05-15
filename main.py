@@ -167,8 +167,25 @@ class TeachPage(QFrame, teach_page_frame):
         self.ActionUpdateRowButton.clicked.connect(self.update_row)
         self.ActionUpdateColButton.clicked.connect(self.update_column)  # 当前组件中无法选择列更新
 
+        # 示教控制页面的按钮提示信息
+        self.ActionImportButton.setToolTip("导入动作文件")
+        self.ActionImportButton.setToolTipDuration(2000)
+        self.ActionOutputButton.setToolTip("导出动作文件")
+        self.ActionOutputButton.setToolTipDuration(2000)
+        self.ActionStepRunButton.setToolTip("单次执行选定的动作")
+        self.ActionStepRunButton.setToolTipDuration(2000)
+        self.ActionRunButton.setToolTip("顺序执行所有动作")
+        self.ActionRunButton.setToolTipDuration(2000)
+        self.ActionLoopRunButton.setToolTip("循环执行指定次数动作")
+        self.ActionLoopRunButton.setToolTipDuration(2000)
+        self.ActionDeleteButton.setToolTip("删除指定动作")
+        self.ActionDeleteButton.setToolTipDuration(2000)
+        self.ActionUpdateRowButton.setToolTip("更新指定行动作")
+        self.ActionUpdateRowButton.setToolTipDuration(2000)
+        self.ActionAddButton.setToolTip("添加一行动作")
+        self.ActionAddButton.setToolTipDuration(2000)
         
-
+        
         # 示教控制添加右键的上下文菜单
         self.context_menu = QMenu(self)
         self.copy_action = self.context_menu.addAction("复制")
@@ -206,9 +223,9 @@ class TeachPage(QFrame, teach_page_frame):
 
         
         # # 复位和急停按钮绑定
-        self.RobotArmResetButton.clicked.connect(self.reset_robot_arm)
+        self.RobotArmResetButton.clicked.connect(self.robot_arm_initialize)
         self.RobotArmZeroButton.clicked.connect(self.reset_to_zero)
-        self.RobotArmStopButton.clicked.connect(self.stop_robot_arm)
+        self.RobotArmStopButton.clicked.connect(self.stop_robot_arm_emergency)
         
         # # 末端工具控制组回调函数绑定
         self.ArmClawOpenButton.clicked.connect(partial(self.tool_control, action=1))
@@ -866,7 +883,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @Slot()
-    def reset_robot_arm(self):
+    def robot_arm_initialize(self):
         """机械臂复位
         :param mode:
         """
@@ -874,7 +891,17 @@ class TeachPage(QFrame, teach_page_frame):
         self.command_queue.put(command.encode())
         self.JointDelayTimeEdit.setText("0")  # 复位时延时时间设置为 0
         self.table_action_thread_flag = True
-        self.message_box.warning_message_box("机械臂复位中!\n请注意手臂姿态")
+        
+        InfoBar(
+            title="⚠️警告",
+            content="🦾机械臂复位中! \n🦾请注意手臂姿态",
+            isClosable=False,
+            orient=Qt.Horizontal,
+            duration=3000,
+            position=InfoBarPosition.TOP,
+            parent=self    
+        )
+        
         logger.warning("机械臂复位中!请注意手臂姿态")
     
     @check_robot_arm_connection
@@ -890,7 +917,7 @@ class TeachPage(QFrame, teach_page_frame):
     @check_robot_arm_connection
     # 机械臂急停按钮回调函数
     @Slot()
-    def stop_robot_arm(self):
+    def stop_robot_arm_emergency(self):
         """机械臂急停"""
         # 发送急停命令
         emergency_stop_command = json.dumps({"command": "set_joint_emergency_stop", "data": [0]}).replace(' ', "") + '\r\n'
@@ -899,7 +926,15 @@ class TeachPage(QFrame, teach_page_frame):
         
         # 重置线程工作状态
         pub.sendMessage('tale_action_thread_flag', flag=False)  # 示教线程标志位设置为 False
-        self.message_box.error_message_box("机械臂急停! \n请排除完问题后, 点击两次: 初始化 按钮")
+        InfoBar.warning(
+            title="警告",
+            content="机械臂急停! \n请排除完问题后, 点击两次: 初始化 按钮",
+            isClosable=False,
+            orient=Qt.Horizontal,
+            duration=3000,
+            position=InfoBarPosition.TOP,
+            parent=self
+            )
     
     @check_robot_arm_connection
     @Slot()
@@ -1632,7 +1667,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         """弹出帮助信息框"""
         w = MessageBox(
             '📖帮助',
-            '🎊欢迎使用比邻星六轴机械臂上位机 v4.1.0🎊\n\n👇使用文档请访问官网获取👇',
+            '🎊欢迎使用比邻星六轴机械臂上位机 v4.3.0🎊\n\n👇使用文档请访问官网获取👇',
             self
         )
         w.yesButton.setText('直达官网🚀')

@@ -26,7 +26,7 @@ def check_robot_arm_connection(func):
                 orient=Qt.Horizontal,
                 position=InfoBarPosition.TOP,
                 isClosable=True,
-                duration=-1,
+                duration=2000,
                 parent=self
             )
         else:
