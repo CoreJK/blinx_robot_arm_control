@@ -892,7 +892,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.JointDelayTimeEdit.setText("0")  # 复位时延时时间设置为 0
         self.table_action_thread_flag = True
         
-        InfoBar(
+        InfoBar.warning(
             title="⚠️警告",
             content="🦾机械臂复位中! \n🦾请注意手臂姿态",
             isClosable=False,
