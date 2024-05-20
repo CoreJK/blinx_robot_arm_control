@@ -69,7 +69,7 @@ class AgnleDegreeWatchTask(QRunnable):
                 time.sleep(0.1)
                 pub.subscribe(self.check_flag, 'thread_work_flag')
                 try:
-                    response_str = coon.recv(1024).decode('utf-8')
+                    response_str = coon.recv(2048).decode('utf-8')
                     if response_str.startswith('{') and response_str.endswith('\r\n'):
                         recv_buffer = self.split_by_symbol(response_str)  # 命令缓冲区
                         recv_joint_angle_datas = list(filter(self.keep_joint_datas_str, recv_buffer))  # 保留关节角度值
@@ -172,7 +172,7 @@ class CommandReceiverTask(QRunnable):
                 pub.subscribe(self.check_flag, 'thread_work_flag')
                 time.sleep(0.1)
                 try:
-                    response_str = conn.recv(1024).decode('utf-8')
+                    response_str = conn.recv(2048).decode('utf-8')
                     if response_str.startswith('{') and response_str.endswith('\r\n'):
                         # 命令缓冲区
                         recv_buffer = self.split_by_symbol(response_str, split_symbol='\r\n')

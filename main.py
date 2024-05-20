@@ -1626,6 +1626,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         self.command_queue = Queue()  # 控件发送的命令队列
         self.joints_angle_queue = Queue()  # 查询到关节角度信息的队列
         self.threadpool = QThreadPool()
+        self.threadpool.globalInstance()
         self.commandInterface = CommandPage('命令控制')
         self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.joints_angle_queue)
         self.connectionInterface = ConnectPage('连接设置', self.threadpool, self.command_queue, self.joints_angle_queue)

@@ -38,6 +38,8 @@ class ClientSocket:
     def new_connect(self):
         logger.info("正在尝试连接机械臂...")
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # 设置心跳包， 1 分钟发送一次，30 秒没有回应就断开连接
+        self.client_socket.ioctl(socket.SIO_KEEPALIVE_VALS, (1, 60*1000, 30*1000))
         self.client_socket.connect((self.host, self.port))
         self.client_socket_list.append(self.client_socket)
         logger.info("连接成功!")
