@@ -1646,8 +1646,8 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
     
     def initNavigation(self):
         """初始化导航栏"""
-        self.addSubInterface(self.commandInterface, FIF.COMMAND_PROMPT, '命令控制')
         self.addSubInterface(self.teachInterface, FIF.APPLICATION, '示教控制')
+        self.addSubInterface(self.commandInterface, FIF.COMMAND_PROMPT, '命令控制')
         self.addSubInterface(self.connectionInterface, FIF.IOT, '连接设置')
         
         self.navigationInterface.addItem(
@@ -1660,7 +1660,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         )
         
         # 设置默认打开的页面
-        self.navigationInterface.setCurrentItem(self.commandInterface.objectName())
+        self.navigationInterface.setCurrentItem(self.teachInterface.objectName())
     
     def showMessageBox(self):
         """弹出帮助信息框"""
