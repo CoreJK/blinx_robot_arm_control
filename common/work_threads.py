@@ -117,27 +117,27 @@ class AgnleDegreeWatchTask(QRunnable):
 class CommandSenderTask(QRunnable):
     """发送命令的线程"""
     
-    def __init__(self, command_queue: PriorityQueue):
+    def __init__(self, command_queue: Queue):
         super().__init__()
         self.command_queue = command_queue
         self.is_on = True
     
     @logger.catch
     def run(self):
-        with self.get_robot_arm_connector() as conn:
-            while self.is_on:
-                pub.subscribe(self.check_flag, 'thread_work_flag')  # 检查线程是否需要继续运行
-                time.sleep(0.1)
-                if not self.command_queue.empty():
-                    try:
-                        # 发送命令
-                        command_str = self.command_queue.get()
-                        logger.debug(f"命令发送线程，发送的命令: {command_str}")
+        while self.is_on:
+            pub.subscribe(self.check_flag, 'thread_work_flag')  # 检查线程是否需要继续运行
+            time.sleep(0.1)
+            if not self.command_queue.empty():
+                try:
+                    # 发送命令
+                    command_str = self.command_queue.get()
+                    with self.get_robot_arm_connector() as conn:
                         conn.sendall(command_str)
-                                    
-                    except Exception as e:
-                        logger.error(f"命令发送异常: {e}")
-                        logger.error(rf"异常命令: {command_str.decode('utf-8')}")
+                        logger.debug(f"命令发送线程，发送的命令: {command_str}")
+                                
+                except Exception as e:
+                    logger.error(f"命令发送异常: {e}")
+                    logger.error(rf"异常命令: {command_str.decode('utf-8')}")
                     
     def check_flag(self, flag=True):
         self.is_on = flag
