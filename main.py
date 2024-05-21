@@ -420,7 +420,6 @@ class TeachPage(QFrame, teach_page_frame):
             
                 # 控制末端工具动作的命令
                 if tool_type_data[0] == "吸盘" and tool_type_data[1] != "":
-                    logger.info("单次执行，开关控制")   
                     tool_status = 1 if tool_type_data[1] == "开" else 0
                     json_command = {"command":"set_end_tool", "data": [1, tool_status]}
                     str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
@@ -523,7 +522,6 @@ class TeachPage(QFrame, teach_page_frame):
         
         # 末端工具动作
         if tool_type_data[0] == "吸盘" and tool_type_data[1] != "":
-            logger.info("单次执行，开关控制")   
             tool_status = 1 if tool_type_data[1] == "开" else 0
             json_command = {"command":"set_end_tool", "data": [1, tool_status]}
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
@@ -1637,7 +1635,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
     def initWindow(self):
         """初始化窗口"""
         self.resize(1330, 750)
-        self.setWindowTitle("比邻星六轴机械臂上位机 v4.3.0")
+        self.setWindowTitle("比邻星六轴机械臂上位机 v4.3.1")
         self.setWindowIcon(QIcon(str(settings.WINDOWS_ICON_PATH)))
         setThemeColor('#00AAFF')
         
@@ -1668,7 +1666,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         """弹出帮助信息框"""
         w = MessageBox(
             '📖帮助',
-            '🎊欢迎使用比邻星六轴机械臂上位机 v4.3.0🎊\n\n👇使用文档请访问官网获取👇',
+            '🎊欢迎使用比邻星六轴机械臂上位机 v4.3.1🎊\n\n👇使用文档请访问官网获取👇',
             self
         )
         w.yesButton.setText('直达官网🚀')

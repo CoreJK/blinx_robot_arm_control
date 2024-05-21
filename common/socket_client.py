@@ -37,7 +37,6 @@ class ClientSocket:
         
     @retry(stop_max_attempt_number=3, wait_fixed=1000)
     def new_connect(self):
-        logger.info("正在尝试连接机械臂...")
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # 设置保活心跳包
         self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, True)
@@ -45,7 +44,6 @@ class ClientSocket:
         self.client_socket.ioctl(socket.SIO_KEEPALIVE_VALS, (1, 30*1000, 3*1000))
         self.client_socket.connect((self.host, self.port))
         self.client_socket_list.append(self.client_socket)
-        logger.info("连接成功!")
         return self.client_socket
             
     def __enter__(self):
