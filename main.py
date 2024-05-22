@@ -4,6 +4,7 @@ import simplejson as json
 import shelve
 import sys
 import time
+import re
 from decimal import Decimal
 from functools import partial
 from queue import Queue
@@ -17,8 +18,8 @@ from common.socket_client import ClientSocket, Worker
 from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask, CommandReceiverTask
 
 # UI 相关模块
-from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot, QUrl
-from PySide6.QtGui import QDesktopServices, QIcon
+from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot, QUrl, QRegularExpression
+from PySide6.QtGui import QDesktopServices, QIcon, QRegularExpressionValidator
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
 from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, 
                             NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition)
@@ -150,6 +151,9 @@ class TeachPage(QFrame, teach_page_frame):
         self.rx = 0.0
         self.ry = -0.0
         self.rz = 0.0
+        
+        # 设置输入框的过滤器
+        self.init_input_validator()
         
         # 示教控制页面
         self.tool_type = ["夹爪", "吸盘"]
@@ -1392,6 +1396,41 @@ class TeachPage(QFrame, teach_page_frame):
         joints_angle_decimal = Decimal(joints_angle_str).quantize(Decimal(accuracy), rounding = "ROUND_HALF_UP")
         return joints_angle_decimal
     
+    def init_input_validator(self):
+        """设置输入框的过滤规则"""
+        # 只允许输入阿拉伯数字
+        only_digidts_regex = QRegularExpression(r'^[0-9]{1,3}$')
+        only_digidts_validator = QRegularExpressionValidator(only_digidts_regex, self)
+        self.ActionLoopTimes.setValidator(only_digidts_validator)
+        self.JointStepEdit.setValidator(only_digidts_validator)
+        self.JointSpeedEdit.setValidator(only_digidts_validator)
+        self.JointDelayTimeEdit.setValidator(only_digidts_validator)
+        
+        # 只允许输入浮点数
+        only_float_regex = QRegularExpression(r'^-?\d{1,3}(\.\d{1,3})?$')
+        only_float_validator = QRegularExpressionValidator(only_float_regex, self)
+        
+        # 关节控制正则过滤
+        self.JointOneEdit.setValidator(only_float_validator)
+        self.JointTwoEdit.setValidator(only_float_validator)
+        self.JointThreeEdit.setValidator(only_float_validator)
+        self.JointFourEdit.setValidator(only_float_validator)
+        self.JointFiveEdit.setValidator(only_float_validator)
+        self.JointSixEdit.setValidator(only_float_validator)
+        
+        # 坐标控制正则过滤
+        self.XAxisEdit.setValidator(only_float_validator)
+        self.YAxisEdit.setValidator(only_float_validator)
+        self.ZAxisEdit.setValidator(only_float_validator)
+        self.CoordinateStepEdit.setValidator(only_float_validator)
+        
+        # 末端工具位置与姿态正则过滤
+        self.RxAxisEdit.setValidator(only_float_validator)
+        self.RyAxisEdit.setValidator(only_float_validator)
+        self.RzAxisEdit.setValidator(only_float_validator)
+        self.ApStepEdit.setValidator(only_digidts_validator)
+    
+    
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
     def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: Queue, joints_angle_queue: Queue):
@@ -1406,6 +1445,7 @@ class ConnectPage(QFrame, connect_page_frame):
         self.joints_angle_queue = joints_angle_queue
         
         self.init_task_thread()
+        self.init_input_validator()
         
         # 机械臂的连接状态
         self.robot_arm_is_connected = False
@@ -1414,6 +1454,7 @@ class ConnectPage(QFrame, connect_page_frame):
         self.robot_arm_connecting_tip = None
         self.IpPortInfoSubmitButton.clicked.connect(self.submit_ip_port_info)
         self.IpPortInfoRestButton.clicked.connect(self.reset_ip_port_info)
+        
 
         # 机械臂 WiFi AP 模式配置页面回调函数绑定
         self.reload_ap_passwd_history()  # 加载上一次的配置
@@ -1428,6 +1469,28 @@ class ConnectPage(QFrame, connect_page_frame):
         self.RobotArmDisconnectButton.clicked.connect(self.disconnect_to_robot_arm)
         self.RobotArmDisconnectButton.setEnabled(False)
 
+    def init_input_validator(self):
+        """对用户输入过滤"""
+        # 限制 IP 输入
+        ip_regex = QRegularExpression(r'^((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])(?::(?:[0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?$')
+        ip_validator = QRegularExpressionValidator(ip_regex, self)
+        self.TargetIpEdit.setValidator(ip_validator)
+        
+        # 限制端口号输入
+        sport_regex = QRegularExpression(r'^(102[4-9]|10[3-9]\d|1[1-9]\d{2}|[2-9]\d{3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$')
+        sport_validator = QRegularExpressionValidator(sport_regex, self)
+        self.TargetPortEdit.setValidator(sport_validator)
+
+        # 限制 Wifi SSID 输入
+        ssid_regex = QRegularExpression(r'^[a-zA-Z0-9_\-]{1,32}$')
+        ssid_validator = QRegularExpressionValidator(ssid_regex, self)
+        self.WiFiSsidEdit.setValidator(ssid_validator)
+        
+        # 限制 wifi 密码输入
+        password_regex = QRegularExpression(r'^[a-zA-Z0-9_\-]{8,63}$')
+        password_validator = QRegularExpressionValidator(password_regex, self)
+        self.WiFiPasswordLineEdit.setValidator(password_validator)
+        
     def init_task_thread(self):
         """初始化后台线程任务"""
         self.angle_degree_thread = AgnleDegreeWatchTask(self.joints_angle_queue)
@@ -1635,8 +1698,8 @@ class ConnectPage(QFrame, connect_page_frame):
             logger.error(str(e))
             self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
         return robot_arm_client
+            
     
-                       
 class BlinxRobotArmControlWindow(MSFluentWindow):
     """上位机主窗口"""    
     def __init__(self):
