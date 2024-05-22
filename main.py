@@ -4,7 +4,6 @@ import simplejson as json
 import shelve
 import sys
 import time
-import re
 from decimal import Decimal
 from functools import partial
 from queue import Queue
@@ -105,7 +104,7 @@ class CommandPage(QFrame, command_page_frame):
             robot_arm_client = ClientSocket(host, port)
             socket_info.close()
         except Exception as e:
-            logger.error(str(e))
+            logger.exception(str(e))
             self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
         return robot_arm_client
     
@@ -334,7 +333,7 @@ class TeachPage(QFrame, teach_page_frame):
             else:
                 logger.warning("取消导入动作文件!")
         except Exception as e:
-            logger.error(f"导入动作文件失败: {e}")
+            logger.exception(f"导入动作文件失败: {e}")
             self.message_box.error_message_box(message="导入动作文件失败!")
     
     @check_robot_arm_connection
@@ -1321,7 +1320,7 @@ class TeachPage(QFrame, teach_page_frame):
             # 发送命令
             self.command_queue.put(command.encode())
         else:
-            logger.error("关节运动范围超出超限!")
+            logger.warning("关节运动范围超出超限!")
             self.message_box.error_message_box("关节运动范围超限!")
         
     def get_arm_ikine(self, x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose) -> list:
@@ -1346,7 +1345,7 @@ class TeachPage(QFrame, teach_page_frame):
             robot_arm_client = ClientSocket(host, port)
             socket_info.close()
         except Exception as e:
-            logger.error(str(e))
+            logger.exception(str(e))
             self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
         return robot_arm_client
     
@@ -1376,7 +1375,7 @@ class TeachPage(QFrame, teach_page_frame):
                     self.update_connect_status_timer.stop()
                     
                 except Exception as e:
-                    logger.error(str(e))
+                    logger.exception(str(e))
                     self.message_box.error_message_box("获取机械臂命令模式失败!")
                 
     def get_robot_arm_connect_status_timer(self):
@@ -1608,7 +1607,7 @@ class ConnectPage(QFrame, connect_page_frame):
             # 清空队列
             self.command_queue.queue.clear()
             # 弹出错误提示框
-            logger.error(f"机械臂连接失败: {e}")
+            logger.exception(f"机械臂连接失败: {e}")
             InfoBar.error(
                 title='连接失败',
                 content="机械臂连接失败 !",
@@ -1695,7 +1694,7 @@ class ConnectPage(QFrame, connect_page_frame):
             robot_arm_client = ClientSocket(host, port)
             socket_info.close()
         except Exception as e:
-            logger.error(str(e))
+            logger.exception(str(e))
             self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
         return robot_arm_client
             
