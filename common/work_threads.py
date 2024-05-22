@@ -1,6 +1,7 @@
-import json
+from decimal import Decimal
+import simplejson as json
 import shelve
-from queue import PriorityQueue, Queue
+from queue import Queue
 import time
 
 import numpy as np
@@ -40,15 +41,21 @@ class UpdateJointAnglesTask(QRunnable):
             if not self.joints_angle_queue.empty():
                 angle_data_list = self.joints_angle_queue.get()
                 # 关节角度更新信号
-                self.singal_emitter.joint_angles_update_signal.emit(list(map(lambda s: round(s, 3), angle_data_list)))
+                self.singal_emitter.joint_angles_update_signal.emit(list(map(self.decimal_round, angle_data_list)))
                 
                 # 末端坐标与位姿更新信号
                 arm_joint_radians = np.radians(angle_data_list)  # 正逆解需要弧度制
                 translation_vector = self.blinx_robot_arm.fkine(arm_joint_radians)
                 X, Y, Z = translation_vector.t  # 末端坐标
                 R_x, P_y, Y_z = translation_vector.rpy(unit='deg', order='zyx')  # 末端姿态
-                self.singal_emitter.arm_endfactor_positions_update_signal.emit(list(map(lambda s: round(s, 3), [X, Y, Z, R_x, P_y, Y_z])))
-            
+                self.singal_emitter.arm_endfactor_positions_update_signal.emit(list(map(self.decimal_round, [X, Y, Z, R_x, P_y, Y_z])))
+    
+    def decimal_round(self, joints_angle: float) -> Decimal:
+        """用精确的方式四舍五入, 保留三位小数"""
+        joints_angle_str = str(joints_angle)
+        joints_angle_decimal = Decimal(joints_angle_str).quantize(Decimal("0.001"), rounding="ROUND_HALF_UP")
+        return joints_angle_decimal
+        
 
     def check_update_joint_angles_thread_flag(self, flag=True):
         self.update_joint_angles_thread_flag = flag

@@ -1,9 +1,10 @@
 # -*- coding:utf-8 -*-
 import sys
-import json
+import simplejson as json
 import shelve
 import sys
 import time
+from decimal import Decimal
 from functools import partial
 from queue import Queue
 from retrying import retry
@@ -20,7 +21,7 @@ from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
 from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, 
-                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition, StateToolTip)
+                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition)
 from qfluentwidgets import FluentIcon as FIF
 
 # 导入子页面控件布局文件
@@ -82,7 +83,7 @@ class CommandPage(QFrame, command_page_frame):
         with robot_arm_client as rac:
             rac.send(json_data.encode('utf-8'))
             rs_data = json.loads(rac.recv(1024).decode('utf-8').strip())
-            self.CommandResWindow.appendPlainText(json.dumps(rs_data))  # 命令响应填入到响应窗口
+            self.CommandResWindow.appendPlainText(json.dumps(rs_data, use_decimal=True))  # 命令响应填入到响应窗口
     
     def get_robot_arm_connect_status(self):
         """获取机械臂连接状态"""
@@ -415,7 +416,7 @@ class TeachPage(QFrame, teach_page_frame):
                 
                 # 发送机械臂执行动作的命令
                 json_command = {"command": "set_joint_angle_all_time", "data": arm_payload_data}
-                str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+                str_command = json.dumps(json_command, use_decimal=True).replace(' ', "") + '\r\n'
                 self.command_queue.put(str_command.encode())
             
                 # 控制末端工具动作的命令
@@ -517,7 +518,7 @@ class TeachPage(QFrame, teach_page_frame):
         arm_payload_data, tool_type_data, _ = self.get_arm_action_payload(row)
         
         json_command = {"command": "set_joint_angle_all_time", "data": arm_payload_data}
-        str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+        str_command = json.dumps(json_command, use_decimal=True).replace(' ', "") + '\r\n'
         self.command_queue.put(str_command.encode())
         
         # 末端工具动作
@@ -578,12 +579,12 @@ class TeachPage(QFrame, teach_page_frame):
         
         row_position = self.ActionTableWidget.rowCount()
         self.ActionTableWidget.insertRow(row_position)
-        self.ActionTableWidget.setItem(row_position, 0, QTableWidgetItem(str(round(self.q1, 2))))
-        self.ActionTableWidget.setItem(row_position, 1, QTableWidgetItem(str(round(self.q2, 2))))
-        self.ActionTableWidget.setItem(row_position, 2, QTableWidgetItem(str(round(self.q3, 2))))
-        self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(str(round(self.q4, 2))))
-        self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(str(round(self.q5, 2))))
-        self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(str(round(self.q6, 2))))
+        self.ActionTableWidget.setItem(row_position, 0, QTableWidgetItem(str(self.q1)))
+        self.ActionTableWidget.setItem(row_position, 1, QTableWidgetItem(str(self.q2)))
+        self.ActionTableWidget.setItem(row_position, 2, QTableWidgetItem(str(self.q3)))
+        self.ActionTableWidget.setItem(row_position, 3, QTableWidgetItem(str(self.q4)))
+        self.ActionTableWidget.setItem(row_position, 4, QTableWidgetItem(str(self.q5)))
+        self.ActionTableWidget.setItem(row_position, 5, QTableWidgetItem(str(self.q6)))
         self.ActionTableWidget.setItem(row_position, 6, QTableWidgetItem(speed_percentage))
         
 
@@ -628,17 +629,17 @@ class TeachPage(QFrame, teach_page_frame):
             for row in selected_rows:
                 for col in range(self.ActionTableWidget.columnCount()):
                     if col == 0:
-                        self.update_table_cell(row.row(), col, round(self.q1, 2))
+                        self.update_table_cell(row.row(), col, self.q1)
                     elif col == 1:
-                        self.update_table_cell(row.row(), col, round(self.q2, 2))
+                        self.update_table_cell(row.row(), col, self.q2)
                     elif col == 2:
-                        self.update_table_cell(row.row(), col, round(self.q3, 2))
+                        self.update_table_cell(row.row(), col, self.q3)
                     elif col == 3:
-                        self.update_table_cell(row.row(), col, round(self.q4, 2))
+                        self.update_table_cell(row.row(), col, self.q4)
                     elif col == 4:
-                        self.update_table_cell(row.row(), col, round(self.q5, 2))
+                        self.update_table_cell(row.row(), col, self.q5)
                     elif col == 5:
-                        self.update_table_cell(row.row(), col, round(self.q6, 2))
+                        self.update_table_cell(row.row(), col, self.q6)
                     elif col == 6:
                         self.update_table_cell(row.row(), col, self.JointSpeedEdit.text())
                     elif col == 7:
@@ -661,17 +662,17 @@ class TeachPage(QFrame, teach_page_frame):
                 column_number = col.column()
                 for row in range(self.ActionTableWidget.rowCount()):
                     if column_number == 0:
-                        self.update_table_cell(row, column_number, round(self.q1, 2))
+                        self.update_table_cell(row, column_number, self.q1)
                     elif column_number == 1:
-                        self.update_table_cell(row, column_number, round(self.q2, 2))
+                        self.update_table_cell(row, column_number, self.q2)
                     elif column_number == 2:
-                        self.update_table_cell(row, column_number, round(self.q3, 2))
+                        self.update_table_cell(row, column_number, self.q3)
                     elif column_number == 3:
-                        self.update_table_cell(row, column_number, round(self.q4, 2))
+                        self.update_table_cell(row, column_number, self.q4)
                     elif column_number == 4:
-                        self.update_table_cell(row, column_number, round(self.q5, 2))
+                        self.update_table_cell(row, column_number, self.q5)
                     elif column_number == 5:
-                        self.update_table_cell(row, column_number, round(self.q6, 2))
+                        self.update_table_cell(row, column_number, self.q6)
                     elif column_number == 6:
                         self.update_table_cell(row, column_number, self.JointSpeedEdit.text())
                     elif column_number == 7:
@@ -742,17 +743,17 @@ class TeachPage(QFrame, teach_page_frame):
             selected_row = selected_items[0].row()
             sellected_col = selected_items[0].column()
             if sellected_col == 0:
-                self.update_table_cell(selected_row, sellected_col, round(self.q1, 2))
+                self.update_table_cell(selected_row, sellected_col, self.q1)
             elif sellected_col == 1:
-                self.update_table_cell(selected_row, sellected_col, round(self.q2, 2))
+                self.update_table_cell(selected_row, sellected_col, self.q2)
             elif sellected_col == 2:
-                self.update_table_cell(selected_row, sellected_col, round(self.q3, 2))
+                self.update_table_cell(selected_row, sellected_col, self.q3)
             elif sellected_col == 3:
-                self.update_table_cell(selected_row, sellected_col, round(self.q4, 2))
+                self.update_table_cell(selected_row, sellected_col, self.q4)
             elif sellected_col == 4:
-                self.update_table_cell(selected_row, sellected_col, round(self.q5, 2))
+                self.update_table_cell(selected_row, sellected_col, self.q5)
             elif sellected_col == 5:
-                self.update_table_cell(selected_row, sellected_col, round(self.q6, 2))
+                self.update_table_cell(selected_row, sellected_col, self.q6)
             elif sellected_col == 6:
                 self.update_table_cell(selected_row, sellected_col, self.JointSpeedEdit.text())
             elif sellected_col == 7:
@@ -778,17 +779,17 @@ class TeachPage(QFrame, teach_page_frame):
             self.ActionTableWidget.insertRow(row_position)
             for col in range(self.ActionTableWidget.columnCount()):
                 if col == 0:
-                    self.update_table_cell(row_position, col, round(self.q1, 2))
+                    self.update_table_cell(row_position, col, self.q1)
                 elif col == 1:
-                    self.update_table_cell(row_position, col, round(self.q2, 2))
+                    self.update_table_cell(row_position, col, self.q2)
                 elif col == 2:
-                    self.update_table_cell(row_position, col, round(self.q3, 2))
+                    self.update_table_cell(row_position, col, self.q3)
                 elif col == 3:
-                    self.update_table_cell(row_position, col, round(self.q4, 2))
+                    self.update_table_cell(row_position, col, self.q4)
                 elif col == 4:
-                    self.update_table_cell(row_position, col, round(self.q5, 2))
+                    self.update_table_cell(row_position, col, self.q5)
                 elif col == 5:
-                    self.update_table_cell(row_position, col, round(self.q6, 2))
+                    self.update_table_cell(row_position, col, self.q6)
                 elif col == 6:
                     self.update_table_cell(row_position, col, self.JointSpeedEdit.text())
                 elif col == 7:  
@@ -811,8 +812,8 @@ class TeachPage(QFrame, teach_page_frame):
     def modify_joint_angle(self, joint_number, min_degrade, max_degrade, increase=True):
         """机械臂关节角度增减操作"""
         old_degrade = getattr(self, f'q{joint_number}')  # 获取当前对象的属性
-        step_degrade = float(self.JointStepEdit.text().strip())
-        speed_percentage = float(self.JointSpeedEdit.text().strip())
+        step_degrade = Decimal(self.JointStepEdit.text().strip())
+        speed_percentage = Decimal(self.JointSpeedEdit.text().strip())
 
         if increase:
             degrade = old_degrade + step_degrade
@@ -830,9 +831,9 @@ class TeachPage(QFrame, teach_page_frame):
 
             # 构造发送命令
             command = json.dumps(
-                {"command": "set_joint_angle", "data": [joint_number, speed_percentage, degrade]}) + '\r\n'
+                {"command": "set_joint_angle", "data": [joint_number, speed_percentage, degrade]}, use_decimal=True) + '\r\n'
             self.command_queue.put(command.encode())
-            logger.debug(f"机械臂关节 {joint_number} 转动 {round(degrade, 3)} 度")
+            logger.debug(f"机械臂关节 {joint_number} 转动 {degrade} 度")
             
             #  录制操作激活时
             if self.RecordActivateSwitchButton.isChecked():
@@ -965,7 +966,7 @@ class TeachPage(QFrame, teach_page_frame):
         ry_pose = self.ry
         rz_pose = self.rz
         
-        change_value = round(float(self.CoordinateStepEdit.text().strip()), 3)  # 步长值
+        change_value = self.decimal_round(self.CoordinateStepEdit.text().strip())  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 3)  # 速度值
         
         # 根据按钮加减增减数值
@@ -1000,7 +1001,7 @@ class TeachPage(QFrame, teach_page_frame):
         ry_pose = self.ry
         rz_pose = self.rz
         
-        change_value = round(float(self.CoordinateStepEdit.text().strip()), 2)  # 步长值
+        change_value = self.decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.01')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
         # 根据按钮加减增减数值
@@ -1036,7 +1037,7 @@ class TeachPage(QFrame, teach_page_frame):
         ry_pose = self.ry
         rz_pose = self.rz
         
-        change_value = round(float(self.CoordinateStepEdit.text().strip()), 2)  # 步长值
+        change_value = self.decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.01')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
         # 根据按钮加减增减数值
@@ -1062,11 +1063,11 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def tool_coordinate_step_modify(self, action="add"):
         """末端工具坐标步长增减函数"""
-        old_coordinate_step = round(float(self.CoordinateStepEdit.text().strip()), 2)
+        old_coordinate_step = self.decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.01')
         if action == "add":
-            new_coordinate_step = round(old_coordinate_step + 0.01, 2)
+            new_coordinate_step = old_coordinate_step + Decimal('0.01')
         else:
-            new_coordinate_step = round(old_coordinate_step - 0.01, 2)
+            new_coordinate_step = old_coordinate_step - Decimal('0.01')
             
         logger.debug(f"末端工具坐标步长设置为: {new_coordinate_step}")
         self.CoordinateStepEdit.setText(str(new_coordinate_step))
@@ -1076,16 +1077,16 @@ class TeachPage(QFrame, teach_page_frame):
     def tool_rx_operate(self, action="add"):
         """末端工具坐标 Rx 增减函数"""
         # 获取末端工具的坐标
-        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
-        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
-        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        x_coordinate = self.decimal_round(self.XAxisEdit.text().strip(), accuracy='0.01')
+        y_coordinate = self.decimal_round(self.YAxisEdit.text().strip(), accuracy='0.01')
+        z_coordinate = self.decimal_round(self.ZAxisEdit.text().strip(), accuracy='0.01')
         
         # 获取末端工具的姿态
-        old_rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
-        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
-        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        old_rx_pose = self.decimal_round(self.RxAxisEdit.text().strip(), accuracy='0.01')
+        ry_pose = self.decimal_round(self.RyAxisEdit.text().strip(), accuracy='0.01')
+        rz_pose = self.decimal_round(self.RzAxisEdit.text().strip(), accuracy='0.01')
         
-        change_value = round(float(self.ApStepEdit.text().strip()), 2)  # 步长值
+        change_value = self.decimal_round(self.ApStepEdit.text().strip(), accuracy='0.01')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
         # 根据按钮加减增减数值
@@ -1112,19 +1113,17 @@ class TeachPage(QFrame, teach_page_frame):
     def tool_ry_operate(self, action="add"):
         """末端工具坐标 Ry 增减函数"""
         # 获取末端工具的坐标
-        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
-        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
-        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        x_coordinate = self.decimal_round(self.XAxisEdit.text().strip(), accuracy='0.01')
+        y_coordinate = self.decimal_round(self.YAxisEdit.text().strip(), accuracy='0.01')
+        z_coordinate = self.decimal_round(self.ZAxisEdit.text().strip(), accuracy='0.01')
         
         # 获取末端工具的姿态
-        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
-        old_ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
-        rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        rx_pose = self.decimal_round(self.RxAxisEdit.text().strip(), accuracy='0.01')
+        old_ry_pose = self.decimal_round(self.RyAxisEdit.text().strip(), accuracy='0.01')
+        rz_pose = self.decimal_round(self.RzAxisEdit.text().strip(), accuracy='0.01')
         
-        change_value = round(float(self.ApStepEdit.text().strip()), 2)  # 步长值
+        change_value = self.decimal_round(self.ApStepEdit.text().strip(), accuracy='0.01')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
-        
-        
         
         # 根据按钮加减增减数值
         if action == "add":
@@ -1149,16 +1148,16 @@ class TeachPage(QFrame, teach_page_frame):
     def tool_rz_operate(self, action="add"):
         """末端工具坐标 Rz 增减函数"""
         # 获取末端工具的坐标、姿态数值
-        x_coordinate = round(float(self.XAxisEdit.text().strip()), 2)
-        y_coordinate = round(float(self.YAxisEdit.text().strip()), 2)
-        z_coordinate = round(float(self.ZAxisEdit.text().strip()), 2)
+        x_coordinate = self.decimal_round(self.XAxisEdit.text().strip(), accuracy='0.01')
+        y_coordinate = self.decimal_round(self.YAxisEdit.text().strip(), accuracy='0.01')
+        z_coordinate = self.decimal_round(self.ZAxisEdit.text().strip(), accuracy='0.01')
         
         # 获取末端工具的姿态
-        rx_pose = round(float(self.RxAxisEdit.text().strip()), 2)
-        ry_pose = round(float(self.RyAxisEdit.text().strip()), 2)
-        old_rz_pose = round(float(self.RzAxisEdit.text().strip()), 2)
+        rx_pose = self.decimal_round(self.RxAxisEdit.text().strip(), accuracy='0.01')
+        ry_pose = self.decimal_round(self.RyAxisEdit.text().strip(), accuracy='0.01')
+        old_rz_pose = self.decimal_round(self.RzAxisEdit.text().strip(), accuracy='0.01')
         
-        change_value = round(float(self.ApStepEdit.text().strip()), 2)  # 步长值
+        change_value = self.decimal_round(self.ApStepEdit.text().strip(), accuracy='0.01')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
         
@@ -1184,11 +1183,11 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def tool_pose_step_modify(self, action="add"):
         """末端工具姿态步长增减函数"""
-        old_pose_step = round(float(self.ApStepEdit.text().strip()), 2)
+        old_pose_step = self.decimal_round(self.ApStepEdit.text().strip(), accuracy='0.01')
         if action == "add":
-            new_pose_step = round(old_pose_step + 1, 2)
+            new_pose_step = old_pose_step + Decimal('1')
         elif action == "sub":
-            new_pose_step = round(old_pose_step - 1, 2)
+            new_pose_step = old_pose_step - Decimal('1')
         else:
             raise ValueError("action 参数只能为 add 或 sub")
         logger.debug(f"末端工具姿态步长设置为: {new_pose_step}")
@@ -1313,8 +1312,8 @@ class TeachPage(QFrame, teach_page_frame):
         if joint_degrees is not None:
             speed_degree_data = [speed_percentage]
             speed_degree_data.extend(joint_degrees)
-            command = json.dumps({"command": "set_joint_angle_all_time", "data": speed_degree_data}).replace(' ', "") + '\r\n'
-            logger.debug(f"逆解后的所有关节角度值: {joint_degrees}")
+            command = json.dumps({"command": "set_joint_angle_all_time", "data": speed_degree_data}, use_decimal=True).replace(' ', "") + '\r\n'
+            logger.debug(f"逆解后的所有关节角度值: {list(map(lambda d: float(d), joint_degrees))}")
             # 发送命令
             self.command_queue.put(command.encode())
         else:
@@ -1323,10 +1322,10 @@ class TeachPage(QFrame, teach_page_frame):
         
     def get_arm_ikine(self, x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose) -> list:
         """计算机械臂的逆解"""
-        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([rx_pose, ry_pose, rz_pose], unit='deg', order='zyx')
+        R_T = SE3([float(x_coordinate), float(y_coordinate), float(z_coordinate)]) * rpy2tr([float(rx_pose), float(ry_pose), float(rz_pose)], unit='deg', order='zyx')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         if sol.success:
-            joint_degrees = [round(degrees(d), 3) for d in sol.q]
+            joint_degrees = [self.decimal_round(degrees(d)) for d in sol.q]
         else:
             joint_degrees = None
         
@@ -1382,7 +1381,16 @@ class TeachPage(QFrame, teach_page_frame):
     
     def _get_robot_arm_connect_status(self, status: bool):
         self.robot_arm_is_connected = status
-        
+    
+    def decimal_round(self, joints_angle: str, accuracy="0.001") -> Decimal:
+        """用精确的方式四舍五入"""
+        if not isinstance(joints_angle, str):
+            joints_angle_str = str(joints_angle)
+        else:
+            joints_angle_str = joints_angle
+            
+        joints_angle_decimal = Decimal(joints_angle_str).quantize(Decimal(accuracy), rounding = "ROUND_HALF_UP")
+        return joints_angle_decimal
     
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
