@@ -50,5 +50,4 @@ class ClientSocket:
         return self.new_connect()
     
     def __exit__(self, exc_type, exc_val, exc_tb):
-        logger.warning("关闭连接!")
         self.client_socket_list.pop().close()

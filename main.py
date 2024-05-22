@@ -20,7 +20,7 @@ from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
 from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, 
-                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition)
+                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition, StateToolTip)
 from qfluentwidgets import FluentIcon as FIF
 
 # 导入子页面控件布局文件
@@ -65,7 +65,7 @@ class CommandPage(QFrame, command_page_frame):
 
     def initGetRobotArmStatusTask(self):
         """初始化获取机械臂连接状态定时器"""
-        logger.warning("命令页面获取机械臂连接状态定时器启动!")
+        logger.warning("获取机械臂连接状态定时器，启动!")
         self.get_robot_arm_status_timer = QTimer()
         self.get_robot_arm_status_timer.timeout.connect(self.get_robot_arm_connect_status)
         self.get_robot_arm_status_timer.start(100)
@@ -253,17 +253,17 @@ class TeachPage(QFrame, teach_page_frame):
 
     def back_task_start(self):
         """后台任务启动"""
-        logger.warning("获取机械臂连接状态定时器启动!")
+        logger.warning("获取机械臂连接状态定时器，启动!")
         self.get_arm_connect_status_timer = QTimer()
         self.get_arm_connect_status_timer.timeout.connect(self.get_robot_arm_connect_status_timer)
         self.get_arm_connect_status_timer.start(100)
         
-        logger.info("获取机械臂命令模式线程启动!")
+        logger.warning("获取机械臂命令模式定时器，启动!")
         self.update_connect_status_timer = QTimer()
         self.update_connect_status_timer.timeout.connect(self.get_current_cmd_model)
         self.update_connect_status_timer.start(1000)
         
-        logger.info("获取机械臂的关节角度信息线程启动!")
+        logger.warning("更新机械臂的关节角度/末端位姿数据线程，启动!")
         self.update_joint_angles_thread = UpdateJointAnglesTask(self.joints_angle_queue)
         self.thread_pool.start(self.update_joint_angles_thread)
         self.update_joint_angles_thread.singal_emitter.joint_angles_update_signal.connect(self.update_joint_degrees_text)
@@ -1401,8 +1401,9 @@ class ConnectPage(QFrame, connect_page_frame):
         
         # 机械臂的连接状态
         self.robot_arm_is_connected = False
-          
+        
         self.message_box = BlinxMessageBox(self)
+        self.robot_arm_connecting_tip = None
         self.IpPortInfoSubmitButton.clicked.connect(self.submit_ip_port_info)
         self.IpPortInfoRestButton.clicked.connect(self.reset_ip_port_info)
 
@@ -1513,65 +1514,60 @@ class ConnectPage(QFrame, connect_page_frame):
     def connect_to_robot_arm(self):
         """连接机械臂"""
         try:
-            # 检查网络连接状态
-            robot_arm_client = self.get_robot_arm_connector()
-            with robot_arm_client as rac:
-                remote_address = rac.getpeername()
-                logger.info("机械臂连接成功!")
+            remote_address = self.get_robot_arm_connect_info()
                 
-            if self.RobotArmLinkButton.isEnabled() and remote_address:
-                # 发布连接机械臂成功状态
-                pub.sendMessage("robot_arm_connect_status", status=True)
-                self.RobotArmLinkButton.setText("已连接")
-                
+            if remote_address:
                 InfoBar.success(
                     title='连接成功',
                     content=f"机械臂连接成功 !\nIP: {remote_address[0]}\nPort: {remote_address[1]}",
                     orient=Qt.Horizontal,
-                    isClosable=True,   # disable close button
+                    isClosable=True,
                     position=InfoBarPosition.BOTTOM_RIGHT,
-                    duration=5000,
+                    duration=3000,
                     parent=self
                 )
                 
-                # 机械臂连接成功标志
-                self.robot_arm_is_connected = True
-                # 连接成功后，将连接机械臂按钮禁用，避免用户操作重复发起连接
-                self.RobotArmLinkButton.setEnabled(False)
-                self.RobotArmDisconnectButton.setEnabled(True)
-                
-                # 启用实时获取机械臂角度线程
-                self.joints_angle_queue.queue.clear()  # 清空队列
-                self.thread_pool.start(self.angle_degree_thread)
-                logger.info("后台获取机械臂角度开始")
-                
-                # 启用轮询队列中所有命令的线程
-                self.command_queue.queue.clear()  # 清空队列
-                self.thread_pool.start(self.command_sender_thread)
-                    
-                logger.info("命令发送线程开启")
-                logger.warning("连接机械臂按钮禁用!")
-                
-                # 启动命令接收线程
-                self.thread_pool.start(self.command_recver_thread)
-                logger.info("命令接收线程开启")
-                
+                self._update_arm_connect_status(connected=True)
+                self.start_sender_recv_threads()
+    
+
         except Exception as e:
             # 连接失败后，将连接机械臂按钮启用
             self.RobotArmLinkButton.setEnabled(True)
             # 清空队列
             self.command_queue.queue.clear()
-            # 关闭线程池
             # 弹出错误提示框
             logger.error(f"机械臂连接失败: {e}")
             InfoBar.error(
                 title='连接失败',
                 content="机械臂连接失败 !",
                 orient=Qt.Horizontal,
-                isClosable=False,   # disable close button
-                duration=-1,
+                isClosable=False,
+                duration=3000,
                 parent=self
             )
+
+    def get_robot_arm_connect_info(self):
+        """连接机械臂线程"""
+        self.RobotArmLinkButton.setEnabled(False)
+        # 检查网络连接状态
+        robot_arm_client = self.get_robot_arm_connector()
+        with robot_arm_client as rac:
+            remote_address = rac.getpeername()
+            logger.info("机械臂连接成功!")
+        return remote_address
+
+    def _update_arm_connect_status(self, connected: bool =True):
+        """更新机械臂的连接状态, 以及相关按钮的状态"""
+        # 发布机械臂连接状态
+        pub.sendMessage("robot_arm_connect_status", status=True)
+        self.robot_arm_is_connected = connected
+        
+        # 更新机械臂连接按钮状态
+        self.RobotArmLinkButton.setText("机械臂已连接")
+        # 连接成功后，将连接机械臂按钮禁用，避免用户操作重复发起连接
+        self.RobotArmLinkButton.setEnabled(not connected)
+        self.RobotArmDisconnectButton.setEnabled(connected)
     
     @Slot()
     def disconnect_to_robot_arm(self):
@@ -1600,8 +1596,24 @@ class ConnectPage(QFrame, connect_page_frame):
         
         # 创建新的线程对象
         self.init_task_thread()
+    
+    def start_sender_recv_threads(self):
+        """启动命令发送与命令接收线程"""
+        # 启用实时获取机械臂角度线程
+        self.joints_angle_queue.queue.clear()  # 清空队列
+        self.thread_pool.start(self.angle_degree_thread)
+        logger.info("后台获取机械臂角度启动!")
+                
+        # 启用轮询队列中所有命令的线程
+        self.command_queue.queue.clear()  # 清空队列
+        self.thread_pool.start(self.command_sender_thread)
+        logger.info("命令发送线程启动!")
+                
+        # 启动命令接收线程
+        self.thread_pool.start(self.command_recver_thread)
+        logger.info("命令接收线程启动!")
         
-    @retry(stop_max_attempt_number=3, wait_fixed=1000)
+    
     @logger.catch
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
