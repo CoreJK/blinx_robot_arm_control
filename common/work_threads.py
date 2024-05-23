@@ -41,21 +41,26 @@ class UpdateJointAnglesTask(QRunnable):
             if not self.joints_angle_queue.empty():
                 angle_data_list = self.joints_angle_queue.get()
                 # 关节角度更新信号
-                self.singal_emitter.joint_angles_update_signal.emit(list(map(self.decimal_round, angle_data_list)))
+                self.singal_emitter.joint_angles_update_signal.emit(list(map(self.decimal_round_for_joints, angle_data_list)))
                 
                 # 末端坐标与位姿更新信号
                 arm_joint_radians = np.radians(angle_data_list)  # 正逆解需要弧度制
                 translation_vector = self.blinx_robot_arm.fkine(arm_joint_radians)
-                X, Y, Z = translation_vector.t  # 末端坐标
-                R_x, P_y, Y_z = translation_vector.rpy(unit='deg', order='zyx')  # 末端姿态
-                self.singal_emitter.arm_endfactor_positions_update_signal.emit(list(map(self.decimal_round, [X, Y, Z, R_x, P_y, Y_z])))
+                X, Y, Z = map(self.decimal_round_for_positions, translation_vector.t)  # 末端坐标
+                R_x, P_y, Y_z = map(self.decimal_round_for_joints, translation_vector.rpy(unit='deg', order='zyx'))  # 末端姿态
+                self.singal_emitter.arm_endfactor_positions_update_signal.emit([X, Y, Z, R_x, P_y, Y_z])
     
-    def decimal_round(self, joints_angle: float) -> Decimal:
-        """用精确的方式四舍五入, 保留三位小数"""
+    def decimal_round_for_joints(self, joints_angle: float) -> Decimal:
+        """用精确的方式四舍五入, 保留关节角度的三位小数"""
         joints_angle_str = str(joints_angle)
         joints_angle_decimal = Decimal(joints_angle_str).quantize(Decimal("0.001"), rounding="ROUND_HALF_UP")
         return joints_angle_decimal
-        
+    
+    def decimal_round_for_positions(self, value: float) -> Decimal:
+        """用精确的方式四舍五入, 保留末端坐标和姿态的三位小数"""
+        value = Decimal(str(value)) * Decimal('1000')
+        value_decimal = value.quantize(Decimal("0.001"), rounding="ROUND_HALF_UP")
+        return value_decimal
 
     def check_update_joint_angles_thread_flag(self, flag=True):
         self.update_joint_angles_thread_flag = flag
@@ -88,7 +93,7 @@ class AgnleDegreeWatchTask(QRunnable):
                         logger.warning(f"数据不完整: {response_str}")
                         
                 except Exception as e:
-                    logger.error(f"解析命令处理异常: {e}")
+                    logger.exception(f"解析命令处理异常: {e}")
                     logger.error(rf"异常命令: {recv}")
 
     def split_by_symbol(self, response_str: str, split_symbol='\r\n') -> list:
@@ -106,7 +111,6 @@ class AgnleDegreeWatchTask(QRunnable):
     def check_flag(self, flag=True):
         self.is_on = flag
     
-    @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
@@ -117,7 +121,7 @@ class AgnleDegreeWatchTask(QRunnable):
             robot_arm_client = ClientSocket(host, port)
             socket_info.close()
         except Exception as e:
-            logger.error(str(e))
+            logger.exception(str(e))
         return robot_arm_client
 
     
@@ -149,7 +153,6 @@ class CommandSenderTask(QRunnable):
     def check_flag(self, flag=True):
         self.is_on = flag
                     
-    @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
@@ -221,7 +224,6 @@ class CommandReceiverTask(QRunnable):
         """线程工作控制位"""
         self.is_on = flag
         
-    @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
@@ -232,5 +234,5 @@ class CommandReceiverTask(QRunnable):
             robot_arm_client = ClientSocket(host, port)
             socket_info.close()
         except Exception as e:
-            logger.error(str(e))
+            logger.exception(str(e))
         return robot_arm_client

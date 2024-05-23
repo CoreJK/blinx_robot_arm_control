@@ -93,7 +93,6 @@ class CommandPage(QFrame, command_page_frame):
         """订阅机械臂连接状态"""
         self.robot_arm_is_connected = status
     
-    @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
@@ -823,9 +822,6 @@ class TeachPage(QFrame, teach_page_frame):
         else:
             degrade = old_degrade - step_degrade
 
-        joint_name_mapping = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six'}
-        getattr(self, f'Joint{joint_name_mapping[joint_number]}Edit').setText(str(degrade))  # 更新关节角度值
-
         if degrade < min_degrade or degrade > max_degrade:
             self.message_box.error_message_box(message=f"关节角度超出范围: {min_degrade} ~ {max_degrade}")
         else:
@@ -969,17 +965,14 @@ class TeachPage(QFrame, teach_page_frame):
         ry_pose = self.ry
         rz_pose = self.rz
         
-        change_value = self.decimal_round(self.CoordinateStepEdit.text().strip())  # 步长值
+        change_value = self._decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.001')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 3)  # 速度值
         
         # 根据按钮加减增减数值
         if action == "add":
             new_x_coordinate = old_x_coordinate + change_value
-            self.XAxisEdit.setText(str(new_x_coordinate))  # 更新末端工具坐标 X
-            
         else:
             new_x_coordinate = old_x_coordinate - change_value
-            self.XAxisEdit.setText(str(new_x_coordinate))  
         
         logger.debug(f"末端工具坐标 X: {new_x_coordinate}")
         
@@ -1004,17 +997,14 @@ class TeachPage(QFrame, teach_page_frame):
         ry_pose = self.ry
         rz_pose = self.rz
         
-        change_value = self.decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.01')  # 步长值
+        change_value = self._decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.001')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
         # 根据按钮加减增减数值
         if action == "add":
             new_y_coordinate = old_y_coordinate + change_value
-            self.YAxisEdit.setText(str(new_y_coordinate))  # 更新末端工具坐标 Y
-            
         else:
             new_y_coordinate = old_y_coordinate - change_value
-            self.YAxisEdit.setText(str(new_y_coordinate))  
         
         logger.debug(f"末端工具坐标 Y: {new_y_coordinate}")
         
@@ -1040,17 +1030,14 @@ class TeachPage(QFrame, teach_page_frame):
         ry_pose = self.ry
         rz_pose = self.rz
         
-        change_value = self.decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.01')  # 步长值
+        change_value = self._decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.001')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
         # 根据按钮加减增减数值
         if action == "add":
             new_z_coordinate = old_z_coordinate + change_value
-            self.ZAxisEdit.setText(str(new_z_coordinate))  # 更新末端工具坐标 Z
-            
         else:
             new_z_coordinate = old_z_coordinate - change_value
-            self.ZAxisEdit.setText(str(new_z_coordinate))  
         
         logger.debug(f"末端工具坐标 Z: {new_z_coordinate}")
         
@@ -1066,11 +1053,11 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def tool_coordinate_step_modify(self, action="add"):
         """末端工具坐标步长增减函数"""
-        old_coordinate_step = self.decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.01')
+        old_coordinate_step = self._decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.001')
         if action == "add":
-            new_coordinate_step = old_coordinate_step + Decimal('0.01')
+            new_coordinate_step = old_coordinate_step + Decimal('1')
         else:
-            new_coordinate_step = old_coordinate_step - Decimal('0.01')
+            new_coordinate_step = old_coordinate_step - Decimal('1')
             
         logger.debug(f"末端工具坐标步长设置为: {new_coordinate_step}")
         self.CoordinateStepEdit.setText(str(new_coordinate_step))
@@ -1080,26 +1067,24 @@ class TeachPage(QFrame, teach_page_frame):
     def tool_rx_operate(self, action="add"):
         """末端工具坐标 Rx 增减函数"""
         # 获取末端工具的坐标
-        x_coordinate = self.decimal_round(self.XAxisEdit.text().strip(), accuracy='0.01')
-        y_coordinate = self.decimal_round(self.YAxisEdit.text().strip(), accuracy='0.01')
-        z_coordinate = self.decimal_round(self.ZAxisEdit.text().strip(), accuracy='0.01')
+        x_coordinate = self._decimal_round(self.XAxisEdit.text().strip(), accuracy='0.001')
+        y_coordinate = self._decimal_round(self.YAxisEdit.text().strip(), accuracy='0.001')
+        z_coordinate = self._decimal_round(self.ZAxisEdit.text().strip(), accuracy='0.001')
         
         # 获取末端工具的姿态
-        old_rx_pose = self.decimal_round(self.RxAxisEdit.text().strip(), accuracy='0.01')
-        ry_pose = self.decimal_round(self.RyAxisEdit.text().strip(), accuracy='0.01')
-        rz_pose = self.decimal_round(self.RzAxisEdit.text().strip(), accuracy='0.01')
+        old_rx_pose = self._decimal_round(self.RxAxisEdit.text().strip(), accuracy='0.001')
+        ry_pose = self._decimal_round(self.RyAxisEdit.text().strip(), accuracy='0.001')
+        rz_pose = self._decimal_round(self.RzAxisEdit.text().strip(), accuracy='0.001')
         
-        change_value = self.decimal_round(self.ApStepEdit.text().strip(), accuracy='0.01')  # 步长值
+        change_value = self._decimal_round(self.ApStepEdit.text().strip(), accuracy='0.001')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
         # 根据按钮加减增减数值
         if action == "add":
             new_rx_pose = old_rx_pose + change_value
-            self.RxAxisEdit.setText(str(new_rx_pose))  # 更新末端工具姿态 Rx
             logger.debug(f"末端工具翻滚姿态 Rx: {new_rx_pose} 度")
         else:
             new_rx_pose = old_rx_pose - change_value
-            self.RxAxisEdit.setText(str(new_rx_pose))  # 更新末端工具姿态 Rx
             logger.debug(f"末端工具翻滚姿态 Rx: {new_rx_pose} 度")
         
         
@@ -1116,26 +1101,24 @@ class TeachPage(QFrame, teach_page_frame):
     def tool_ry_operate(self, action="add"):
         """末端工具坐标 Ry 增减函数"""
         # 获取末端工具的坐标
-        x_coordinate = self.decimal_round(self.XAxisEdit.text().strip(), accuracy='0.01')
-        y_coordinate = self.decimal_round(self.YAxisEdit.text().strip(), accuracy='0.01')
-        z_coordinate = self.decimal_round(self.ZAxisEdit.text().strip(), accuracy='0.01')
+        x_coordinate = self._decimal_round(self.XAxisEdit.text().strip(), accuracy='0.001')
+        y_coordinate = self._decimal_round(self.YAxisEdit.text().strip(), accuracy='0.001')
+        z_coordinate = self._decimal_round(self.ZAxisEdit.text().strip(), accuracy='0.001')
         
         # 获取末端工具的姿态
-        rx_pose = self.decimal_round(self.RxAxisEdit.text().strip(), accuracy='0.01')
-        old_ry_pose = self.decimal_round(self.RyAxisEdit.text().strip(), accuracy='0.01')
-        rz_pose = self.decimal_round(self.RzAxisEdit.text().strip(), accuracy='0.01')
+        rx_pose = self._decimal_round(self.RxAxisEdit.text().strip(), accuracy='0.001')
+        old_ry_pose = self._decimal_round(self.RyAxisEdit.text().strip(), accuracy='0.001')
+        rz_pose = self._decimal_round(self.RzAxisEdit.text().strip(), accuracy='0.001')
         
-        change_value = self.decimal_round(self.ApStepEdit.text().strip(), accuracy='0.01')  # 步长值
+        change_value = self._decimal_round(self.ApStepEdit.text().strip(), accuracy='0.001')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
         # 根据按钮加减增减数值
         if action == "add":
             new_ry_pose = old_ry_pose + change_value
-            self.RyAxisEdit.setText(str(new_ry_pose))
             logger.debug(f"末端工具俯仰姿态 Ry: {new_ry_pose} 度")
         else:
             new_ry_pose = old_ry_pose - change_value
-            self.RyAxisEdit.setText(str(new_ry_pose))
             logger.debug(f"末端工具俯仰姿态 Ry: {new_ry_pose} 度")
             
         # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
@@ -1151,27 +1134,25 @@ class TeachPage(QFrame, teach_page_frame):
     def tool_rz_operate(self, action="add"):
         """末端工具坐标 Rz 增减函数"""
         # 获取末端工具的坐标、姿态数值
-        x_coordinate = self.decimal_round(self.XAxisEdit.text().strip(), accuracy='0.01')
-        y_coordinate = self.decimal_round(self.YAxisEdit.text().strip(), accuracy='0.01')
-        z_coordinate = self.decimal_round(self.ZAxisEdit.text().strip(), accuracy='0.01')
+        x_coordinate = self._decimal_round(self.XAxisEdit.text().strip(), accuracy='0.001')
+        y_coordinate = self._decimal_round(self.YAxisEdit.text().strip(), accuracy='0.001')
+        z_coordinate = self._decimal_round(self.ZAxisEdit.text().strip(), accuracy='0.001')
         
         # 获取末端工具的姿态
-        rx_pose = self.decimal_round(self.RxAxisEdit.text().strip(), accuracy='0.01')
-        ry_pose = self.decimal_round(self.RyAxisEdit.text().strip(), accuracy='0.01')
-        old_rz_pose = self.decimal_round(self.RzAxisEdit.text().strip(), accuracy='0.01')
+        rx_pose = self._decimal_round(self.RxAxisEdit.text().strip(), accuracy='0.001')
+        ry_pose = self._decimal_round(self.RyAxisEdit.text().strip(), accuracy='0.001')
+        old_rz_pose = self._decimal_round(self.RzAxisEdit.text().strip(), accuracy='0.001')
         
-        change_value = self.decimal_round(self.ApStepEdit.text().strip(), accuracy='0.01')  # 步长值
+        change_value = self._decimal_round(self.ApStepEdit.text().strip(), accuracy='0.001')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
         
         
         # 根据按钮加减增减数值
         if action == "add":
             new_rz_pose = old_rz_pose + change_value
-            self.RzAxisEdit.setText(str(new_rz_pose))  # 更新末端工具姿态 Rz
             logger.debug(f"末端工具偏航姿态 Rz: {new_rz_pose} 度")
         else:
             new_rz_pose = old_rz_pose - change_value
-            self.RzAxisEdit.setText(str(new_rz_pose))  # 更新末端工具姿态 Rz
             logger.debug(f"末端工具偏航姿态 Rz: {new_rz_pose} 度")
             
         # 根据增减后的位姿数值，逆解出机械臂关节的角度并发送命令
@@ -1186,7 +1167,7 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def tool_pose_step_modify(self, action="add"):
         """末端工具姿态步长增减函数"""
-        old_pose_step = self.decimal_round(self.ApStepEdit.text().strip(), accuracy='0.01')
+        old_pose_step = self._decimal_round(self.ApStepEdit.text().strip(), accuracy='0.01')
         if action == "add":
             new_pose_step = old_pose_step + Decimal('1')
         elif action == "sub":
@@ -1325,16 +1306,19 @@ class TeachPage(QFrame, teach_page_frame):
         
     def get_arm_ikine(self, x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose) -> list:
         """计算机械臂的逆解"""
-        R_T = SE3([float(x_coordinate), float(y_coordinate), float(z_coordinate)]) * rpy2tr([float(rx_pose), float(ry_pose), float(rz_pose)], unit='deg', order='zyx')
+        # 对坐标的值缩小 3 位
+        x_coordinate, y_coordinate, z_coordinate = map(self._decimal_exp, [x_coordinate, y_coordinate, z_coordinate])
+        logger.debug(f"缩小后的末端工具坐标: {x_coordinate}, {y_coordinate}, {z_coordinate}")
+        logger.debug(f"末端工具姿态: {rx_pose}, {ry_pose}, {rz_pose}")
+        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([float(rx_pose), float(ry_pose), float(rz_pose)], unit='deg', order='zyx')
         sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
         if sol.success:
-            joint_degrees = [self.decimal_round(degrees(d)) for d in sol.q]
+            joint_degrees = [self._decimal_round(degrees(d)) for d in sol.q]
         else:
             joint_degrees = None
         
         return joint_degrees
     
-    @retry(stop_max_attempt_number=3, wait_fixed=1000)
     @logger.catch
     def get_robot_arm_connector(self):
         """获取与机械臂的连接对象"""
@@ -1385,7 +1369,7 @@ class TeachPage(QFrame, teach_page_frame):
     def _get_robot_arm_connect_status(self, status: bool):
         self.robot_arm_is_connected = status
     
-    def decimal_round(self, joints_angle: str, accuracy="0.001") -> Decimal:
+    def _decimal_round(self, joints_angle, accuracy="0.001") -> Decimal:
         """用精确的方式四舍五入"""
         if not isinstance(joints_angle, str):
             joints_angle_str = str(joints_angle)
@@ -1394,6 +1378,12 @@ class TeachPage(QFrame, teach_page_frame):
             
         joints_angle_decimal = Decimal(joints_angle_str).quantize(Decimal(accuracy), rounding = "ROUND_HALF_UP")
         return joints_angle_decimal
+    
+    def _decimal_exp(self, value: Decimal) -> float:
+        """用精确的方式四舍五入, 保留末端坐标和姿态的三位小数"""
+        coordinate_value = value / Decimal('1000')
+        coordinate_value_float = coordinate_value.quantize(Decimal("0.001"), rounding="ROUND_HALF_UP")
+        return float(coordinate_value_float)
     
     def init_input_validator(self):
         """设置输入框的过滤规则"""

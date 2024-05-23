@@ -1682,7 +1682,7 @@ ToolButton:hover {
                   <item>
                    <widget class="LineEdit" name="CoordinateStepEdit">
                     <property name="text">
-                     <string>0.01</string>
+                     <string>10</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
