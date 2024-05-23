@@ -7,7 +7,6 @@ import time
 from decimal import Decimal
 from functools import partial
 from queue import Queue
-from retrying import retry
 from pubsub import pub
 
 import common.settings as settings
@@ -132,24 +131,6 @@ class TeachPage(QFrame, teach_page_frame):
         # 开启角度更新与末端工具位姿的更新线程
         self.back_task_start()
         
-        # 角度初始值
-        self.q1 = 0.0
-        self.q2 = 0.0
-        self.q3 = 0.0
-        self.q4 = 0.0
-        self.q5 = 0.0
-        self.q6 = 0.0
-        
-        # 末端工具坐标初始值
-        self.X = 0.245
-        self.Y = 0.0
-        self.Z = 0.269
-        
-        # 末端工具姿态初始值
-        self.rx = 0.0
-        self.ry = -0.0
-        self.rz = 0.0
-        
         # 设置输入框的过滤器
         self.init_input_validator()
         
@@ -235,12 +216,12 @@ class TeachPage(QFrame, teach_page_frame):
         self.ArmClawCloseButton.clicked.connect(partial(self.tool_control, action=0))
         
         # 末端工具坐标增减回调函数绑定 
-        self.XAxisAddButton.clicked.connect(partial(self.tool_x_operate, action="add"))
-        self.XAxisSubButton.clicked.connect(partial(self.tool_x_operate, action="sub"))
-        self.YAxisAddButton.clicked.connect(partial(self.tool_y_operate, action="add"))
-        self.YAxisSubButton.clicked.connect(partial(self.tool_y_operate, action="sub"))
-        self.ZAxisAddButton.clicked.connect(partial(self.tool_z_operate, action="add"))
-        self.ZAxisSubButton.clicked.connect(partial(self.tool_z_operate, action="sub"))
+        self.XAxisAddButton.clicked.connect(partial(self.end_tool_coordinate_operate, axis='x', action="add"))
+        self.XAxisSubButton.clicked.connect(partial(self.end_tool_coordinate_operate, axis='x', action="sub"))
+        self.YAxisAddButton.clicked.connect(partial(self.end_tool_coordinate_operate, axis='y', action="add"))
+        self.YAxisSubButton.clicked.connect(partial(self.end_tool_coordinate_operate, axis='y', action="sub"))
+        self.ZAxisAddButton.clicked.connect(partial(self.end_tool_coordinate_operate, axis='z', action="add"))
+        self.ZAxisSubButton.clicked.connect(partial(self.end_tool_coordinate_operate, axis='z', action="sub"))
         self.CoordinateAddButton.clicked.connect(partial(self.tool_coordinate_step_modify, action="add"))
         self.CoordinateStepSubButton.clicked.connect(partial(self.tool_coordinate_step_modify, action="sub"))
         
@@ -953,98 +934,33 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @Slot()
-    def tool_x_operate(self, action="add"):
-        """末端工具坐标 x 增减函数"""
+    def end_tool_coordinate_operate(self, axis: str, action: str = "add"):
+        """末端工具坐标增减函数"""
         # 获取末端工具的坐标
-        old_x_coordinate = self.X
-        y_coordinate = self.Y
-        z_coordinate = self.Z
-        
-        # 获取末端工具的姿态
-        rx_pose = self.rx
-        ry_pose = self.ry
-        rz_pose = self.rz
-        
-        change_value = self._decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.001')  # 步长值
-        speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 3)  # 速度值
-        
-        # 根据按钮加减增减数值
-        if action == "add":
-            new_x_coordinate = old_x_coordinate + change_value
-        else:
-            new_x_coordinate = old_x_coordinate - change_value
-        
-        logger.debug(f"末端工具坐标 X: {new_x_coordinate}")
-        
-        # 通过逆解算出机械臂各个关节角度值
-        arm_ikine_solves = self.get_arm_ikine(new_x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose)
-        self.construct_and_send_command(arm_ikine_solves, speed_percentage)
-        
-        #  录制操作激活时
-        if self.RecordActivateSwitchButton.isChecked():
-            self.add_item()
+        coordinates = {'x': self.X, 'y': self.Y, 'z': self.Z}
+        old_coordinate = coordinates[axis.lower()]
 
-    @check_robot_arm_connection
-    @Slot()
-    def tool_y_operate(self, action="add"):
-        """末端工具坐标 y 增减函数"""
-        x_coordinate = self.X
-        old_y_coordinate = self.Y
-        z_coordinate = self.Z
-        
         # 获取末端工具的姿态
         rx_pose = self.rx
         ry_pose = self.ry
         rz_pose = self.rz
-        
+
         change_value = self._decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.001')  # 步长值
         speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
-        
-        # 根据按钮加减增减数值
-        if action == "add":
-            new_y_coordinate = old_y_coordinate + change_value
-        else:
-            new_y_coordinate = old_y_coordinate - change_value
-        
-        logger.debug(f"末端工具坐标 Y: {new_y_coordinate}")
-        
-        # 通过逆解算出机械臂各个关节角度值
-        arm_ikine_solves = self.get_arm_ikine(x_coordinate, new_y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose)
-        self.construct_and_send_command(arm_ikine_solves, speed_percentage)
-        
-        #  录制操作激活时
-        if self.RecordActivateSwitchButton.isChecked():
-            self.add_item()
 
-    @check_robot_arm_connection
-    @Slot()
-    def tool_z_operate(self, action="add"):
-        """末端工具坐标 z 增减函数"""
-        # 获取末端工具的坐标
-        x_coordinate = self.X
-        y_coordinate = self.Y
-        old_z_coordinate = self.Z
-        
-        # 获取末端工具的姿态
-        rx_pose = self.rx
-        ry_pose = self.ry
-        rz_pose = self.rz
-        
-        change_value = self._decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.001')  # 步长值
-        speed_percentage = round(int(self.JointSpeedEdit.text().strip()), 2)  # 速度值
-        
         # 根据按钮加减增减数值
         if action == "add":
-            new_z_coordinate = old_z_coordinate + change_value
+            new_coordinate = old_coordinate + change_value
         else:
-            new_z_coordinate = old_z_coordinate - change_value
-        
-        logger.debug(f"末端工具坐标 Z: {new_z_coordinate}")
-        
+            new_coordinate = old_coordinate - change_value
+
+        logger.debug(f"末端工具, 目标坐标 {axis.upper()}: {new_coordinate}")
+
         # 通过逆解算出机械臂各个关节角度值
-        arm_ikine_solves = self.get_arm_ikine(x_coordinate, y_coordinate, new_z_coordinate, rx_pose, ry_pose, rz_pose)
+        coordinates[axis] = new_coordinate
+        arm_ikine_solves = self.get_arm_ikine(coordinates['x'], coordinates['y'], coordinates['z'], rx_pose, ry_pose, rz_pose)
         self.construct_and_send_command(arm_ikine_solves, speed_percentage)
-        
+
         #  录制操作激活时
         if self.RecordActivateSwitchButton.isChecked():
             self.add_item()

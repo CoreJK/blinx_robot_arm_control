@@ -1339,7 +1339,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(125, 214, 249);\n"
 "}", None))
-        self.CoordinateStepEdit.setText(QCoreApplication.translate("Frame", u"10", None))
+        self.CoordinateStepEdit.setText(QCoreApplication.translate("Frame", u"10.000", None))
         self.CoordinateAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(125, 214, 249);\n"
 "}\n"

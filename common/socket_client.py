@@ -37,7 +37,6 @@ class ClientSocket:
     
     def new_connect(self):
         try:
-            logger.warning(f"尝试连接机械臂: {self.host}:{self.port}...")
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # 设置保活心跳包
             self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, True)

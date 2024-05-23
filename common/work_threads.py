@@ -6,7 +6,6 @@ import time
 
 import numpy as np
 from loguru import logger
-from retrying import retry
 from pubsub import pub
 from PySide6.QtCore import QRunnable, Signal, QObject
 
