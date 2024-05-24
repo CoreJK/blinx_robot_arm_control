@@ -543,8 +543,36 @@ class TeachPage(QFrame, teach_page_frame):
         """循环执行动作"""
         if self.ActionLoopTimes.text().isdigit():
             loop_times = int(self.ActionLoopTimes.text().strip())
-            loop_work_thread = Worker(self.arm_action_loop_thread, loop_times)
-            self.thread_pool.start(loop_work_thread)
+            # 顺序模式下，最多执行 400 条动作
+            action_count = self.ActionTableWidget.rowCount()
+            total_action_count = loop_times * action_count
+            if self.command_model == "SEQ":
+                if total_action_count <= 400:
+                    loop_work_thread = Worker(self.arm_action_loop_thread, loop_times)
+                    self.thread_pool.start(loop_work_thread)
+                else:
+                    InfoBar.warning(
+                        title="警告",
+                        content=f"顺序模式下，最多执行 400 条动作\n当前 {total_action_count} 条，请减少循环次数!",
+                        isClosable=True,
+                        orient=Qt.Horizontal,
+                        duration=3000,
+                        position=InfoBarPosition.TOP_LEFT,
+                        parent=self
+                    )
+            elif self.command_model == "INT":
+                loop_work_thread = Worker(self.arm_action_loop_thread, loop_times)
+                self.thread_pool.start(loop_work_thread)
+            else:
+                InfoBar.error(
+                        title="警告",
+                        content="未知的命令模式!",
+                        isClosable=True,
+                        orient=Qt.Horizontal,
+                        duration=3000,
+                        position=InfoBarPosition.TOP_LEFT,
+                        parent=self
+                    )
         else:
             self.message_box.warning_message_box(f"请输入所以动作循环次数[0-9]")
     
