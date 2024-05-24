@@ -1,4 +1,5 @@
 from decimal import Decimal
+import socket
 import simplejson as json
 import shelve
 from queue import Queue
@@ -85,16 +86,21 @@ class AgnleDegreeWatchTask(QRunnable):
                         recv_buffer = self.split_by_symbol(response_str)  # 命令缓冲区
                         recv_joint_angle_datas = list(filter(self.keep_joint_datas_str, recv_buffer))  # 保留关节角度值
                         for recv in recv_joint_angle_datas:
-                            joints_angle = json.loads(recv)
+                            
+                            try:
+                                joints_angle = json.loads(recv)
+                            except json.JSONDecodeError as e:
+                                logger.exception(f"解析命令处理异常: {e}")
+                                logger.error(rf"异常命令: {recv}")
+                                
                             joints_angle_list = joints_angle['data']
                             self.joints_angle_queue.put(joints_angle_list)
                     else:
                         logger.warning(f"数据不完整: {response_str}")
-                        
-                except Exception as e:
-                    logger.exception(f"解析命令处理异常: {e}")
-                    logger.error(rf"异常命令: {recv}")
-
+                except socket.timeout:
+                    self.is_on = False        
+                    logger.error("机械臂连接超时！")
+                
     def split_by_symbol(self, response_str: str, split_symbol='\r\n') -> list:
         """根据指定的分隔符拆分字符串, 并清理空字符串"""
         recv_buffer = list(filter(lambda s: s and s.strip(), response_str.split(split_symbol)))

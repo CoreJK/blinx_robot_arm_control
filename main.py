@@ -1513,12 +1513,12 @@ class ConnectPage(QFrame, connect_page_frame):
             # 清空队列
             self.command_queue.queue.clear()
             # 弹出错误提示框
-            logger.exception(f"机械臂连接失败: {e}")
+            logger.error(f"机械臂连接失败: {e}")
             InfoBar.error(
                 title='连接失败',
                 content="机械臂连接失败 !",
                 orient=Qt.Horizontal,
-                isClosable=False,
+                isClosable=True,
                 duration=3000,
                 parent=self
             )
