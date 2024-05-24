@@ -25,6 +25,7 @@ platformdirs==4.2.0
 pre-commit==3.5.0
 progress==1.6
 pyparsing==3.1.2
+Pypubsub==4.0.3
 pyserial==3.5
 PySide6==6.6.3.1
 PySide6-Fluent-Widgets==1.5.4
@@ -39,6 +40,7 @@ roboticstoolbox-python==1.1.0
 rtb-data==1.0.1
 scipy==1.10.1
 shiboken6==6.6.3.1
+simplejson==3.19.2
 six==1.16.0
 spatialgeometry==1.1.0
 spatialmath-python==1.1.9
