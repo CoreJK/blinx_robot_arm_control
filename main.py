@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import re
 import sys
 import simplejson as json
 import shelve
@@ -27,7 +28,6 @@ from qfluentwidgets import FluentIcon as FIF
 from app.command_page import command_page_frame
 from app.teach_page import teach_page_frame
 from app.connect_page import connect_page_frame
-from componets.message_box import BlinxMessageBox
 
 # 正逆解相关模块
 import numpy as np
@@ -37,7 +37,7 @@ from spatialmath.base import rpy2tr
 
 # 日志模块
 from loguru import logger
-logger.add(settings.LOG_FILE_PATH, level="DEBUG", rotation="1 MB", retention="7 days")
+logger.add(settings.LOG_FILE_PATH, level="DEBUG", rotation="50 MB", retention="7 days", compression="zip")
 
 # 三方通讯模块
 from serial.tools import list_ports
@@ -55,7 +55,6 @@ class CommandPage(QFrame, command_page_frame):
         self.initButtonIcon()
         self.robot_arm_is_connected = False
         self.initGetRobotArmStatusTask()
-        self.message_box = BlinxMessageBox(self)
         self.CommandSendButton.clicked.connect(self.send_json_command)
         
     def initButtonIcon(self):
@@ -74,15 +73,53 @@ class CommandPage(QFrame, command_page_frame):
     @Slot()
     def send_json_command(self):
         """json数据发送按钮"""
-        json_data = self.CommandEditWindow.toPlainText() + '\r\n'
-        self.CommandSendWindow.appendPlainText(json_data.strip())
-
-        # 发送机械臂命令
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rac:
-            rac.send(json_data.encode('utf-8'))
-            rs_data = json.loads(rac.recv(1024).decode('utf-8').strip())
-            self.CommandResWindow.appendPlainText(json.dumps(rs_data, use_decimal=True))  # 命令响应填入到响应窗口
+        try:
+            command_wait_for_send = self.CommandEditWindow.toPlainText().strip()
+            
+            try:
+                json.loads(command_wait_for_send)
+            except json.JSONDecodeError:
+                raise ValueError("输入的内容不是有效的 JSON 字符串!")
+            
+            if command_wait_for_send:
+                json_data = command_wait_for_send + '\r\n'
+                self.CommandSendWindow.appendPlainText(json_data.strip())
+            else:
+                raise ValueError("发送的数据为空!")
+            
+        except ValueError as e:
+            logger.error(f"命令发送异常: {str(e)}")
+            InfoBar.error(
+                title='错误',
+                content=f"{str(e)}",
+                orient=Qt.Horizontal,
+                isClosable=True,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
+            self.CommandResWindow.appendPlainText(f"error: {str(e)}")
+        else:
+            # 发送机械臂命令
+            robot_arm_client = self.get_robot_arm_connector()
+            with robot_arm_client as rac:
+                rac.send(json_data.encode('utf-8'))
+                try:
+                    rs_data = json.loads(rac.recv(1024).decode('utf-8').strip())
+                except json.JSONDecodeError:
+                    logger.error("接收到的数据不是有效的 JSON 字符串!")
+                    InfoBar.error(
+                        title='错误',
+                        content="接收到的数据不是有效的 JSON 字符串!",
+                        orient=Qt.Horizontal,
+                        isClosable=True,
+                        duration=3000,
+                        position=InfoBarPosition.TOP,
+                        parent=self
+                    )
+                    self.CommandResWindow.appendPlainText("error: 接收到的数据不是有效的 JSON 字符串!")
+                else:
+                    self.CommandResWindow.appendPlainText(json.dumps(rs_data, use_decimal=True))  # 命令响应填入到响应窗口
     
     def get_robot_arm_connect_status(self):
         """获取机械臂连接状态"""
@@ -99,11 +136,32 @@ class CommandPage(QFrame, command_page_frame):
             socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
             host = socket_info['target_ip']
             port = int(socket_info['target_port'])
-            robot_arm_client = ClientSocket(host, port)
-            socket_info.close()
+            if host and port:
+                robot_arm_client = ClientSocket(host, port)
+            else:
+                logger.error("IP 和 Port 信息为空!")
+                InfoBar.warning(
+                    title='警告',
+                    content="IP 和 Port 信息为空，请前往【连接配置】页面填写 !",
+                    orient=Qt.Horizontal,
+                    isClosable=True,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
         except Exception as e:
-            logger.exception(str(e))
-            self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
+            logger.error(str(e))
+            InfoBar.error(
+                title='错误',
+                content="没有读取到 ip 和 port 信息，请前往机械臂配置 !",
+                orient=Qt.Horizontal,
+                isClosable=True,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
+        finally:
+            socket_info.close()
         return robot_arm_client
     
 
@@ -126,7 +184,6 @@ class TeachPage(QFrame, teach_page_frame):
         self.command_queue = command_queue  # 控制命令队列
         self.joints_angle_queue = joints_angle_queue  # 查询到的机械臂关节角度队列
         self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH, param_type='MDH')
-        self.message_box = BlinxMessageBox(self)
         
         # 开启角度更新与末端工具位姿的更新线程
         self.back_task_start()
@@ -313,8 +370,16 @@ class TeachPage(QFrame, teach_page_frame):
             else:
                 logger.warning("取消导入动作文件!")
         except Exception as e:
-            logger.exception(f"导入动作文件失败: {e}")
-            self.message_box.error_message_box(message="导入动作文件失败!")
+            logger.error(f"导入动作文件失败: {e}")
+            InfoBar.error(
+                title="错误",
+                content="⬇️ 导入动作文件失败!",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP_LEFT,
+                parent=self
+            )
     
     @check_robot_arm_connection
     @Slot()                    
@@ -362,7 +427,7 @@ class TeachPage(QFrame, teach_page_frame):
                     "延时": arm_action_delay_time,
                     "备注": note
                 })
-
+    
             with open(file_name, "w", encoding="utf-8") as json_file:
                 json.dump(data, json_file, indent=4, ensure_ascii=False)
                 logger.info("导出配置文件成功!")
@@ -386,7 +451,12 @@ class TeachPage(QFrame, teach_page_frame):
         for robot_action_row in range(self.ActionTableWidget.rowCount()):
             if self.table_action_thread_flag:
                 pub.subscribe(self._check_tale_action_thread_flag, 'tale_action_thread_flag')
-                logger.warning(f"机械臂正在执行第 {robot_action_row + 1} 个动作")
+                if self.command_model == "SEQ":
+                    logger.warning(f"【顺序模式】机械臂正在发送第 {robot_action_row + 1} 个动作")
+                    self.TeachArmRunLogWindow.appendPlainText(f"【顺序模式】正在发送第 【{robot_action_row + 1}】 个动作")
+                else:
+                    logger.warning(f"【实时模式】机械臂正在执行第 {robot_action_row + 1} 个动作")
+                    self.TeachArmRunLogWindow.appendPlainText(f"【实时模式】正在执行第 【{robot_action_row + 1}】 个动作")
                 
                 # 更新任务执行的进度条
                 self.ProgressBar.setVal(100 * (robot_action_row + 1) / action_count)
@@ -408,6 +478,7 @@ class TeachPage(QFrame, teach_page_frame):
                     json_command = {"command":"set_end_tool", "data": [1, tool_status]}
                     str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
                     self.command_queue.put(str_command.encode())
+                    self.TeachArmRunLogWindow.appendPlainText(f'吸盘状态: {"开" if tool_status == 1 else "关"}')
                 
                 # SEQ 顺序模式下，发送延时命令，INT 模式不发送延时命令
                 if self.command_model == 'SEQ' and delay_time != 0:
@@ -416,8 +487,17 @@ class TeachPage(QFrame, teach_page_frame):
                         json_command = {"command": "set_time_delay", "data": [set_delay_time]}
                         str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
                         self.command_queue.put(str_command.encode())
+                        self.TeachArmRunLogWindow.appendPlainText(f"等待 【{delay_time}】 秒后执行下一个动作...")
                     else:
-                        self.message_box.warning_message_box("延时时间太长，系统动作无法执行!")
+                        InfoBar.warning(
+                            title="警告",
+                            content="延时时间太长，系统动作无法执行!",
+                            isClosable=True,
+                            orient=Qt.Horizontal,
+                            duration=3000,
+                            position=InfoBarPosition.TOP_LEFT,
+                            parent=self
+                        )
                         break
                 
                 # 根据动作是否到位，以及线程是否工作判断是否执行
@@ -523,7 +603,15 @@ class TeachPage(QFrame, teach_page_frame):
             run_action_step_thread = Worker(self.robot_arm_step_action_thread, selected_row)
             self.thread_pool.start(run_action_step_thread)
         else:
-            self.message_box.warning_message_box("请选择需要执行的动作!")
+            InfoBar.warning(
+                title="警告",
+                content="请选择需要执行的动作!",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP_LEFT,
+                parent=self
+            )
 
     def arm_action_loop_thread(self, loop_times):
         """机械臂循环执行指定次数的示教动作线程"""
@@ -574,7 +662,15 @@ class TeachPage(QFrame, teach_page_frame):
                         parent=self
                     )
         else:
-            self.message_box.warning_message_box(f"请输入所以动作循环次数[0-9]")
+            InfoBar.warning(
+                title="警告",
+                content="请输入动作循环次数[0-99]",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP_RIGHT,
+                parent=self
+            )
     
     @Slot()
     def show_context_menu(self, pos):
@@ -661,7 +757,14 @@ class TeachPage(QFrame, teach_page_frame):
                     elif col == 9:
                         self.update_table_cell(row.row(), col, self.JointDelayTimeEdit.text())
         else:
-            self.message_box.warning_message_box(message="请选择需要更新的行! \n点击表格左侧行号即可选中行")
+            InfoBar.warning(
+                title="警告",
+                content="请选择需要更新的行! \n点击表格左侧行号即可选中行",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                parent=self
+            )
     
     @check_robot_arm_connection
     @Slot()
@@ -698,7 +801,14 @@ class TeachPage(QFrame, teach_page_frame):
                     elif column_number == 9:
                         self.update_table_cell(row, column_number, self.JointDelayTimeEdit.text())
         else:
-            self.message_box.warning_message_box(message="请选择需要更新的列! \n点击表格上方列名即可选中列")
+            InfoBar.warning(
+                title="警告",
+                content="请选择需要更新的列! \n点击表格上方列名即可选中列",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                parent=self
+            )
     
     # 表格的右键菜单功能
     @Slot()
@@ -779,7 +889,15 @@ class TeachPage(QFrame, teach_page_frame):
             elif sellected_col == 9:
                 self.update_table_cell(selected_row, sellected_col, self.JointDelayTimeEdit.text())
         else:
-            self.message_box.warning_message_box(message="请选择需要更新的单元格! \n点击表格即可选中单元格")
+            InfoBar.warning(
+                title="警告",
+                content="请选择需要更新的单元格! \n点击表格即可选中单元格",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP_LEFT,
+                parent=self
+            )
     
     @Slot()
     def insert_row(self):
@@ -823,77 +941,187 @@ class TeachPage(QFrame, teach_page_frame):
     def modify_joint_angle(self, joint_number, min_degrade, max_degrade, increase=True):
         """机械臂关节角度增减操作"""
         old_degrade = getattr(self, f'q{joint_number}')  # 获取当前对象的属性
-        step_degrade = Decimal(self.JointStepEdit.text().strip())
-        speed_percentage = Decimal(self.JointSpeedEdit.text().strip())
-
-        if increase:
-            degrade = old_degrade + step_degrade
-        else:
-            degrade = old_degrade - step_degrade
-
-        if degrade < min_degrade or degrade > max_degrade:
-            self.message_box.error_message_box(message=f"关节角度超出范围: {min_degrade} ~ {max_degrade}")
-        else:
-            # 使用线性回归方程限制关节角度
-            degrade = np.clip(degrade, min_degrade, max_degrade)
-
-            # 构造发送命令
-            command = json.dumps(
-                {"command": "set_joint_angle", "data": [joint_number, speed_percentage, degrade]}, use_decimal=True) + '\r\n'
-            self.command_queue.put(command.encode())
-            logger.debug(f"机械臂关节 {joint_number} 转动 {degrade} 度")
+        joint_step = self.JointStepEdit.text()
+        joint_speed = self.JointSpeedEdit.text()
+        try:
+            if joint_step:
+                step_degrade = Decimal(joint_step)
+            else:
+                InfoBar.error(
+                    title="错误",
+                    content="机械臂关节【步长】值无效！",
+                    isClosable=True,
+                    orient=Qt.Horizontal,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
+                self.JointStepEdit.setText("5")
+                raise ValueError("机械臂关节【步长】值无效！")
+                
+            if joint_speed:
+                speed_percentage = Decimal(self.JointSpeedEdit.text())
+                if not (0 < speed_percentage <= 100):
+                    InfoBar.error(
+                        title="错误",
+                        content="机械臂关节【速度】值超过限制范围: 0 ~ 100",
+                        isClosable=True,
+                        orient=Qt.Horizontal,
+                        duration=3000,
+                        position=InfoBarPosition.TOP,
+                        parent=self
+                    )
+                    self.JointSpeedEdit.setText("50")
+                    raise ValueError("机械臂关节【速度】值超过限制范围: 0 ~ 100")
+            else:
+                InfoBar.error(
+                    title="错误",
+                    content="机械臂关节【速度】值无效！",
+                    isClosable=True,
+                    orient=Qt.Horizontal,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
+                raise ValueError("机械臂关节【速度】值无效！")
             
-            #  录制操作激活时
-            if self.RecordActivateSwitchButton.isChecked():
-                self.add_item()
+        except ValueError as e:
+            logger.error(f"机械臂无法运动: {e}")
+        
+        else:
+            if increase:
+                degrade = old_degrade + step_degrade
+            else:
+                degrade = old_degrade - step_degrade
+
+            if degrade < min_degrade or degrade > max_degrade:
+                InfoBar.error(
+                    title="错误",
+                    content=f"第 {joint_number} 关节角度超出范围: {min_degrade} ~ {max_degrade}",
+                    isClosable=True,
+                    orient=Qt.Horizontal,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
+                self.JointStepEdit.setText("5")
+                logger.error(f"第 {joint_number} 关节角度超出范围: {min_degrade} ~ {max_degrade}")
+            else:
+                # 使用线性回归方程限制关节角度
+                degrade = np.clip(degrade, min_degrade, max_degrade)
+
+                # 构造发送命令
+                command = json.dumps(
+                    {"command": "set_joint_angle", "data": [joint_number, speed_percentage, degrade]}, use_decimal=True) + '\r\n'
+                self.command_queue.put(command.encode())
+                logger.debug(f"机械臂关节 {joint_number} 转动 {degrade} 度")
+                
+                #  录制操作激活时
+                if self.RecordActivateSwitchButton.isChecked():
+                    self.add_item()
     
     @check_robot_arm_connection
     @Slot()
     def modify_joint_angle_step(self, increase=True):
         """修改机械臂关节步长"""
-        old_degrade = int(self.JointStepEdit.text().strip())
-        degrade = old_degrade + 5 if increase else old_degrade - 5
-        self.JointStepEdit.setText(str(degrade))
-        logger.debug(f"机械臂步长修改为: {degrade}")
+        old_degrade = self.JointStepEdit.text()
+        if old_degrade:
+                new_degrade = int(old_degrade) + 5 if increase else int(old_degrade) - 5
+                if 0 < int(old_degrade) <= 360:
+                    self.JointStepEdit.setText(str(new_degrade))
+                    logger.debug(f"机械臂步长修改为: {new_degrade}")
+                else:
+                    self.JointStepEdit.setText(str(0))
+                    InfoBar.warning(
+                        title="警告",
+                        content="机械臂关节的步长(角度)范围: 0 ~ 360",
+                        isClosable=True,
+                        orient=Qt.Horizontal,
+                        duration=3000,
+                        position=InfoBarPosition.TOP,
+                        parent=self
+                    )
+        else:
+            InfoBar.error(
+                title="错误",
+                content="请输入有效的，机械臂关节步长值！",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
 
     @check_robot_arm_connection
     @Slot()
     def modify_joint_speed_percentage(self, increase=True):
         """修改关节运动速度百分比"""
         speed_percentage_edit = self.JointSpeedEdit.text()
-        if speed_percentage_edit is not None and speed_percentage_edit.isdigit():
-            old_speed_percentage = int(speed_percentage_edit.strip())
+        if speed_percentage_edit:
+            old_speed_percentage = int(speed_percentage_edit)
             new_speed_percentage = old_speed_percentage + 5 if increase else old_speed_percentage - 5
             if 0 <= new_speed_percentage <= 100:
                 self.JointSpeedEdit.setText(str(new_speed_percentage))
                 logger.debug(f"机械臂速度修改为: {new_speed_percentage}")
             else:
-                self.message_box.warning_message_box(message=f"关节速度范围 0 ~ 100")
+                self.JointSpeedEdit.setText(str(50))
+                InfoBar.warning(
+                    title="警告",
+                    content=f"机械臂关节的速度范围: 0 ~ 100",
+                    isClosable=True,
+                    orient=Qt.Horizontal,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
         else:
-            self.message_box.error_message_box(message="请输入整数字符!")
+            InfoBar.error(
+                title="错误",
+                content="请输入有效的，机械臂关节速度值！",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
 
     @check_robot_arm_connection
     @Slot()
     def modify_joint_delay_time(self, increase=True):
         """修改机械臂延时时间"""
         delay_time_edit = self.JointDelayTimeEdit.text()
-        if delay_time_edit is not None and delay_time_edit.isdigit():
+        if delay_time_edit:
             old_delay_time = int(delay_time_edit.strip())
             new_delay_time = old_delay_time + 1 if increase else old_delay_time - 1
-            if 0 <= new_delay_time <= 100:
+            if 0 <= new_delay_time <= 30:
                 self.JointDelayTimeEdit.setText(str(new_delay_time))
                 logger.debug(f"机械臂延时时间修改为: {new_delay_time}s")
             else:
-                self.message_box.warning_message_box(message=f"延时时间必须在 0-100s 之间")
+                self.JointDelayTimeEdit.setText(str(0))
+                InfoBar.warning(
+                    title="警告",
+                    content=f"机械臂动作，延时时间范围: 0 ~ 30s ",
+                    isClosable=True,
+                    orient=Qt.Horizontal,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
         else:
-            self.message_box.error_message_box(message="请输入整数字符!")
-    
+            InfoBar.error(
+                title="错误",
+                content="请输入有效的，机械臂延时时间！",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
+            
     @check_robot_arm_connection
     @Slot()
     def robot_arm_initialize(self):
-        """机械臂复位
-        :param mode:
-        """
+        """机械臂初始化"""
         command = json.dumps({"command": "set_joint_initialize", "data": [0]}).replace('', "") + '\r\n'
         self.command_queue.put(command.encode())
         self.JointDelayTimeEdit.setText("0")  # 复位时延时时间设置为 0
@@ -901,7 +1129,7 @@ class TeachPage(QFrame, teach_page_frame):
         
         InfoBar.warning(
             title="⚠️警告",
-            content="🦾机械臂复位中! \n🦾请注意手臂姿态",
+            content="🦾机械臂初始化中! \n🦾请注意手臂姿态",
             isClosable=False,
             orient=Qt.Horizontal,
             duration=3000,
@@ -909,7 +1137,7 @@ class TeachPage(QFrame, teach_page_frame):
             parent=self    
         )
         
-        logger.warning("机械臂复位中!请注意手臂姿态")
+        logger.warning("机械臂初始化中!请注意手臂姿态")
     
     @check_robot_arm_connection
     @Slot()
@@ -918,7 +1146,15 @@ class TeachPage(QFrame, teach_page_frame):
         command = json.dumps({"command": "set_joint_angle_all", "data": [100, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}).replace(' ', "") + '\r\n'
         self.command_queue.put(command.encode())
         self.JointDelayTimeEdit.setText("0")  # 归零时延时时间设置为 0
-        self.message_box.warning_message_box("机械臂回到初始角度中!\n请注意手臂姿态")
+        InfoBar.warning(
+            title="⚠️警告",
+            content="🦾机械臂回到初始位姿中! \n🦾请注意手臂姿态",
+            orient=Qt.Horizontal,
+            duration=3000,
+            isClosable=False,
+            position=InfoBarPosition.TOP,
+            parent=self
+        )
         logger.warning("机械臂回到初始位姿中!")
     
     @check_robot_arm_connection
@@ -935,7 +1171,7 @@ class TeachPage(QFrame, teach_page_frame):
         pub.sendMessage('tale_action_thread_flag', flag=False)  # 示教线程标志位设置为 False
         InfoBar.warning(
             title="警告",
-            content="机械臂急停! \n请排除完问题后, 点击两次: 初始化 按钮",
+            content="机械臂急停! \n请排除完问题后, 点击两次:【初始化】按钮",
             isClosable=False,
             orient=Qt.Horizontal,
             duration=3000,
@@ -958,7 +1194,15 @@ class TeachPage(QFrame, teach_page_frame):
                 
             self.command_queue.put(command.encode())
         else:
-            self.message_box.warning_message_box("末端工具未选择吸盘!")
+            InfoBar.warning(
+                title="警告",
+                content="末端工具未选择吸盘!",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
     
     @check_robot_arm_connection
     @Slot()
@@ -997,14 +1241,26 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def tool_coordinate_step_modify(self, action="add"):
         """末端工具坐标步长增减函数"""
-        old_coordinate_step = self._decimal_round(self.CoordinateStepEdit.text().strip(), accuracy='0.001')
-        if action == "add":
-            new_coordinate_step = old_coordinate_step + Decimal('1')
-        else:
-            new_coordinate_step = old_coordinate_step - Decimal('1')
+        coordinate_step = self.CoordinateStepEdit.text()
+        if coordinate_step:
+            old_coordinate_step = self._decimal_round(coordinate_step, accuracy='0.001')
+            if action == "add":
+                new_coordinate_step = old_coordinate_step + Decimal('1')
+            else:
+                new_coordinate_step = old_coordinate_step - Decimal('1')
             
-        logger.debug(f"末端工具坐标步长设置为: {new_coordinate_step}")
-        self.CoordinateStepEdit.setText(str(new_coordinate_step))
+            logger.debug(f"末端工具坐标步长设置为: {new_coordinate_step}")
+            self.CoordinateStepEdit.setText(str(new_coordinate_step))
+        else:
+            InfoBar.error(
+                title="错误",
+                content="请输入有效的，末端工具坐标步长值！",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
     
     @check_robot_arm_connection
     @Slot()
@@ -1111,15 +1367,27 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def tool_pose_step_modify(self, action="add"):
         """末端工具姿态步长增减函数"""
-        old_pose_step = self._decimal_round(self.ApStepEdit.text().strip(), accuracy='0.01')
-        if action == "add":
-            new_pose_step = old_pose_step + Decimal('1')
-        elif action == "sub":
-            new_pose_step = old_pose_step - Decimal('1')
+        pose_step = self.ApStepEdit.text()
+        if pose_step:
+            old_pose_step = self._decimal_round(pose_step, accuracy='0.01')
+            if action == "add":
+                new_pose_step = old_pose_step + Decimal('1')
+            elif action == "sub":
+                new_pose_step = old_pose_step - Decimal('1')
+            else:
+                raise ValueError("action 参数只能为 add 或 sub")
+            logger.debug(f"末端工具姿态步长设置为: {new_pose_step}")
+            self.ApStepEdit.setText(str(new_pose_step))
         else:
-            raise ValueError("action 参数只能为 add 或 sub")
-        logger.debug(f"末端工具姿态步长设置为: {new_pose_step}")
-        self.ApStepEdit.setText(str(new_pose_step))
+            InfoBar.error(
+                title="错误",
+                content="请输入有效的，末端工具姿态步长值！",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
     
     # 一些 qt 界面的常用的抽象操作
     def update_table_cell_widget(self, row, col, widget):
@@ -1246,7 +1514,15 @@ class TeachPage(QFrame, teach_page_frame):
             self.command_queue.put(command.encode())
         else:
             logger.warning("关节运动范围超出超限!")
-            self.message_box.error_message_box("关节运动范围超限!")
+            InfoBar.warning(
+                title="警告",
+                content="关节运动范围超限!",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
         
     def get_arm_ikine(self, x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose) -> list:
         """计算机械臂的逆解"""
@@ -1270,11 +1546,32 @@ class TeachPage(QFrame, teach_page_frame):
             socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
             host = socket_info['target_ip']
             port = int(socket_info['target_port'])
-            robot_arm_client = ClientSocket(host, port)
-            socket_info.close()
+            if host and port:
+                robot_arm_client = ClientSocket(host, port)
+            else:
+                logger.error("IP 和 Port 信息为空!")
+                InfoBar.warning(
+                    title='警告',
+                    content="IP 和 Port 信息为空，请前往【连接配置】页面填写 !",
+                    orient=Qt.Horizontal,
+                    isClosable=True,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
         except Exception as e:
             logger.exception(str(e))
-            self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
+            InfoBar.error(
+                title='错误',
+                content="没有读取到 ip 和 port 信息 !",
+                orient=Qt.Horizontal,
+                isClosable=True,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
+        finally:
+            socket_info.close()
         return robot_arm_client
     
     def get_current_cmd_model(self):
@@ -1304,7 +1601,15 @@ class TeachPage(QFrame, teach_page_frame):
                     
                 except Exception as e:
                     logger.exception(str(e))
-                    self.message_box.error_message_box("获取机械臂命令模式失败!")
+                    InfoBar.error(
+                        title="错误",
+                        content="获取机械臂命令模式失败!",
+                        isClosable=True,
+                        orient=Qt.Horizontal,
+                        duration=3000,
+                        position=InfoBarPosition.TOP,
+                        parent=self
+                    )
                 
     def get_robot_arm_connect_status_timer(self):
         """获取机械臂连接状态的定时器"""
@@ -1383,7 +1688,6 @@ class ConnectPage(QFrame, connect_page_frame):
         # 机械臂的连接状态
         self.robot_arm_is_connected = False
         
-        self.message_box = BlinxMessageBox(self)
         self.robot_arm_connecting_tip = None
         self.IpPortInfoSubmitButton.clicked.connect(self.submit_ip_port_info)
         self.IpPortInfoRestButton.clicked.connect(self.reset_ip_port_info)
@@ -1446,6 +1750,18 @@ class ConnectPage(QFrame, connect_page_frame):
             self.TargetIpEdit.setText("")
             self.TargetPortEdit.setText("")
     
+    @classmethod
+    def is_valid_ip(cls, ip):
+        """校验 IP 地址是否合法"""
+        m = re.match(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", str(ip).strip())
+        return bool(m) and all(map(lambda n: 0 <= int(n) <= 255, m.groups()))
+    
+    @classmethod
+    def is_valid_port(cls, port):
+        """校验端口号是否合法"""
+        return 0 <= int(port) <= 65535
+    
+    
     @Slot()
     def submit_ip_port_info(self):
         """配置机械臂的通讯IP和端口"""
@@ -1453,20 +1769,50 @@ class ConnectPage(QFrame, connect_page_frame):
         port = self.TargetPortEdit.text().strip()
         
         # 保存 IP 和 Port 信息
-        if all([ip, port]):
+        if all([self.is_valid_ip(ip), self.is_valid_port(port)]):
             socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
             socket_info["target_ip"] = ip
             socket_info["target_port"] = int(port)
-            self.message_box.success_message_box(message="配置添加成功!")
+            InfoBar.success(
+                title='成功',
+                content="IP 和 Port 配置添加成功!",
+                orient=Qt.Horizontal,
+                isClosable=True,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
             socket_info.close()
         else:
-            self.message_box.warning_message_box(message="IP 或 Port 号为空，请重新填写!")
+            InfoBar.error(
+                title='错误',
+                content="IP 或 Port 不符合 IPV4 标准，请重新填写!",
+                orient=Qt.Horizontal,
+                isClosable=True,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
     
     @Slot()
     def reset_ip_port_info(self):
         """重置 IP 和 Port 输入框内容"""
         self.TargetIpEdit.clear()
         self.TargetPortEdit.clear()
+        
+        socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
+        socket_info.clear()
+        socket_info.close()
+        
+        InfoBar.success(
+            title='成功',
+            content="IP 和 Port 配置已重置! 请重新填写!",
+            orient=Qt.Horizontal,
+            isClosable=True,
+            duration=3000,
+            position=InfoBarPosition.TOP,
+            parent=self
+        )
     
     # 机械臂 WiFi AP 模式配置回调函数
     def reload_ap_passwd_history(self):
@@ -1496,15 +1842,45 @@ class ConnectPage(QFrame, connect_page_frame):
             wifi_info["SSID"] = ip
             wifi_info["passwd"] = port
             wifi_info.close()
-            self.message_box.success_message_box(message="WiFi 配置添加成功!")
+            
+            InfoBar.success(
+                title='成功',
+                content="🛜 WiFi 配置添加成功!",
+                orient=Qt.Horizontal,
+                isClosable=True,
+                duration=3000,
+                position=InfoBarPosition.TOP_RIGHT,
+                parent=self
+            )
         else:
-            self.message_box.warning_message_box(message="WiFi名称 或密码为空，请重新填写!")
+            InfoBar.warning(
+                title='警告',
+                content="🛜 WiFi名称 或密码为空，请重新填写!",
+                orient=Qt.Horizontal,
+                isClosable=True,
+                duration=3000,
+                position=InfoBarPosition.TOP_RIGHT,
+                parent=self
+            )
     
     @Slot()
     def reset_ap_passwd_info(self):
         """重置 WiFi 名称和 passwd 输入框内容"""
         self.WiFiSsidEdit.clear()
         self.WiFiPasswordLineEdit.clear()
+        wifi_info = shelve.open(str(settings.WIFI_INFO_FILE_PATH))
+        wifi_info.clear()
+        wifi_info.close()
+        
+        InfoBar.success(
+            title='成功',
+            content="WiFi 配置已重置! 请重新填写!",
+            orient=Qt.Horizontal,
+            isClosable=True,
+            duration=3000,
+            position=InfoBarPosition.TOP_RIGHT,
+            parent=self
+        )
 
     # todo: 机械臂串口连接配置回调函数
     @Slot()
@@ -1519,22 +1895,6 @@ class ConnectPage(QFrame, connect_page_frame):
         """连接机械臂"""
         try:
             remote_address = self.get_robot_arm_connect_info()
-                
-            if remote_address:
-                InfoBar.success(
-                    title='连接成功',
-                    content=f"机械臂连接成功 !\nIP: {remote_address[0]}\nPort: {remote_address[1]}",
-                    orient=Qt.Horizontal,
-                    isClosable=True,
-                    position=InfoBarPosition.BOTTOM_RIGHT,
-                    duration=3000,
-                    parent=self
-                )
-                
-                self._update_arm_connect_status(connected=True)
-                self.start_sender_recv_threads()
-    
-
         except Exception as e:
             # 连接失败后，将连接机械臂按钮启用
             self.RobotArmLinkButton.setEnabled(True)
@@ -1550,16 +1910,47 @@ class ConnectPage(QFrame, connect_page_frame):
                 duration=3000,
                 parent=self
             )
+        else:
+            InfoBar.success(
+                title='连接成功',
+                content=f"机械臂连接成功 !\nIP: {remote_address[0]}\nPort: {remote_address[1]}",
+                orient=Qt.Horizontal,
+                isClosable=True,
+                position=InfoBarPosition.TOP_RIGHT,
+                duration=3000,
+                parent=self
+            )
+            
+            self._update_arm_connect_status(connected=True)
+            self.start_sender_recv_threads()
 
     def get_robot_arm_connect_info(self):
         """连接机械臂线程"""
-        self.RobotArmLinkButton.setEnabled(False)
-        # 检查网络连接状态
-        robot_arm_client = self.get_robot_arm_connector()
-        with robot_arm_client as rac:
-            remote_address = rac.getpeername()
-            logger.info("机械臂连接成功!")
-        return remote_address
+        try:
+            socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
+            host = socket_info['target_ip']
+            port = int(socket_info['target_port'])
+        except KeyError:
+            InfoBar.error(
+                title='错误',
+                content="IP 或 Port 信息未填写!",
+                orient=Qt.Horizontal,
+                isClosable=True,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
+            raise KeyError("IP 或 Port 信息未填写!")
+        else:
+            robot_arm_client = ClientSocket(host, port)
+            with robot_arm_client as rac:
+                remote_address = rac.getpeername()
+                logger.info("机械臂连接成功!")
+            return remote_address
+        
+        finally:
+            socket_info.close()
+        
 
     def _update_arm_connect_status(self, connected: bool =True):
         """更新机械臂的连接状态, 以及相关按钮的状态"""
@@ -1625,11 +2016,13 @@ class ConnectPage(QFrame, connect_page_frame):
             socket_info = shelve.open(str(settings.IP_PORT_INFO_FILE_PATH))
             host = socket_info['target_ip']
             port = int(socket_info['target_port'])
-            robot_arm_client = ClientSocket(host, port)
+        except KeyError:
+            raise KeyError("IP 或 Port 信息未填写!")
+        else:
+             robot_arm_client = ClientSocket(host, port)
+        finally:
             socket_info.close()
-        except Exception as e:
-            logger.exception(str(e))
-            self.message_box.error_message_box(message="没有读取到 ip 和 port 信息，请前往机械臂配置 !")
+        
         return robot_arm_client
             
     

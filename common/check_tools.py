@@ -32,3 +32,21 @@ def check_robot_arm_connection(func):
         else:
             return func(self, *args, **kwargs)
     return wrapper
+
+def check_robot_arm_is_working(func):
+    """检查机械臂是否正则执行任务的装饰器"""
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        if not self.table_action_thread_flag:
+            InfoBar.warning(
+                title="警告",
+                content="⚠️机械臂正在执行任务中，请稍后再试！",
+                orient=Qt.Horizontal,
+                position=InfoBarPosition.TOP,
+                isClosable=True,
+                duration=3000,
+                parent=self
+            )
+        else:
+            return func(self, *args, **kwargs)
+    return wrapper

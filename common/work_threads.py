@@ -208,7 +208,7 @@ class CommandReceiverTask(QRunnable):
     def get_joints_move_status(self, recv_buffer: list):
         """获取并发布机械臂运动状态"""
         # 剔除不需要的命令
-        recv_arm_move_status = list(filter(self.exclude_joint_data_str, recv_buffer))
+        recv_arm_move_status = list(filter(self.get_arm_move_state, recv_buffer))
         try:
             for move_status in recv_arm_move_status:
                 json_data = json.loads(move_status)
@@ -218,7 +218,7 @@ class CommandReceiverTask(QRunnable):
             logger.error(f"解析命令处理异常: {e}")
             logger.error(rf"异常命令: {move_status}")
     
-    def exclude_joint_data_str(self, json_str):
+    def get_arm_move_state(self, json_str):
         """获取机械臂运动到位状态"""
         if'move_in_place' in json_str:
             return True
