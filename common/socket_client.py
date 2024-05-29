@@ -37,11 +37,7 @@ class ClientSocket:
     def new_connect(self):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.client_socket.settimeout(3)
-            # 设置保活心跳包
-            self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, True)
-            # 30s 发送一次，若 30s 后没有回应，3s/探测一次 ，十次失败断开连接
-            self.client_socket.ioctl(socket.SIO_KEEPALIVE_VALS, (1, 30*1000, 3*1000))
+            self.client_socket.settimeout(6)
             self.client_socket.connect((self.host, self.port))
         except (socket.timeout, socket.error) as e:
             logger.error(f"机械臂连接失败: {e}")
