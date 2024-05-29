@@ -16,23 +16,24 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QHeaderView,
-    QSizePolicy, QSpacerItem, QStackedWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget)
+    QLayout, QSizePolicy, QSpacerItem, QStackedWidget,
+    QTableWidgetItem, QVBoxLayout, QWidget)
 
 from qfluentwidgets import (CardWidget, ComboBox, HorizontalSeparator, LineEdit,
-    Pivot, PlainTextEdit, ProgressBar, PushButton,
-    SegmentedWidget, StrongBodyLabel, SwitchButton, TableWidget,
-    ToolButton, VerticalSeparator)
+    Pivot, ProgressBar, PushButton, SegmentedWidget,
+    StrongBodyLabel, SwitchButton, TableWidget, ToolButton,
+    VerticalSeparator)
 
 class teach_page_frame(object):
     def setupUi(self, Frame):
         if not Frame.objectName():
             Frame.setObjectName(u"Frame")
-        Frame.resize(1285, 688)
+        Frame.resize(1449, 694)
         self.horizontalLayout_5 = QHBoxLayout(Frame)
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalLayout_4.setSizeConstraint(QLayout.SetMinimumSize)
         self.verticalLayout_10 = QVBoxLayout()
         self.verticalLayout_10.setObjectName(u"verticalLayout_10")
         self.TeachLayout = QVBoxLayout()
@@ -43,7 +44,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer_30)
 
-        self.ActionImportButton = ToolButton(Frame)
+        self.ActionImportButton = PushButton(Frame)
         self.ActionImportButton.setObjectName(u"ActionImportButton")
 
         self.horizontalLayout.addWidget(self.ActionImportButton)
@@ -52,12 +53,12 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer_31)
 
-        self.ActionOutputButton = ToolButton(Frame)
+        self.ActionOutputButton = PushButton(Frame)
         self.ActionOutputButton.setObjectName(u"ActionOutputButton")
 
         self.horizontalLayout.addWidget(self.ActionOutputButton)
 
-        self.horizontalSpacer = QSpacerItem(320, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer = QSpacerItem(200, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
@@ -77,7 +78,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addWidget(self.VerticalSeparator_4)
 
-        self.ActionStepRunButton = ToolButton(Frame)
+        self.ActionStepRunButton = PushButton(Frame)
         self.ActionStepRunButton.setObjectName(u"ActionStepRunButton")
 
         self.horizontalLayout.addWidget(self.ActionStepRunButton)
@@ -86,7 +87,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer_3)
 
-        self.ActionRunButton = ToolButton(Frame)
+        self.ActionRunButton = PushButton(Frame)
         self.ActionRunButton.setObjectName(u"ActionRunButton")
 
         self.horizontalLayout.addWidget(self.ActionRunButton)
@@ -95,7 +96,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer_4)
 
-        self.ActionLoopRunButton = ToolButton(Frame)
+        self.ActionLoopRunButton = PushButton(Frame)
         self.ActionLoopRunButton.setObjectName(u"ActionLoopRunButton")
 
         self.horizontalLayout.addWidget(self.ActionLoopRunButton)
@@ -141,8 +142,19 @@ class teach_page_frame(object):
         __qtablewidgetitem11 = QTableWidgetItem()
         self.ActionTableWidget.setHorizontalHeaderItem(11, __qtablewidgetitem11)
         self.ActionTableWidget.setObjectName(u"ActionTableWidget")
+        self.ActionTableWidget.setShowGrid(False)
 
         self.TeachLayout.addWidget(self.ActionTableWidget)
+
+        self.HorizontalSeparator = HorizontalSeparator(Frame)
+        self.HorizontalSeparator.setObjectName(u"HorizontalSeparator")
+
+        self.TeachLayout.addWidget(self.HorizontalSeparator)
+
+        self.ProgressBar = ProgressBar(Frame)
+        self.ProgressBar.setObjectName(u"ProgressBar")
+
+        self.TeachLayout.addWidget(self.ProgressBar)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
@@ -150,7 +162,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_29)
 
-        self.ActionDeleteButton = ToolButton(Frame)
+        self.ActionDeleteButton = PushButton(Frame)
         self.ActionDeleteButton.setObjectName(u"ActionDeleteButton")
 
         self.horizontalLayout_2.addWidget(self.ActionDeleteButton)
@@ -159,7 +171,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_5)
 
-        self.ActionAddButton = ToolButton(Frame)
+        self.ActionAddButton = PushButton(Frame)
         self.ActionAddButton.setObjectName(u"ActionAddButton")
 
         self.horizontalLayout_2.addWidget(self.ActionAddButton)
@@ -168,27 +180,10 @@ class teach_page_frame(object):
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_6)
 
-        self.ActionUpdateRowButton = ToolButton(Frame)
+        self.ActionUpdateRowButton = PushButton(Frame)
         self.ActionUpdateRowButton.setObjectName(u"ActionUpdateRowButton")
-        icon = QIcon()
-        iconThemeName = u"SEND"
-        if QIcon.hasThemeIcon(iconThemeName):
-            icon = QIcon.fromTheme(iconThemeName)
-        else:
-            icon.addFile(u".", QSize(), QIcon.Normal, QIcon.Off)
-
-        self.ActionUpdateRowButton.setIcon(icon)
 
         self.horizontalLayout_2.addWidget(self.ActionUpdateRowButton)
-
-        self.horizontalSpacer_7 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_2.addItem(self.horizontalSpacer_7)
-
-        self.ActionUpdateColButton = ToolButton(Frame)
-        self.ActionUpdateColButton.setObjectName(u"ActionUpdateColButton")
-
-        self.horizontalLayout_2.addWidget(self.ActionUpdateColButton)
 
         self.horizontalSpacer_28 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
@@ -200,24 +195,7 @@ class teach_page_frame(object):
 
         self.verticalLayout_10.addLayout(self.TeachLayout)
 
-        self.HorizontalSeparator = HorizontalSeparator(Frame)
-        self.HorizontalSeparator.setObjectName(u"HorizontalSeparator")
-
-        self.verticalLayout_10.addWidget(self.HorizontalSeparator)
-
-        self.ProgressBar = ProgressBar(Frame)
-        self.ProgressBar.setObjectName(u"ProgressBar")
-
-        self.verticalLayout_10.addWidget(self.ProgressBar)
-
-        self.TeachArmRunLogWindow = PlainTextEdit(Frame)
-        self.TeachArmRunLogWindow.setObjectName(u"TeachArmRunLogWindow")
-        self.TeachArmRunLogWindow.setReadOnly(True)
-
-        self.verticalLayout_10.addWidget(self.TeachArmRunLogWindow)
-
         self.verticalLayout_10.setStretch(0, 7)
-        self.verticalLayout_10.setStretch(3, 1)
 
         self.horizontalLayout_4.addLayout(self.verticalLayout_10)
 
@@ -1033,13 +1011,11 @@ class teach_page_frame(object):
 
         self.verticalLayout_11.addLayout(self.horizontalLayout_3)
 
-        self.verticalLayout_11.setStretch(1, 12)
-        self.verticalLayout_11.setStretch(2, 2)
 
         self.horizontalLayout_4.addLayout(self.verticalLayout_11)
 
-        self.horizontalLayout_4.setStretch(0, 7)
-        self.horizontalLayout_4.setStretch(2, 3)
+        self.horizontalLayout_4.setStretch(0, 6)
+        self.horizontalLayout_4.setStretch(2, 4)
 
         self.horizontalLayout_5.addLayout(self.horizontalLayout_4)
 
@@ -1055,18 +1031,18 @@ class teach_page_frame(object):
     def retranslateUi(self, Frame):
         Frame.setWindowTitle(QCoreApplication.translate("Frame", u"Frame", None))
         Frame.setProperty("lightCustomQss", "")
-        self.ActionImportButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+        self.ActionImportButton.setText(QCoreApplication.translate("Frame", u"\u5bfc\u5165\u52a8\u4f5c", None))
+        self.ActionImportButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(125, 214, 249);\n"
 "}\n"
-"\n"
-"ToolButton:hover {\n"
+"PushButton:hover {\n"
 "    background: rgb(125, 214, 249);\n"
 "}", None))
-        self.ActionOutputButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+        self.ActionOutputButton.setText(QCoreApplication.translate("Frame", u"\u5bfc\u51fa\u52a8\u4f5c", None))
+        self.ActionOutputButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(125, 214, 249);\n"
 "}\n"
-"\n"
-"ToolButton:hover {\n"
+"PushButton:hover {\n"
 "    background: rgb(125, 214, 249);\n"
 "}", None))
         self.ActionModelSwitchButton.setText(QCoreApplication.translate("Frame", u"\u987a\u5e8f\u6307\u4ee4", None))
@@ -1074,25 +1050,25 @@ class teach_page_frame(object):
         self.ActionModelSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u5b9e\u65f6\u6307\u4ee4", None))
         self.RecordActivateSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u5f55\u5236\u6a21\u5f0f", None))
         self.RecordActivateSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u666e\u901a\u6a21\u5f0f", None))
-        self.ActionStepRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+        self.ActionStepRunButton.setText(QCoreApplication.translate("Frame", u"\u5355\u6b65\u6267\u884c", None))
+        self.ActionStepRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(125, 214, 249);\n"
 "}\n"
-"\n"
-"ToolButton:hover {\n"
+"PushButton:hover {\n"
 "    background: rgb(125, 214, 249);\n"
 "}", None))
-        self.ActionRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+        self.ActionRunButton.setText(QCoreApplication.translate("Frame", u"\u987a\u5e8f\u6267\u884c", None))
+        self.ActionRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(125, 214, 249);\n"
 "}\n"
-"\n"
-"ToolButton:hover {\n"
+"PushButton:hover {\n"
 "    background: rgb(125, 214, 249);\n"
 "}", None))
-        self.ActionLoopRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+        self.ActionLoopRunButton.setText(QCoreApplication.translate("Frame", u"\u5faa\u73af\u6267\u884c", None))
+        self.ActionLoopRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(125, 214, 249);\n"
 "}\n"
-"\n"
-"ToolButton:hover {\n"
+"PushButton:hover {\n"
 "    background: rgb(125, 214, 249);\n"
 "}", None))
         self.ActionLoopTimes.setText("")
@@ -1119,33 +1095,29 @@ class teach_page_frame(object):
         ___qtablewidgetitem9.setText(QCoreApplication.translate("Frame", u"\u5ef6\u65f6", None));
         ___qtablewidgetitem10 = self.ActionTableWidget.horizontalHeaderItem(10)
         ___qtablewidgetitem10.setText(QCoreApplication.translate("Frame", u"\u5907\u6ce8", None));
-        self.ActionDeleteButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+        self.ActionDeleteButton.setText(QCoreApplication.translate("Frame", u"\u5220\u9664\u52a8\u4f5c", None))
+        self.ActionDeleteButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(229, 142, 138);\n"
 "}\n"
 "\n"
-"ToolButton:hover {\n"
+"PushButton:hover {\n"
 "    background: rgb(229, 142, 138);\n"
 "}", None))
-        self.ActionAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+        self.ActionAddButton.setText(QCoreApplication.translate("Frame", u"\u6dfb\u52a0\u52a8\u4f5c", None))
+        self.ActionAddButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(170, 211, 140);\n"
 "}\n"
 "\n"
-"ToolButton:hover {\n"
+"PushButton:hover {\n"
 "    background: rgb(170, 211, 140);\n"
 "}", None))
-        self.ActionUpdateRowButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
+        self.ActionUpdateRowButton.setText(QCoreApplication.translate("Frame", u"\u66f4\u65b0\u52a8\u4f5c", None))
+        self.ActionUpdateRowButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(240, 203, 98);\n"
 "}\n"
 "\n"
-"ToolButton:hover {\n"
+"PushButton:hover {\n"
 "    background: rgb(240, 203, 98);\n"
-"}", None))
-        self.ActionUpdateColButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
-"    background: rgb(125, 214, 249);\n"
-"}\n"
-"\n"
-"ToolButton:hover {\n"
-"    background: rgb(125, 214, 249);\n"
 "}", None))
         self.JointOneLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82821", None))
         self.JointOneSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"

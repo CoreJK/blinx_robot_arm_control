@@ -222,7 +222,6 @@ class TeachPage(QFrame, teach_page_frame):
         self.ActionDeleteButton.clicked.connect(self.remove_item)
         self.ActionAddButton.clicked.connect(self.add_item)
         self.ActionUpdateRowButton.clicked.connect(self.update_row)
-        self.ActionUpdateColButton.clicked.connect(self.update_column)  # 当前组件中无法选择列更新
 
         # 示教控制页面的按钮提示信息
         self.ActionImportButton.setToolTip("导入动作文件")
@@ -560,7 +559,6 @@ class TeachPage(QFrame, teach_page_frame):
     def run_all_action(self):
         """顺序执行示教动作"""
         if (total_row_count := self.ActionTableWidget.rowCount()) > 0:
-            self.TeachArmRunLogWindow.appendPlainText('【顺序执行】任务开始')
             InfoBar.success(
                 title="成功",
                 content="【顺序执行】任务开始",
@@ -1523,7 +1521,6 @@ class TeachPage(QFrame, teach_page_frame):
         self.ActionLoopRunButton.setIcon(FIF.ROTATE)
         self.ActionAddButton.setIcon(FIF.ADD_TO)
         self.ActionDeleteButton.setIcon(FIF.DELETE)
-        self.ActionUpdateColButton.setIcon(FIF.SCROLL)
         self.ActionUpdateRowButton.setIcon(FIF.MENU)
         # 关节控制按钮图标
         self.JointOneAddButton.setIcon(FIF.ADD)

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1285</width>
-    <height>688</height>
+    <width>1449</width>
+    <height>694</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,9 +18,12 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_5">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="7,0,3">
+    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="6,0,4">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetMinimumSize</enum>
+     </property>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="7,0,0,1">
+      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="7">
        <item>
         <layout class="QVBoxLayout" name="TeachLayout">
          <item>
@@ -42,13 +45,15 @@
             </spacer>
            </item>
            <item>
-            <widget class="ToolButton" name="ActionImportButton">
+            <widget class="PushButton" name="ActionImportButton">
+             <property name="text">
+              <string>导入动作</string>
+             </property>
              <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
+              <string>PushButton {
     background: rgb(125, 214, 249);
 }
-
-ToolButton:hover {
+PushButton:hover {
     background: rgb(125, 214, 249);
 }</string>
              </property>
@@ -71,13 +76,15 @@ ToolButton:hover {
             </spacer>
            </item>
            <item>
-            <widget class="ToolButton" name="ActionOutputButton">
+            <widget class="PushButton" name="ActionOutputButton">
+             <property name="text">
+              <string>导出动作</string>
+             </property>
              <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
+              <string>PushButton {
     background: rgb(125, 214, 249);
 }
-
-ToolButton:hover {
+PushButton:hover {
     background: rgb(125, 214, 249);
 }</string>
              </property>
@@ -93,7 +100,7 @@ ToolButton:hover {
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>320</width>
+               <width>200</width>
                <height>20</height>
               </size>
              </property>
@@ -129,13 +136,15 @@ ToolButton:hover {
             <widget class="VerticalSeparator" name="VerticalSeparator_4"/>
            </item>
            <item>
-            <widget class="ToolButton" name="ActionStepRunButton">
+            <widget class="PushButton" name="ActionStepRunButton">
+             <property name="text">
+              <string>单步执行</string>
+             </property>
              <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
+              <string>PushButton {
     background: rgb(125, 214, 249);
 }
-
-ToolButton:hover {
+PushButton:hover {
     background: rgb(125, 214, 249);
 }</string>
              </property>
@@ -158,13 +167,15 @@ ToolButton:hover {
             </spacer>
            </item>
            <item>
-            <widget class="ToolButton" name="ActionRunButton">
+            <widget class="PushButton" name="ActionRunButton">
+             <property name="text">
+              <string>顺序执行</string>
+             </property>
              <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
+              <string>PushButton {
     background: rgb(125, 214, 249);
 }
-
-ToolButton:hover {
+PushButton:hover {
     background: rgb(125, 214, 249);
 }</string>
              </property>
@@ -187,13 +198,15 @@ ToolButton:hover {
             </spacer>
            </item>
            <item>
-            <widget class="ToolButton" name="ActionLoopRunButton">
+            <widget class="PushButton" name="ActionLoopRunButton">
+             <property name="text">
+              <string>循环执行</string>
+             </property>
              <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
+              <string>PushButton {
     background: rgb(125, 214, 249);
 }
-
-ToolButton:hover {
+PushButton:hover {
     background: rgb(125, 214, 249);
 }</string>
              </property>
@@ -232,6 +245,9 @@ ToolButton:hover {
          </item>
          <item>
           <widget class="TableWidget" name="ActionTableWidget">
+           <property name="showGrid">
+            <bool>false</bool>
+           </property>
            <column>
             <property name="text">
              <string>J1</string>
@@ -295,6 +311,12 @@ ToolButton:hover {
           </widget>
          </item>
          <item>
+          <widget class="HorizontalSeparator" name="HorizontalSeparator"/>
+         </item>
+         <item>
+          <widget class="ProgressBar" name="ProgressBar"/>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
             <spacer name="horizontalSpacer_29">
@@ -313,13 +335,16 @@ ToolButton:hover {
             </spacer>
            </item>
            <item>
-            <widget class="ToolButton" name="ActionDeleteButton">
+            <widget class="PushButton" name="ActionDeleteButton">
+             <property name="text">
+              <string>删除动作</string>
+             </property>
              <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
+              <string>PushButton {
     background: rgb(229, 142, 138);
 }
 
-ToolButton:hover {
+PushButton:hover {
     background: rgb(229, 142, 138);
 }</string>
              </property>
@@ -339,13 +364,16 @@ ToolButton:hover {
             </spacer>
            </item>
            <item>
-            <widget class="ToolButton" name="ActionAddButton">
+            <widget class="PushButton" name="ActionAddButton">
+             <property name="text">
+              <string>添加动作</string>
+             </property>
              <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
+              <string>PushButton {
     background: rgb(170, 211, 140);
 }
 
-ToolButton:hover {
+PushButton:hover {
     background: rgb(170, 211, 140);
 }</string>
              </property>
@@ -368,47 +396,17 @@ ToolButton:hover {
             </spacer>
            </item>
            <item>
-            <widget class="ToolButton" name="ActionUpdateRowButton">
-             <property name="icon">
-              <iconset theme="SEND">
-               <normaloff>.</normaloff>.</iconset>
+            <widget class="PushButton" name="ActionUpdateRowButton">
+             <property name="text">
+              <string>更新动作</string>
              </property>
              <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
+              <string>PushButton {
     background: rgb(240, 203, 98);
 }
 
-ToolButton:hover {
+PushButton:hover {
     background: rgb(240, 203, 98);
-}</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Minimum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="ToolButton" name="ActionUpdateColButton">
-             <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
-    background: rgb(125, 214, 249);
-}
-
-ToolButton:hover {
-    background: rgb(125, 214, 249);
 }</string>
              </property>
             </widget>
@@ -433,26 +431,13 @@ ToolButton:hover {
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="HorizontalSeparator" name="HorizontalSeparator"/>
-       </item>
-       <item>
-        <widget class="ProgressBar" name="ProgressBar"/>
-       </item>
-       <item>
-        <widget class="PlainTextEdit" name="TeachArmRunLogWindow">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item>
       <widget class="VerticalSeparator" name="VerticalSeparator"/>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_11" stretch="0,12,2">
+      <layout class="QVBoxLayout" name="verticalLayout_11" stretch="0,0,0">
        <item>
         <widget class="SegmentedWidget" name="RobotArmControlSegmentedWidget"/>
        </item>
@@ -2357,11 +2342,6 @@ PushButton:hover {
   <customwidget>
    <class>LineEdit</class>
    <extends>QLineEdit</extends>
-   <header>qfluentwidgets</header>
-  </customwidget>
-  <customwidget>
-   <class>PlainTextEdit</class>
-   <extends>QPlainTextEdit</extends>
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
