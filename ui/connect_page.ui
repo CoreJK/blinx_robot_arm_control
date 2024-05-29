@@ -40,6 +40,9 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="1">
+            <widget class="LineEdit" name="TargetPortEdit"/>
+           </item>
            <item row="0" column="1">
             <widget class="LineEdit" name="TargetIpEdit"/>
            </item>
@@ -50,32 +53,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="LineEdit" name="TargetPortEdit"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="PushButton" name="IpPortInfoRestButton">
-             <property name="text">
-              <string>重置</string>
-             </property>
-             <property name="hasIcon" stdset="0">
-              <bool>false</bool>
-             </property>
-             <property name="lightCustomQss" stdset="0">
-              <string>PushButton {
-    background: rgb(125, 214, 249);
-}
-PushButton:hover {
-    background: rgb(125, 214, 249);
-}</string>
-             </property>
-            </widget>
-           </item>
-           <item>
+           <item row="0" column="2">
             <widget class="PushButton" name="IpPortInfoSubmitButton">
              <property name="text">
               <string>确定</string>
@@ -93,42 +71,73 @@ PushButton:hover {
              </property>
             </widget>
            </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-       <widget class="PushButton" name="RobotArmLinkButton">
-        <property name="geometry">
-         <rect>
-          <x>520</x>
-          <y>190</y>
-          <width>110</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>200</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="text">
-         <string>连接机械臂</string>
-        </property>
-        <property name="hasIcon" stdset="0">
-         <bool>false</bool>
-        </property>
-        <property name="lightCustomQss" stdset="0">
-         <string>PushButton {
+           <item row="1" column="2">
+            <widget class="PushButton" name="IpPortInfoRestButton">
+             <property name="text">
+              <string>重置</string>
+             </property>
+             <property name="hasIcon" stdset="0">
+              <bool>false</bool>
+             </property>
+             <property name="lightCustomQss" stdset="0">
+              <string>PushButton {
     background: rgb(125, 214, 249);
 }
 PushButton:hover {
     background: rgb(125, 214, 249);
 }</string>
-        </property>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="PushButton" name="RobotArmLinkButton">
+             <property name="maximumSize">
+              <size>
+               <width>200</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="text">
+              <string>连接机械臂</string>
+             </property>
+             <property name="hasIcon" stdset="0">
+              <bool>false</bool>
+             </property>
+             <property name="lightCustomQss" stdset="0">
+              <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="PushButton" name="RobotArmDisconnectButton">
+             <property name="text">
+              <string>断开连接</string>
+             </property>
+             <property name="lightCustomQss" stdset="0">
+              <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </widget>
       </widget>
      </item>

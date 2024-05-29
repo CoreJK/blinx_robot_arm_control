@@ -20,7 +20,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="7,0,3">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="7,0,1">
+      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="7,0,0,1">
        <item>
         <layout class="QVBoxLayout" name="TeachLayout">
          <item>
@@ -100,19 +100,28 @@ ToolButton:hover {
             </spacer>
            </item>
            <item>
-            <widget class="RadioButton" name="RecordActivateButton">
+            <widget class="SwitchButton" name="ActionModelSwitchButton">
+             <property name="checked">
+              <bool>true</bool>
+             </property>
              <property name="text">
-              <string>录制模式</string>
+              <string>顺序指令</string>
+             </property>
+             <property name="onText">
+              <string>顺序指令</string>
+             </property>
+             <property name="offText">
+              <string>实时指令</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="RadioButton" name="RecordDeActivateButton">
-             <property name="text">
-              <string>普通模式</string>
+            <widget class="SwitchButton" name="RecordActivateSwitchButton">
+             <property name="onText">
+              <string>录制模式</string>
              </property>
-             <property name="checked">
-              <bool>true</bool>
+             <property name="offText">
+              <string>普通模式</string>
              </property>
             </widget>
            </item>
@@ -426,6 +435,9 @@ ToolButton:hover {
        </item>
        <item>
         <widget class="HorizontalSeparator" name="HorizontalSeparator"/>
+       </item>
+       <item>
+        <widget class="ProgressBar" name="ProgressBar"/>
        </item>
        <item>
         <widget class="PlainTextEdit" name="TeachArmRunLogWindow">
@@ -1322,9 +1334,9 @@ ToolButton:hover {
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
             <widget class="CardWidget" name="ArmEndToolsCoordinateControlCard">
-             <layout class="QHBoxLayout" name="horizontalLayout_21">
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_4">
+               <layout class="QVBoxLayout" name="verticalLayout_3">
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_10">
                   <item>
@@ -1670,7 +1682,7 @@ ToolButton:hover {
                   <item>
                    <widget class="LineEdit" name="CoordinateStepEdit">
                     <property name="text">
-                     <string>0.01</string>
+                     <string>10.000</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
@@ -1708,24 +1720,13 @@ ToolButton:hover {
                   </item>
                  </layout>
                 </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="ArmEndToolsPositionControlPage">
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="CardWidget" name="ArmEndToolsPositionControlCard">
-             <layout class="QHBoxLayout" name="horizontalLayout_23">
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_5">
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_15">
+                 <widget class="HorizontalSeparator" name="HorizontalSeparator_2"/>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_24">
                   <item>
-                   <spacer name="horizontalSpacer_58">
+                   <spacer name="horizontalSpacer_23">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -1748,7 +1749,7 @@ ToolButton:hover {
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_23">
+                   <spacer name="horizontalSpacer_79">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -1800,7 +1801,7 @@ ToolButton:hover {
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_62">
+                   <spacer name="horizontalSpacer_80">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -1818,9 +1819,9 @@ ToolButton:hover {
                  </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_16">
+                 <layout class="QHBoxLayout" name="horizontalLayout_25">
                   <item>
-                   <spacer name="horizontalSpacer_59">
+                   <spacer name="horizontalSpacer_81">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -1843,7 +1844,7 @@ ToolButton:hover {
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_24">
+                   <spacer name="horizontalSpacer_82">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -1895,7 +1896,7 @@ ToolButton:hover {
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_63">
+                   <spacer name="horizontalSpacer_83">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -1913,9 +1914,9 @@ ToolButton:hover {
                  </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_17">
+                 <layout class="QHBoxLayout" name="horizontalLayout_26">
                   <item>
-                   <spacer name="horizontalSpacer_60">
+                   <spacer name="horizontalSpacer_84">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -1938,7 +1939,7 @@ ToolButton:hover {
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_25">
+                   <spacer name="horizontalSpacer_85">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -1990,7 +1991,7 @@ ToolButton:hover {
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_64">
+                   <spacer name="horizontalSpacer_86">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -2008,9 +2009,9 @@ ToolButton:hover {
                  </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_18">
+                 <layout class="QHBoxLayout" name="horizontalLayout_27">
                   <item>
-                   <spacer name="horizontalSpacer_61">
+                   <spacer name="horizontalSpacer_87">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -2028,12 +2029,12 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="ApStepLabel">
                     <property name="text">
-                     <string>步长</string>
+                     <string>角度</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_26">
+                   <spacer name="horizontalSpacer_88">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -2085,7 +2086,7 @@ ToolButton:hover {
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_65">
+                   <spacer name="horizontalSpacer_89">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -2108,6 +2109,9 @@ ToolButton:hover {
             </widget>
            </item>
           </layout>
+         </widget>
+         <widget class="QWidget" name="ArmEndToolsPositionControlPage">
+          <layout class="QVBoxLayout" name="verticalLayout"/>
          </widget>
         </widget>
        </item>
@@ -2230,7 +2234,7 @@ PushButton:hover {
              <item>
               <widget class="PushButton" name="RobotArmResetButton">
                <property name="text">
-                <string>复位</string>
+                <string>初始化</string>
                </property>
                <property name="lightCustomQss" stdset="0">
                 <string>PushButton {
@@ -2246,7 +2250,7 @@ PushButton:hover {
              <item>
               <widget class="PushButton" name="RobotArmZeroButton">
                <property name="text">
-                <string>归零</string>
+                <string>回零</string>
                </property>
                <property name="lightCustomQss" stdset="0">
                 <string>PushButton {
@@ -2310,8 +2314,8 @@ PushButton:hover {
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
-   <class>RadioButton</class>
-   <extends>QRadioButton</extends>
+   <class>SwitchButton</class>
+   <extends>QWidget</extends>
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
@@ -2343,6 +2347,11 @@ PushButton:hover {
   <customwidget>
    <class>SegmentedWidget</class>
    <extends>Pivot</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ProgressBar</class>
+   <extends>QProgressBar</extends>
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
