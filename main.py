@@ -284,8 +284,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.RobotArmStopButton.clicked.connect(self.stop_robot_arm_emergency)
         
         # # 末端工具控制组回调函数绑定
-        self.ArmClawOpenButton.clicked.connect(partial(self.tool_control, action=1))
-        self.ArmClawCloseButton.clicked.connect(partial(self.tool_control, action=0))
+        self.ArmToolSwitchButton.checkedChanged.connect(self.tool_switch_control)
         
         # 末端工具坐标增减回调函数绑定 
         self.XAxisAddButton.clicked.connect(partial(self.end_tool_coordinate_operate, axis='x', action="add"))
@@ -1265,15 +1264,15 @@ class TeachPage(QFrame, teach_page_frame):
     @check_robot_arm_connection
     @check_robot_arm_is_working
     @Slot()
-    def tool_control(self, action=1):
+    def tool_switch_control(self, isChecked: bool):
         """吸盘工具开"""
         type_of_tool = self.ArmToolComboBox.currentText()
         if type_of_tool == "吸盘":
-            command = json.dumps({"command":"set_end_tool", "data": [1, action]}) + '\r\n'
-            
-            if action:
+            if isChecked:
+                command = json.dumps({"command":"set_end_tool", "data": [1, 1]}) + '\r\n'
                 logger.warning("吸盘开启!")
             else:
+                command = json.dumps({"command":"set_end_tool", "data": [1, 0]}) + '\r\n'
                 logger.warning("吸盘关闭!")
                 
             self.command_queue.put(command.encode())
