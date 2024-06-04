@@ -1521,6 +1521,10 @@ class TeachPage(QFrame, teach_page_frame):
         self.ActionAddButton.setIcon(FIF.ADD_TO)
         self.ActionDeleteButton.setIcon(FIF.DELETE)
         self.ActionUpdateRowButton.setIcon(FIF.MENU)
+        # 工作模式、动作录制按钮
+        self.ActionModeIcon.setIcon(FIF.CONNECT)
+        self.ActionRecordIcon.setIcon(FIF.MOVIE)
+        self.RobotArmStopButton.setIcon(FIF.UPDATE)
         # 关节控制按钮图标
         self.JointOneAddButton.setIcon(FIF.ADD)
         self.JointOneSubButton.setIcon(FIF.REMOVE)
@@ -1558,6 +1562,12 @@ class TeachPage(QFrame, teach_page_frame):
         self.RzAxisSubButton.setIcon(FIF.REMOVE)
         self.ApStepAddButton.setIcon(FIF.ADD)
         self.ApStepSubButton.setIcon(FIF.REMOVE)
+        # 工具控制按钮图标
+        self.ToolIcon.setIcon(FIF.DEVELOPER_TOOLS)
+        self.ToolsControlIcon.setIcon(FIF.ROBOT)
+        self.RobotArmZeroButton.setIcon(FIF.HOME)
+        self.RobotArmResetButton.setIcon(FIF.SYNC)
+        
     
     def update_joint_degrees_text(self, angle_data_list: list):
         """更新界面上的角度值, 并返回实时角度值
@@ -2128,7 +2138,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         
     def initWindow(self):
         """初始化窗口"""
-        self.resize(1330, 750)
+        self.resize(1531, 850)
         self.setWindowTitle("比邻星六轴机械臂上位机 v4.3.3")
         self.setWindowIcon(QIcon(str(settings.WINDOWS_ICON_PATH)))
         setThemeColor('#00AAFF')
