@@ -11,7 +11,6 @@ from pubsub import pub
 from PySide6.QtCore import QRunnable, Signal, QObject
 
 from common import settings
-from common.blinx_robot_module import Mirobot
 from common.socket_client import ClientSocket
 
 
@@ -26,10 +25,10 @@ class SingalEmitter(QObject):
 class UpdateJointAnglesTask(QRunnable):
     """更新上位机发送的关节角度数据的线程"""
     
-    def __init__(self, joints_angle_queue: Queue):
+    def __init__(self, joints_angle_queue: Queue, coordinate_queue: Queue):
         super().__init__()
-        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH, param_type='MDH')
         self.joints_angle_queue = joints_angle_queue
+        self.coordinate_queue = coordinate_queue
         self.singal_emitter = SingalEmitter()
         self.update_joint_angles_thread_flag = True
     
@@ -41,20 +40,20 @@ class UpdateJointAnglesTask(QRunnable):
             if not self.joints_angle_queue.empty():
                 angle_data_list = self.joints_angle_queue.get()
                 # 关节角度更新信号
-                self.singal_emitter.joint_angles_update_signal.emit(list(map(self.decimal_round_for_joints, angle_data_list)))
+                self.singal_emitter.joint_angles_update_signal.emit(list(map(self.decimal_round_for_float, angle_data_list)))
                 
+            if not self.coordinate_queue.empty():
+                coordinate_data_list = self.coordinate_queue.get()
                 # 末端坐标与位姿更新信号
-                arm_joint_radians = np.radians(angle_data_list)  # 正逆解需要弧度制
-                translation_vector = self.blinx_robot_arm.fkine(arm_joint_radians)
-                X, Y, Z = map(self.decimal_round_for_positions, translation_vector.t)  # 末端坐标
-                R_x, P_y, Y_z = map(self.decimal_round_for_joints, translation_vector.rpy(unit='deg', order='zyx'))  # 末端姿态
+                X, Y, Z = map(self.decimal_round_for_float, coordinate_data_list[:3])
+                R_x, P_y, Y_z = map(self.decimal_round_for_float, coordinate_data_list[3:])
                 self.singal_emitter.arm_endfactor_positions_update_signal.emit([X, Y, Z, R_x, P_y, Y_z])
-    
-    def decimal_round_for_joints(self, joints_angle: float) -> Decimal:
-        """用精确的方式四舍五入, 保留关节角度的三位小数"""
-        joints_angle_str = str(joints_angle)
-        joints_angle_decimal = Decimal(joints_angle_str).quantize(Decimal("0.001"), rounding="ROUND_HALF_UP")
-        return joints_angle_decimal
+                
+    def decimal_round_for_float(self, float_data: float) -> Decimal:
+        """用精确的方式四舍五入, 保留三位小数"""
+        float_data_str = str(float_data)
+        float_data_decimal = Decimal(float_data_str).quantize(Decimal("0.001"), rounding="ROUND_HALF_UP")
+        return float_data_decimal
     
     def decimal_round_for_positions(self, value: float) -> Decimal:
         """用精确的方式四舍五入, 保留末端坐标和姿态的三位小数"""
@@ -69,10 +68,11 @@ class UpdateJointAnglesTask(QRunnable):
 class AgnleDegreeWatchTask(QRunnable):
     """订阅关节角度值的线程"""
     
-    def __init__(self, joints_angle_queue: Queue):
+    def __init__(self, joints_angle_queue: Queue, coordinate_queue: Queue):
         super().__init__()
         self.is_on = True
-        self.joints_angle_queue = joints_angle_queue        
+        self.joints_angle_queue = joints_angle_queue
+        self.coordinate_queue = coordinate_queue
     
     @logger.catch        
     def run(self):
@@ -84,31 +84,43 @@ class AgnleDegreeWatchTask(QRunnable):
                     response_str = coon.recv(2048).decode('utf-8')
                     if response_str.startswith('{') and response_str.endswith('\r\n'):
                         recv_buffer = self.split_by_symbol(response_str)  # 命令缓冲区
-                        recv_joint_angle_datas = list(filter(self.keep_joint_datas_str, recv_buffer))  # 保留关节角度值
-                        for recv in recv_joint_angle_datas:
-                            
-                            try:
-                                joints_angle = json.loads(recv)
-                            except json.JSONDecodeError as e:
-                                logger.exception(f"解析命令处理异常: {e}")
-                                logger.error(rf"异常命令: {recv}")
-                                
-                            joints_angle_list = joints_angle['data']
-                            self.joints_angle_queue.put(joints_angle_list)
+                        recv_joint_angle_datas = list(filter(self.filter_joint_datas_str, recv_buffer))  # 保留关节角度值
+                        recv_coordinate_datas = list(filter(self.filter_coordinate_str, recv_buffer))  # 保留坐标和姿态值
+                        self.put_data_to_queue(recv_joint_angle_datas, self.joints_angle_queue)
+                        self.put_data_to_queue(recv_coordinate_datas, self.coordinate_queue)
                     else:
                         logger.warning(f"数据不完整: {response_str}")
                 except socket.timeout:
                     self.is_on = False        
                     logger.error("机械臂连接超时！")
+
+    def put_data_to_queue(self, recv_datas, target_queue: Queue):
+        """将数据放置到对应的队列当中"""
+        for recv in recv_datas:
+            try:
+                response_data = json.loads(recv)
+            except json.JSONDecodeError as e:
+                logger.exception(f"解析命令处理异常: {e}")
+                logger.error(rf"异常命令: {recv}")
+                                
+            joints_angle_list = response_data['data']
+            target_queue.put(joints_angle_list)
                 
     def split_by_symbol(self, response_str: str, split_symbol='\r\n') -> list:
         """根据指定的分隔符拆分字符串, 并清理空字符串"""
         recv_buffer = list(filter(lambda s: s and s.strip(), response_str.split(split_symbol)))
         return recv_buffer
     
-    def keep_joint_datas_str(self, json_str: str):
+    def filter_joint_datas_str(self, json_str: str):
         """保留关节角度值"""
         if 'get_joint_angle_all' in json_str:
+            return True
+        else:
+            return False
+    
+    def filter_coordinate_str(self, json_str: str):
+        """保留坐标和姿态值"""
+        if 'get_coordinate' in json_str:
             return True
         else:
             return False

@@ -11,7 +11,6 @@ from queue import Queue
 from pubsub import pub
 
 import common.settings as settings
-from common.blinx_robot_module import Mirobot
 from common.check_tools import check_robot_arm_connection, check_robot_arm_is_working
 from common.socket_client import ClientSocket, Worker
 from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask, CommandReceiverTask
@@ -31,9 +30,6 @@ from app.connect_page import connect_page_frame
 
 # 正逆解相关模块
 import numpy as np
-from math import degrees
-from spatialmath import SE3
-from spatialmath.base import rpy2tr
 
 # 日志模块
 from loguru import logger
@@ -182,7 +178,7 @@ class CommandPage(QFrame, command_page_frame):
 
 class TeachPage(QFrame, teach_page_frame):
     """示教控制页面"""
-    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: Queue, joints_angle_queue: Queue):
+    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: Queue, joints_angle_queue: Queue, coordinate_queue: Queue):
         super().__init__()
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
@@ -199,7 +195,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
         self.joints_angle_queue = joints_angle_queue  # 查询到的机械臂关节角度队列
-        self.blinx_robot_arm = Mirobot(settings.ROBOT_MODEL_CONFIG_FILE_PATH, param_type='MDH')
+        self.coordinate_queue = coordinate_queue  # 查询到的机械臂末端工具位姿队列
         
         # 开启角度更新与末端工具位姿的更新线程
         self.back_task_start()
@@ -319,7 +315,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.update_connect_status_timer.start(1000)
         
         logger.warning("更新机械臂的关节角度/末端位姿数据线程，启动!")
-        self.update_joint_angles_thread = UpdateJointAnglesTask(self.joints_angle_queue)
+        self.update_joint_angles_thread = UpdateJointAnglesTask(self.joints_angle_queue, self.coordinate_queue)
         self.thread_pool.start(self.update_joint_angles_thread)
         self.update_joint_angles_thread.singal_emitter.joint_angles_update_signal.connect(self.update_joint_degrees_text)
         self.update_joint_angles_thread.singal_emitter.arm_endfactor_positions_update_signal.connect(self.update_arm_pose_text)
@@ -1601,12 +1597,11 @@ class TeachPage(QFrame, teach_page_frame):
         self.RzAxisEdit.setText(str(self.rz))
 
     def construct_and_send_command(self, joint_degrees, speed_percentage):
-        """构造逆解后的发送命令"""
+        """构造发送坐标控制命令"""
         if joint_degrees is not None:
             speed_degree_data = [speed_percentage]
             speed_degree_data.extend(joint_degrees)
-            command = json.dumps({"command": "set_joint_angle_all_time", "data": speed_degree_data}, use_decimal=True).replace(' ', "") + '\r\n'
-            logger.debug(f"逆解后的所有关节角度值: {list(map(lambda d: float(d), joint_degrees))}")
+            command = json.dumps({"command": "set_coordinate", "data": speed_degree_data}, use_decimal=True).replace(' ', "") + '\r\n'
             # 发送命令
             self.command_queue.put(command.encode())
         else:
@@ -1625,15 +1620,9 @@ class TeachPage(QFrame, teach_page_frame):
         """计算机械臂的逆解"""
         # 对坐标的值缩小 3 位
         x_coordinate, y_coordinate, z_coordinate = map(self._decimal_exp, [x_coordinate, y_coordinate, z_coordinate])
-        logger.debug(f"缩小后的末端工具坐标: {x_coordinate}, {y_coordinate}, {z_coordinate}")
+        logger.debug(f"末端工具坐标: {x_coordinate}, {y_coordinate}, {z_coordinate}")
         logger.debug(f"末端工具姿态: {rx_pose}, {ry_pose}, {rz_pose}")
-        R_T = SE3([x_coordinate, y_coordinate, z_coordinate]) * rpy2tr([float(rx_pose), float(ry_pose), float(rz_pose)], unit='deg', order='zyx')
-        sol = self.blinx_robot_arm.ikine_LM(R_T, joint_limits=True)
-        if sol.success:
-            joint_degrees = [self._decimal_round(degrees(d)) for d in sol.q]
-        else:
-            joint_degrees = None
-        
+        joint_degrees = [x_coordinate, y_coordinate, z_coordinate, rx_pose, ry_pose, rz_pose]
         return joint_degrees
     
     @logger.catch
@@ -1725,11 +1714,10 @@ class TeachPage(QFrame, teach_page_frame):
         joints_angle_decimal = Decimal(joints_angle_str).quantize(Decimal(accuracy), rounding = "ROUND_HALF_UP")
         return joints_angle_decimal
     
-    def _decimal_exp(self, value: Decimal) -> float:
+    def _decimal_exp(self, coordinate_value: Decimal) -> float:
         """用精确的方式四舍五入, 保留末端坐标和姿态的三位小数"""
-        coordinate_value = value / Decimal('1000')
         coordinate_value_float = coordinate_value.quantize(Decimal("0.001"), rounding="ROUND_HALF_UP")
-        return float(coordinate_value_float)
+        return coordinate_value_float
     
     def init_input_validator(self):
         """设置输入框的过滤规则"""
@@ -1768,7 +1756,7 @@ class TeachPage(QFrame, teach_page_frame):
     
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
-    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: Queue, joints_angle_queue: Queue):
+    def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: Queue, joints_angle_queue: Queue, coordinate_queue: Queue):
         super().__init__()
         self.setupUi(self)
         self.setObjectName(page_name.replace(' ', '-'))
@@ -1778,6 +1766,7 @@ class ConnectPage(QFrame, connect_page_frame):
         self.thread_pool = thread_pool
         self.command_queue = command_queue
         self.joints_angle_queue = joints_angle_queue
+        self.coordinate_queue = coordinate_queue
         
         self.init_task_thread()
         self.init_input_validator()
@@ -1827,7 +1816,7 @@ class ConnectPage(QFrame, connect_page_frame):
         
     def init_task_thread(self):
         """初始化后台线程任务"""
-        self.angle_degree_thread = AgnleDegreeWatchTask(self.joints_angle_queue)
+        self.angle_degree_thread = AgnleDegreeWatchTask(self.joints_angle_queue, self.coordinate_queue)
         self.command_sender_thread = CommandSenderTask(self.command_queue)
         self.command_recver_thread = CommandReceiverTask()
     
@@ -2127,11 +2116,12 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         super().__init__()
         self.command_queue = Queue()  # 控件发送的命令队列
         self.joints_angle_queue = Queue()  # 查询到关节角度信息的队列
+        self.coordinate_queue = Queue()  # 查询到末端工具坐标和姿态信息的队列
         self.threadpool = QThreadPool()
         self.threadpool.globalInstance()
         self.commandInterface = CommandPage('命令控制')
-        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.joints_angle_queue)
-        self.connectionInterface = ConnectPage('连接设置', self.threadpool, self.command_queue, self.joints_angle_queue)
+        self.teachInterface = TeachPage('示教控制', self.threadpool, self.command_queue, self.joints_angle_queue, self.coordinate_queue)
+        self.connectionInterface = ConnectPage('连接设置', self.threadpool, self.command_queue, self.joints_angle_queue, self.coordinate_queue)
         
         self.initNavigation()
         self.initWindow()
