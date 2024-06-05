@@ -126,7 +126,8 @@ celerybeat.pid
 .venv
 env/
 venv/
-qfluent-venv/
+ops-venv/
+cs-venv/
 ENV/
 env.bak/
 venv.bak/
