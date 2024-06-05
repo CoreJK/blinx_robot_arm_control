@@ -36,10 +36,13 @@
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color:white;
 }
+
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color:white;
 }</string>
            </property>
           </widget>
@@ -73,10 +76,13 @@ PushButton:hover {
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color:white;
 }
+
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color:white;
 }</string>
            </property>
           </widget>
@@ -110,10 +116,13 @@ PushButton:hover {
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color:white;
 }
+
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color:white;
 }</string>
            </property>
           </widget>
@@ -147,10 +156,13 @@ PushButton:hover {
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color:white;
 }
+
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color:white;
 }</string>
            </property>
           </widget>
@@ -184,10 +196,13 @@ PushButton:hover {
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color:white;
 }
+
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color:white;
 }</string>
            </property>
           </widget>
@@ -295,10 +310,12 @@ PushButton:hover {
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
-    background: rgb(221, 109, 103);
+    background: rgb(225, 41, 41);
+    color: white;
 }
 PushButton:hover {
-    background: rgb(221, 109, 103);
+    background: rgb(225, 41, 41);
+    color: white;
 }</string>
            </property>
           </widget>
@@ -323,11 +340,13 @@ PushButton:hover {
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
-    background: rgb(170, 211, 140);
+    background: rgb(33, 150, 243);
+    color:white;
 }
 
 PushButton:hover {
-    background: rgb(170, 211, 140);
+    background: rgb(33, 150, 243);
+    color:white;
 }</string>
            </property>
           </widget>
@@ -355,11 +374,13 @@ PushButton:hover {
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
-    background: rgb(244, 208, 111);
+    background: rgb(33, 150, 243);
+    color:white;
 }
 
 PushButton:hover {
-    background: rgb(244, 208, 111);
+    background: rgb(33, 150, 243);
+    color:white;
 }</string>
            </property>
           </widget>
@@ -484,10 +505,12 @@ PushButton:hover {
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
-    background: rgb(221, 109, 103);
+    background: rgb(225, 41, 41);
+    color: white;
 }
 PushButton:hover {
-    background: rgb(221, 109, 103);
+    background: rgb(225, 41, 41);
+    color: white;
 }</string>
            </property>
           </widget>
@@ -561,11 +584,11 @@ PushButton:hover {
                    <widget class="ToolButton" name="JointOneSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -584,11 +607,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointOneAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -656,11 +679,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointTwoSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -679,11 +702,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointTwoAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -751,11 +774,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointThreeSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -774,11 +797,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointThreeAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -846,11 +869,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointFourSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -869,11 +892,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointFourAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -941,11 +964,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointFiveSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -964,11 +987,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointFiveAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1036,11 +1059,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointSixSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1059,11 +1082,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointSixAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1131,11 +1154,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointStepSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1154,11 +1177,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointStepAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1226,11 +1249,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointSpeedDecButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1249,11 +1272,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointSpeedUpButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1321,11 +1344,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointDelayTimeSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1344,11 +1367,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="JointDelayTimeAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1433,11 +1456,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="XAxisSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1456,11 +1479,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="XAxisAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1528,11 +1551,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="YAxisSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1551,11 +1574,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="YAxisAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1623,11 +1646,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="ZAxisSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1646,11 +1669,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="ZAxisAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1718,11 +1741,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="CoordinateStepSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1741,11 +1764,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="CoordinateAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1816,11 +1839,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="RxAxisSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1839,11 +1862,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="RxAxisAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1911,11 +1934,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="RyAxisSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -1934,11 +1957,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="RyAxisAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -2006,11 +2029,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="RzAxisSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -2029,11 +2052,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="RzAxisAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -2101,11 +2124,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="ApStepSubButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -2124,11 +2147,11 @@ ToolButton:hover {
                    <widget class="ToolButton" name="ApStepAddButton">
                     <property name="lightCustomQss" stdset="0">
                      <string>ToolButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }
 
 ToolButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
 }</string>
                     </property>
                    </widget>
@@ -2222,6 +2245,28 @@ ToolButton:hover {
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
+            <widget class="PushButton" name="RobotArmZeroButton">
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>80</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>回零</string>
+             </property>
+             <property name="lightCustomQss" stdset="0">
+              <string>PushButton {
+    background: rgb(255, 224, 0);
+}
+
+PushButton:hover {
+    background: rgb(255, 224, 0);
+}</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="PushButton" name="RobotArmResetButton">
              <property name="minimumSize">
               <size>
@@ -2234,33 +2279,13 @@ ToolButton:hover {
              </property>
              <property name="lightCustomQss" stdset="0">
               <string>PushButton {
-    background: rgb(244, 208, 111);
+    background: rgb(0, 51, 160);
+    color:white;
 }
 
 PushButton:hover {
-    background: rgb(244, 208, 111);
-}</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="PushButton" name="RobotArmZeroButton">
-             <property name="minimumSize">
-              <size>
-               <width>90</width>
-               <height>80</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>回零</string>
-             </property>
-             <property name="lightCustomQss" stdset="0">
-              <string>PushButton {
-    background: rgb(170, 211, 140);
-}
-
-PushButton:hover {
-    background: rgb(170, 211, 140);
+    background: rgb(0, 51, 160);
+    color:white;
 }</string>
              </property>
             </widget>

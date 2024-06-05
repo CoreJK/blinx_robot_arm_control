@@ -63,10 +63,12 @@
              </property>
              <property name="lightCustomQss" stdset="0">
               <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }</string>
              </property>
             </widget>
@@ -81,10 +83,12 @@ PushButton:hover {
              </property>
              <property name="lightCustomQss" stdset="0">
               <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }</string>
              </property>
             </widget>
@@ -112,10 +116,12 @@ PushButton:hover {
              </property>
              <property name="lightCustomQss" stdset="0">
               <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }</string>
              </property>
             </widget>
@@ -127,10 +133,12 @@ PushButton:hover {
              </property>
              <property name="lightCustomQss" stdset="0">
               <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }</string>
              </property>
             </widget>
@@ -189,10 +197,12 @@ PushButton:hover {
              </property>
              <property name="lightCustomQss" stdset="0">
               <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }</string>
              </property>
             </widget>
@@ -204,10 +214,12 @@ PushButton:hover {
              </property>
              <property name="lightCustomQss" stdset="0">
               <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }</string>
              </property>
             </widget>
@@ -276,10 +288,12 @@ PushButton:hover {
              </property>
              <property name="lightCustomQss" stdset="0">
               <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }</string>
              </property>
             </widget>
@@ -291,10 +305,12 @@ PushButton:hover {
              </property>
              <property name="lightCustomQss" stdset="0">
               <string>PushButton {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }
 PushButton:hover {
-    background: rgb(125, 214, 249);
+    background: rgb(33, 150, 243);
+    color: white;
 }</string>
              </property>
             </widget>
