@@ -23,6 +23,9 @@
          <property name="text">
           <string>命令发送</string>
          </property>
+         <property name="lightCustomQss" stdset="0">
+          <string>PushButton {     background: rgb(33, 150, 243);     color:white; } PushButton:hover {     background: rgb(33, 150, 243);     color:white; }</string>
+         </property>
         </widget>
        </item>
        <item>
@@ -70,12 +73,7 @@
           <string>发送</string>
          </property>
          <property name="lightCustomQss" stdset="0">
-          <string>PushButton {
-    background: rgb(125, 214, 249);
-}
-PushButton:hover {
-    background: rgb(125, 214, 249);
-}</string>
+          <string>PushButton {     background: rgb(33, 150, 243);     color:white; } PushButton:hover {     background: rgb(33, 150, 243);     color:white; }</string>
          </property>
         </widget>
        </item>
