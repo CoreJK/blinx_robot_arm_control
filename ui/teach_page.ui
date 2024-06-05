@@ -404,7 +404,7 @@ PushButton:hover {
               <widget class="TransparentToolButton" name="ActionModeIcon"/>
              </item>
              <item>
-              <widget class="StrongBodyLabel" name="ActionModelLabel">
+              <widget class="BodyLabel" name="ActionModelLabel">
                <property name="text">
                 <string>工作模式</string>
                </property>
@@ -423,6 +423,9 @@ PushButton:hover {
                </property>
                <property name="offText">
                 <string>实时</string>
+               </property>
+               <property name="lightCustomQss" stdset="0">
+                <string/>
                </property>
               </widget>
              </item>
@@ -450,9 +453,9 @@ PushButton:hover {
               <widget class="TransparentToolButton" name="ActionRecordIcon"/>
              </item>
              <item>
-              <widget class="StrongBodyLabel" name="ActionRecordLabel">
+              <widget class="BodyLabel" name="ActionRecordLabel">
                <property name="text">
-                <string>动作录制</string>
+                <string>工作录制</string>
                </property>
               </widget>
              </item>
@@ -2191,7 +2194,7 @@ ToolButton:hover {
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_9">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_tools" stretch="0,2,8">
+            <layout class="QHBoxLayout" name="horizontalLayout_tools" stretch="0,0,8">
              <property name="spacing">
               <number>6</number>
              </property>
@@ -2199,7 +2202,7 @@ ToolButton:hover {
               <widget class="TransparentToolButton" name="ToolIcon"/>
              </item>
              <item>
-              <widget class="StrongBodyLabel" name="ArmToolLabel">
+              <widget class="BodyLabel" name="ArmToolLabel">
                <property name="text">
                 <string>工具</string>
                </property>
@@ -2216,15 +2219,9 @@ ToolButton:hover {
               <widget class="TransparentToolButton" name="ToolsControlIcon"/>
              </item>
              <item>
-              <widget class="StrongBodyLabel" name="ArmControlLabel">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
+              <widget class="BodyLabel" name="BodyLabel">
                <property name="text">
-                <string>控制</string>
+                <string>执行</string>
                </property>
               </widget>
              </item>
@@ -2341,6 +2338,11 @@ PushButton:hover {
    <extends>QFrame</extends>
    <header>qfluentwidgets</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BodyLabel</class>
+   <extends>QLabel</extends>
+   <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
    <class>StrongBodyLabel</class>

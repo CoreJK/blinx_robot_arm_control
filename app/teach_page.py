@@ -19,10 +19,10 @@ from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QHeaderView,
     QSizePolicy, QSpacerItem, QStackedWidget, QTableWidgetItem,
     QVBoxLayout, QWidget)
 
-from qfluentwidgets import (CardWidget, ComboBox, HorizontalSeparator, LineEdit,
-    Pivot, ProgressBar, PushButton, SegmentedWidget,
-    StrongBodyLabel, SwitchButton, TableWidget, ToolButton,
-    TransparentToolButton, VerticalSeparator)
+from qfluentwidgets import (BodyLabel, CardWidget, ComboBox, HorizontalSeparator,
+    LineEdit, Pivot, ProgressBar, PushButton,
+    SegmentedWidget, StrongBodyLabel, SwitchButton, TableWidget,
+    ToolButton, TransparentToolButton, VerticalSeparator)
 
 class teach_page_frame(object):
     def setupUi(self, Frame):
@@ -184,7 +184,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_5.addWidget(self.ActionModeIcon)
 
-        self.ActionModelLabel = StrongBodyLabel(Frame)
+        self.ActionModelLabel = BodyLabel(Frame)
         self.ActionModelLabel.setObjectName(u"ActionModelLabel")
 
         self.horizontalLayout_5.addWidget(self.ActionModelLabel)
@@ -209,7 +209,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_8.addWidget(self.ActionRecordIcon)
 
-        self.ActionRecordLabel = StrongBodyLabel(Frame)
+        self.ActionRecordLabel = BodyLabel(Frame)
         self.ActionRecordLabel.setObjectName(u"ActionRecordLabel")
 
         self.horizontalLayout_8.addWidget(self.ActionRecordLabel)
@@ -964,7 +964,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_tools.addWidget(self.ToolIcon)
 
-        self.ArmToolLabel = StrongBodyLabel(Frame)
+        self.ArmToolLabel = BodyLabel(Frame)
         self.ArmToolLabel.setObjectName(u"ArmToolLabel")
 
         self.horizontalLayout_tools.addWidget(self.ArmToolLabel)
@@ -974,7 +974,6 @@ class teach_page_frame(object):
 
         self.horizontalLayout_tools.addWidget(self.ArmToolComboBox)
 
-        self.horizontalLayout_tools.setStretch(1, 2)
         self.horizontalLayout_tools.setStretch(2, 8)
 
         self.verticalLayout_9.addLayout(self.horizontalLayout_tools)
@@ -986,11 +985,10 @@ class teach_page_frame(object):
 
         self.horizontalLayout_tool_control.addWidget(self.ToolsControlIcon)
 
-        self.ArmControlLabel = StrongBodyLabel(Frame)
-        self.ArmControlLabel.setObjectName(u"ArmControlLabel")
-        self.ArmControlLabel.setMinimumSize(QSize(0, 0))
+        self.BodyLabel = BodyLabel(Frame)
+        self.BodyLabel.setObjectName(u"BodyLabel")
 
-        self.horizontalLayout_tool_control.addWidget(self.ArmControlLabel)
+        self.horizontalLayout_tool_control.addWidget(self.BodyLabel)
 
         self.ArmToolSwitchButton = SwitchButton(Frame)
         self.ArmToolSwitchButton.setObjectName(u"ArmToolSwitchButton")
@@ -1007,7 +1005,7 @@ class teach_page_frame(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.RobotArmZeroButton = PushButton(Frame)
         self.RobotArmZeroButton.setObjectName(u"RobotArmZeroButton")
-        self.RobotArmZeroButton.setMinimumSize(QSize(90, 80))
+        self.RobotArmZeroButton.setMinimumSize(QSize(80, 80))
 
         self.horizontalLayout_3.addWidget(self.RobotArmZeroButton)
 
@@ -1034,7 +1032,7 @@ class teach_page_frame(object):
 
         self.retranslateUi(Frame)
 
-        self.ArmActionControlStackWidget.setCurrentIndex(1)
+        self.ArmActionControlStackWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(Frame)
@@ -1150,7 +1148,8 @@ class teach_page_frame(object):
         self.ActionModelSwitchButton.setText(QCoreApplication.translate("Frame", u"\u987a\u5e8f", None))
         self.ActionModelSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u987a\u5e8f", None))
         self.ActionModelSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u5b9e\u65f6", None))
-        self.ActionRecordLabel.setText(QCoreApplication.translate("Frame", u"\u52a8\u4f5c\u5f55\u5236", None))
+        self.ActionModelSwitchButton.setProperty("lightCustomQss", "")
+        self.ActionRecordLabel.setText(QCoreApplication.translate("Frame", u"\u5de5\u4f5c\u5f55\u5236", None))
         self.RecordActivateSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u5f00\u542f", None))
         self.RecordActivateSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u5173\u95ed", None))
         self.RobotArmStopButton.setText(QCoreApplication.translate("Frame", u"\u6025\u505c", None))
@@ -1424,7 +1423,7 @@ class teach_page_frame(object):
 "    background: rgb(33, 150, 243);\n"
 "}", None))
         self.ArmToolLabel.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177", None))
-        self.ArmControlLabel.setText(QCoreApplication.translate("Frame", u"\u63a7\u5236", None))
+        self.BodyLabel.setText(QCoreApplication.translate("Frame", u"\u6267\u884c", None))
         self.ArmToolSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u5438\u53d6", None))
         self.ArmToolSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u91ca\u653e", None))
         self.RobotArmZeroButton.setText(QCoreApplication.translate("Frame", u"\u56de\u96f6", None))
