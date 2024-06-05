@@ -5,7 +5,6 @@ import shelve
 from queue import Queue
 import time
 
-import numpy as np
 from loguru import logger
 from pubsub import pub
 from PySide6.QtCore import QRunnable, Signal, QObject

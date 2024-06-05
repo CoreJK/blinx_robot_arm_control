@@ -28,9 +28,6 @@ from app.command_page import command_page_frame
 from app.teach_page import teach_page_frame
 from app.connect_page import connect_page_frame
 
-# 正逆解相关模块
-import numpy as np
-
 # 日志模块
 from loguru import logger
 logger.add(settings.LOG_FILE_PATH, level="DEBUG", rotation="50 MB", retention="7 days", compression="zip")
@@ -1008,6 +1005,23 @@ class TeachPage(QFrame, teach_page_frame):
                 elif col == 9:
                     self.update_table_cell(row_position, col, self.JointDelayTimeEdit.text())
     
+    def check_degrade_range(self, joint_number, degrade, min_degrade, max_degrade):
+        if min_degrade <= degrade <= max_degrade:
+            return True
+        else:
+            InfoBar.error(
+                title="错误",
+                content=f"第 {joint_number} 关节角度超出范围: {min_degrade} ~ {max_degrade}",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
+            self.JointStepEdit.setText("5")
+            logger.error(f"第 {joint_number} 关节角度超出范围: {min_degrade} ~ {max_degrade}")
+            return False
+    
     @check_robot_arm_connection
     @check_robot_arm_is_working
     @Slot()
@@ -1067,7 +1081,7 @@ class TeachPage(QFrame, teach_page_frame):
             else:
                 degrade = old_degrade - step_degrade
 
-            if degrade < min_degrade or degrade > max_degrade:
+            if not (min_degrade <= degrade <= max_degrade):
                 InfoBar.error(
                     title="错误",
                     content=f"第 {joint_number} 关节角度超出范围: {min_degrade} ~ {max_degrade}",
@@ -1077,12 +1091,9 @@ class TeachPage(QFrame, teach_page_frame):
                     position=InfoBarPosition.TOP,
                     parent=self
                 )
-                self.JointStepEdit.setText("5")
+                self.JointStepEdit.setText("5")  # 重置步长值
                 logger.error(f"第 {joint_number} 关节角度超出范围: {min_degrade} ~ {max_degrade}")
             else:
-                # 使用线性回归方程限制关节角度
-                degrade = np.clip(degrade, min_degrade, max_degrade)
-
                 # 构造发送命令
                 command = json.dumps(
                     {"command": "set_joint_angle", "data": [joint_number, speed_percentage, degrade]}, use_decimal=True) + '\r\n'
