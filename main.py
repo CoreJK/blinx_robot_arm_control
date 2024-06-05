@@ -30,7 +30,6 @@ from app.teach_page import teach_page_frame
 from app.connect_page import connect_page_frame
 
 # 正逆解相关模块
-import numpy as np
 from math import degrees
 from spatialmath import SE3
 from spatialmath.base import rpy2tr
@@ -1071,7 +1070,7 @@ class TeachPage(QFrame, teach_page_frame):
             else:
                 degrade = old_degrade - step_degrade
 
-            if degrade < min_degrade or degrade > max_degrade:
+            if not (min_degrade <= degrade <= max_degrade):
                 InfoBar.error(
                     title="错误",
                     content=f"第 {joint_number} 关节角度超出范围: {min_degrade} ~ {max_degrade}",
@@ -1081,12 +1080,9 @@ class TeachPage(QFrame, teach_page_frame):
                     position=InfoBarPosition.TOP,
                     parent=self
                 )
-                self.JointStepEdit.setText("5")
+                self.JointStepEdit.setText("5")  # 重置步长值
                 logger.error(f"第 {joint_number} 关节角度超出范围: {min_degrade} ~ {max_degrade}")
             else:
-                # 使用线性回归方程限制关节角度
-                degrade = np.clip(degrade, min_degrade, max_degrade)
-
                 # 构造发送命令
                 command = json.dumps(
                     {"command": "set_joint_angle", "data": [joint_number, speed_percentage, degrade]}, use_decimal=True) + '\r\n'
