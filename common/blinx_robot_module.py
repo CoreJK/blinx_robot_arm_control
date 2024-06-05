@@ -123,12 +123,12 @@ if __name__ == "__main__":
     print(mirobot)
 
     # 机械臂正运动解
-    q1 = radians(10)
-    q2 = radians(10)
-    q3 = radians(10)
-    q4 = radians(10)
-    q5 = radians(10)
-    q6 = radians(10)
+    q1 = radians(0)
+    q2 = radians(0)
+    q3 = radians(0)
+    q4 = radians(0)
+    q5 = radians(0)
+    q6 = radians(0)
     print("机械臂关节角度 = ", [round(degrees(i), 2) for i in [q1, q2, q3, q4, q5, q6]])
     arm_pose_degree = np.array([q1, q2, q3, q4, q5, q6])
     translation_vector = mirobot.fkine(arm_pose_degree)

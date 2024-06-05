@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1285</width>
-    <height>688</height>
+    <width>1312</width>
+    <height>676</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,422 +16,263 @@
   <property name="lightCustomQss" stdset="0">
    <string/>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_5">
+  <layout class="QHBoxLayout" name="horizontalLayout_15">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="7,0,3">
+    <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="7,0,3">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="7,0,0,1">
+      <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
-        <layout class="QVBoxLayout" name="TeachLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <spacer name="horizontalSpacer_30">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Minimum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>10</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="ToolButton" name="ActionImportButton">
-             <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
+          <widget class="PushButton" name="ActionImportButton">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>导入动作</string>
+           </property>
+           <property name="lightCustomQss" stdset="0">
+            <string>PushButton {
     background: rgb(125, 214, 249);
 }
-
-ToolButton:hover {
+PushButton:hover {
     background: rgb(125, 214, 249);
 }</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_31">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Minimum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>5</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="ToolButton" name="ActionOutputButton">
-             <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
-    background: rgb(125, 214, 249);
-}
-
-ToolButton:hover {
-    background: rgb(125, 214, 249);
-}</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Minimum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>320</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="SwitchButton" name="ActionModelSwitchButton">
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-             <property name="text">
-              <string>顺序指令</string>
-             </property>
-             <property name="onText">
-              <string>顺序指令</string>
-             </property>
-             <property name="offText">
-              <string>实时指令</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="SwitchButton" name="RecordActivateSwitchButton">
-             <property name="onText">
-              <string>录制模式</string>
-             </property>
-             <property name="offText">
-              <string>普通模式</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="VerticalSeparator" name="VerticalSeparator_4"/>
-           </item>
-           <item>
-            <widget class="ToolButton" name="ActionStepRunButton">
-             <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
-    background: rgb(125, 214, 249);
-}
-
-ToolButton:hover {
-    background: rgb(125, 214, 249);
-}</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Minimum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>5</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="ToolButton" name="ActionRunButton">
-             <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
-    background: rgb(125, 214, 249);
-}
-
-ToolButton:hover {
-    background: rgb(125, 214, 249);
-}</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Minimum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>5</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="ToolButton" name="ActionLoopRunButton">
-             <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
-    background: rgb(125, 214, 249);
-}
-
-ToolButton:hover {
-    background: rgb(125, 214, 249);
-}</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="LineEdit" name="ActionLoopTimes">
-             <property name="text">
-              <string/>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="placeholderText">
-              <string>1~100</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_27">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Minimum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>10</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="TableWidget" name="ActionTableWidget">
-           <column>
-            <property name="text">
-             <string>J1</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>J2</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>J3</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>J4</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>J5</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>J6</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>速度</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>工具</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>开关</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>延时</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>备注</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string/>
-            </property>
-           </column>
+           </property>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <spacer name="horizontalSpacer_29">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Minimum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>10</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="ToolButton" name="ActionDeleteButton">
-             <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
-    background: rgb(229, 142, 138);
-}
-
-ToolButton:hover {
-    background: rgb(229, 142, 138);
-}</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_5">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="ToolButton" name="ActionAddButton">
-             <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
-    background: rgb(170, 211, 140);
-}
-
-ToolButton:hover {
-    background: rgb(170, 211, 140);
-}</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_6">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Minimum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="ToolButton" name="ActionUpdateRowButton">
-             <property name="icon">
-              <iconset theme="SEND">
-               <normaloff>.</normaloff>.</iconset>
-             </property>
-             <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
-    background: rgb(240, 203, 98);
-}
-
-ToolButton:hover {
-    background: rgb(240, 203, 98);
-}</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Minimum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="ToolButton" name="ActionUpdateColButton">
-             <property name="lightCustomQss" stdset="0">
-              <string>ToolButton {
+          <spacer name="horizontalSpacer_31">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>5</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="PushButton" name="ActionOutputButton">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>导出动作</string>
+           </property>
+           <property name="lightCustomQss" stdset="0">
+            <string>PushButton {
     background: rgb(125, 214, 249);
 }
-
-ToolButton:hover {
+PushButton:hover {
     background: rgb(125, 214, 249);
 }</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_28">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Minimum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>10</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>300</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="PushButton" name="ActionStepRunButton">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>单步执行</string>
+           </property>
+           <property name="lightCustomQss" stdset="0">
+            <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>5</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="PushButton" name="ActionRunButton">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>顺序执行</string>
+           </property>
+           <property name="lightCustomQss" stdset="0">
+            <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>5</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="PushButton" name="ActionLoopRunButton">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>循环执行</string>
+           </property>
+           <property name="lightCustomQss" stdset="0">
+            <string>PushButton {
+    background: rgb(125, 214, 249);
+}
+PushButton:hover {
+    background: rgb(125, 214, 249);
+}</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="LineEdit" name="ActionLoopTimes">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="placeholderText">
+            <string>1~100</string>
+           </property>
+          </widget>
          </item>
         </layout>
+       </item>
+       <item>
+        <widget class="TableWidget" name="ActionTableWidget">
+         <property name="showGrid">
+          <bool>false</bool>
+         </property>
+         <column>
+          <property name="text">
+           <string>J1</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>J2</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>J3</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>J4</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>J5</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>J6</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>速度</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>工具</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>开关</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>延时</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>备注</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string/>
+          </property>
+         </column>
+        </widget>
        </item>
        <item>
         <widget class="HorizontalSeparator" name="HorizontalSeparator"/>
@@ -440,11 +281,90 @@ ToolButton:hover {
         <widget class="ProgressBar" name="ProgressBar"/>
        </item>
        <item>
-        <widget class="PlainTextEdit" name="TeachArmRunLogWindow">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="PushButton" name="ActionDeleteButton">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>删除动作</string>
+           </property>
+           <property name="lightCustomQss" stdset="0">
+            <string>PushButton {
+    background: rgb(221, 109, 103);
+}
+PushButton:hover {
+    background: rgb(221, 109, 103);
+}</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="PushButton" name="ActionAddButton">
+           <property name="text">
+            <string>添加动作</string>
+           </property>
+           <property name="lightCustomQss" stdset="0">
+            <string>PushButton {
+    background: rgb(170, 211, 140);
+}
+
+PushButton:hover {
+    background: rgb(170, 211, 140);
+}</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>5</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="PushButton" name="ActionUpdateRowButton">
+           <property name="text">
+            <string>更新动作</string>
+           </property>
+           <property name="lightCustomQss" stdset="0">
+            <string>PushButton {
+    background: rgb(244, 208, 111);
+}
+
+PushButton:hover {
+    background: rgb(244, 208, 111);
+}</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -452,9 +372,137 @@ ToolButton:hover {
       <widget class="VerticalSeparator" name="VerticalSeparator"/>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_11" stretch="0,12,2">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="SegmentedWidget" name="RobotArmControlSegmentedWidget"/>
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="TransparentToolButton" name="ActionModeIcon"/>
+             </item>
+             <item>
+              <widget class="StrongBodyLabel" name="ActionModelLabel">
+               <property name="text">
+                <string>工作模式</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="SwitchButton" name="ActionModelSwitchButton">
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+               <property name="text">
+                <string>顺序</string>
+               </property>
+               <property name="onText">
+                <string>顺序</string>
+               </property>
+               <property name="offText">
+                <string>实时</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_7">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>10</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="TransparentToolButton" name="ActionRecordIcon"/>
+             </item>
+             <item>
+              <widget class="StrongBodyLabel" name="ActionRecordLabel">
+               <property name="text">
+                <string>动作录制</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="SwitchButton" name="RecordActivateSwitchButton">
+               <property name="onText">
+                <string>开启</string>
+               </property>
+               <property name="offText">
+                <string>关闭</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_24">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>10</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="PushButton" name="RobotArmStopButton">
+           <property name="minimumSize">
+            <size>
+             <width>170</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>90</width>
+             <height>90</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>急停</string>
+           </property>
+           <property name="lightCustomQss" stdset="0">
+            <string>PushButton {
+    background: rgb(221, 109, 103);
+}
+PushButton:hover {
+    background: rgb(221, 109, 103);
+}</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="SegmentedWidget" name="RobotArmControlSegmentedWidget">
+         <property name="minimumSize">
+          <size>
+           <width>188</width>
+           <height>31</height>
+          </size>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QStackedWidget" name="ArmActionControlStackWidget">
@@ -2116,7 +2164,7 @@ ToolButton:hover {
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="4,7">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_9">
            <item>
@@ -2125,20 +2173,7 @@ ToolButton:hover {
               <number>6</number>
              </property>
              <item>
-              <spacer name="horizontalSpacer_16">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::Minimum</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>5</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
+              <widget class="TransparentToolButton" name="ToolIcon"/>
              </item>
              <item>
               <widget class="StrongBodyLabel" name="ArmToolLabel">
@@ -2153,70 +2188,30 @@ ToolButton:hover {
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_tool_control" stretch="0,0,0,0,0">
+            <layout class="QHBoxLayout" name="horizontalLayout_tool_control" stretch="0,0,0">
              <item>
-              <spacer name="horizontalSpacer_17">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::Minimum</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>5</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
+              <widget class="TransparentToolButton" name="ToolsControlIcon"/>
              </item>
              <item>
               <widget class="StrongBodyLabel" name="ArmControlLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>控制</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="PushButton" name="ArmClawOpenButton">
-               <property name="text">
-                <string>开</string>
+              <widget class="SwitchButton" name="ArmToolSwitchButton">
+               <property name="onText">
+                <string>吸取</string>
                </property>
-               <property name="lightCustomQss" stdset="0">
-                <string>PushButton {
-    background: rgb(125, 214, 249);
-}
-PushButton:hover {
-    background: rgb(125, 214, 249);
-}</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_8">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="PushButton" name="ArmClawCloseButton">
-               <property name="text">
-                <string>关</string>
-               </property>
-               <property name="lightCustomQss" stdset="0">
-                <string>PushButton {
-    background: rgb(229, 142, 138);
-}
-PushButton:hover {
-    background: rgb(229, 142, 138);
-}</string>
+               <property name="offText">
+                <string>释放</string>
                </property>
               </widget>
              </item>
@@ -2225,64 +2220,47 @@ PushButton:hover {
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_arm_init">
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <widget class="VerticalSeparator" name="VerticalSeparator_3"/>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_8">
-             <item>
-              <widget class="PushButton" name="RobotArmResetButton">
-               <property name="text">
-                <string>初始化</string>
-               </property>
-               <property name="lightCustomQss" stdset="0">
-                <string>PushButton {
-    background: rgb(240, 203, 98);
-}
-
-PushButton:hover {
-    background: rgb(240, 203, 98);
-}</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="PushButton" name="RobotArmZeroButton">
-               <property name="text">
-                <string>回零</string>
-               </property>
-               <property name="lightCustomQss" stdset="0">
-                <string>PushButton {
-    background: rgb(170, 211, 140);
-}
-
-PushButton:hover {
-    background: rgb(170, 211, 140);
-}</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="PushButton" name="RobotArmStopButton">
-             <property name="maximumSize">
+            <widget class="PushButton" name="RobotArmResetButton">
+             <property name="minimumSize">
               <size>
-               <width>90</width>
-               <height>90</height>
+               <width>80</width>
+               <height>80</height>
               </size>
              </property>
              <property name="text">
-              <string>急停</string>
+              <string>初始化</string>
              </property>
              <property name="lightCustomQss" stdset="0">
               <string>PushButton {
-    background: rgb(229, 142, 138);
+    background: rgb(244, 208, 111);
 }
 
 PushButton:hover {
-    background: rgb(229, 142, 138);
+    background: rgb(244, 208, 111);
+}</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="PushButton" name="RobotArmZeroButton">
+             <property name="minimumSize">
+              <size>
+               <width>90</width>
+               <height>80</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>回零</string>
+             </property>
+             <property name="lightCustomQss" stdset="0">
+              <string>PushButton {
+    background: rgb(170, 211, 140);
+}
+
+PushButton:hover {
+    background: rgb(170, 211, 140);
 }</string>
              </property>
             </widget>
@@ -2311,6 +2289,11 @@ PushButton:hover {
   <customwidget>
    <class>ToolButton</class>
    <extends>QToolButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>TransparentToolButton</class>
+   <extends>ToolButton</extends>
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
@@ -2357,11 +2340,6 @@ PushButton:hover {
   <customwidget>
    <class>LineEdit</class>
    <extends>QLineEdit</extends>
-   <header>qfluentwidgets</header>
-  </customwidget>
-  <customwidget>
-   <class>PlainTextEdit</class>
-   <extends>QPlainTextEdit</extends>
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>

@@ -222,7 +222,6 @@ class TeachPage(QFrame, teach_page_frame):
         self.ActionDeleteButton.clicked.connect(self.remove_item)
         self.ActionAddButton.clicked.connect(self.add_item)
         self.ActionUpdateRowButton.clicked.connect(self.update_row)
-        self.ActionUpdateColButton.clicked.connect(self.update_column)  # 当前组件中无法选择列更新
 
         # 示教控制页面的按钮提示信息
         self.ActionImportButton.setToolTip("导入动作文件")
@@ -285,8 +284,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.RobotArmStopButton.clicked.connect(self.stop_robot_arm_emergency)
         
         # # 末端工具控制组回调函数绑定
-        self.ArmClawOpenButton.clicked.connect(partial(self.tool_control, action=1))
-        self.ArmClawCloseButton.clicked.connect(partial(self.tool_control, action=0))
+        self.ArmToolSwitchButton.checkedChanged.connect(self.tool_switch_control)
         
         # 末端工具坐标增减回调函数绑定 
         self.XAxisAddButton.clicked.connect(partial(self.end_tool_coordinate_operate, axis='x', action="add"))
@@ -560,7 +558,6 @@ class TeachPage(QFrame, teach_page_frame):
     def run_all_action(self):
         """顺序执行示教动作"""
         if (total_row_count := self.ActionTableWidget.rowCount()) > 0:
-            self.TeachArmRunLogWindow.appendPlainText('【顺序执行】任务开始')
             InfoBar.success(
                 title="成功",
                 content="【顺序执行】任务开始",
@@ -1267,15 +1264,15 @@ class TeachPage(QFrame, teach_page_frame):
     @check_robot_arm_connection
     @check_robot_arm_is_working
     @Slot()
-    def tool_control(self, action=1):
+    def tool_switch_control(self, isChecked: bool):
         """吸盘工具开"""
         type_of_tool = self.ArmToolComboBox.currentText()
         if type_of_tool == "吸盘":
-            command = json.dumps({"command":"set_end_tool", "data": [1, action]}) + '\r\n'
-            
-            if action:
+            if isChecked:
+                command = json.dumps({"command":"set_end_tool", "data": [1, 1]}) + '\r\n'
                 logger.warning("吸盘开启!")
             else:
+                command = json.dumps({"command":"set_end_tool", "data": [1, 0]}) + '\r\n'
                 logger.warning("吸盘关闭!")
                 
             self.command_queue.put(command.encode())
@@ -1523,8 +1520,11 @@ class TeachPage(QFrame, teach_page_frame):
         self.ActionLoopRunButton.setIcon(FIF.ROTATE)
         self.ActionAddButton.setIcon(FIF.ADD_TO)
         self.ActionDeleteButton.setIcon(FIF.DELETE)
-        self.ActionUpdateColButton.setIcon(FIF.SCROLL)
         self.ActionUpdateRowButton.setIcon(FIF.MENU)
+        # 工作模式、动作录制按钮
+        self.ActionModeIcon.setIcon(FIF.CONNECT)
+        self.ActionRecordIcon.setIcon(FIF.MOVIE)
+        self.RobotArmStopButton.setIcon(FIF.UPDATE)
         # 关节控制按钮图标
         self.JointOneAddButton.setIcon(FIF.ADD)
         self.JointOneSubButton.setIcon(FIF.REMOVE)
@@ -1562,6 +1562,12 @@ class TeachPage(QFrame, teach_page_frame):
         self.RzAxisSubButton.setIcon(FIF.REMOVE)
         self.ApStepAddButton.setIcon(FIF.ADD)
         self.ApStepSubButton.setIcon(FIF.REMOVE)
+        # 工具控制按钮图标
+        self.ToolIcon.setIcon(FIF.DEVELOPER_TOOLS)
+        self.ToolsControlIcon.setIcon(FIF.ROBOT)
+        self.RobotArmZeroButton.setIcon(FIF.HOME)
+        self.RobotArmResetButton.setIcon(FIF.SYNC)
+        
     
     def update_joint_degrees_text(self, angle_data_list: list):
         """更新界面上的角度值, 并返回实时角度值
@@ -2132,7 +2138,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         
     def initWindow(self):
         """初始化窗口"""
-        self.resize(1330, 750)
+        self.resize(1531, 850)
         self.setWindowTitle("比邻星六轴机械臂上位机 v4.3.3")
         self.setWindowIcon(QIcon(str(settings.WINDOWS_ICON_PATH)))
         setThemeColor('#00AAFF')
