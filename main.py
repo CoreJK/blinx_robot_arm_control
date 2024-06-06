@@ -1091,7 +1091,6 @@ class TeachPage(QFrame, teach_page_frame):
                     position=InfoBarPosition.TOP,
                     parent=self
                 )
-                self.JointStepEdit.setText("5")  # 重置步长值
                 logger.error(f"第 {joint_number} 关节角度超出范围: {min_degrade} ~ {max_degrade}")
             else:
                 # 构造发送命令
@@ -1112,7 +1111,7 @@ class TeachPage(QFrame, teach_page_frame):
         old_degrade = self.JointStepEdit.text()
         if old_degrade:
                 new_degrade = int(old_degrade) + 5 if increase else int(old_degrade) - 5
-                if 0 < int(old_degrade) <= 360:
+                if 0 < int(new_degrade) <= 360:
                     self.JointStepEdit.setText(str(new_degrade))
                     logger.debug(f"机械臂步长修改为: {new_degrade}")
                 else:
