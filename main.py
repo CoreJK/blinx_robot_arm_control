@@ -24,7 +24,7 @@ from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot, QUrl, QRegularExpressi
 from PySide6.QtGui import QDesktopServices, QIcon, QRegularExpressionValidator
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
 from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, 
-                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition, LineEdit)
+                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition)
 from qfluentwidgets import FluentIcon as FIF
 
 # 导入子页面控件布局文件
@@ -241,12 +241,8 @@ class TeachPage(QFrame, teach_page_frame):
         
         # 示教控制添加右键的上下文菜单
         self.context_menu = QMenu(self)
-        self.copy_action = self.context_menu.addAction("复制")
-        self.paste_action = self.context_menu.addAction("粘贴")  # 默认粘贴到最后一行
-        self.updata_action = self.context_menu.addAction("更新单元格")  # 暂时无法使用
+        self.updata_action = self.context_menu.addAction("更新单元格")  # TODO: 暂时无法使用
         self.insert_row_action = self.context_menu.addAction("插入一行")  # 默认插入到最后一行，无法插入当前行的下一行
-        self.copy_action.triggered.connect(self.copy_selected_row)
-        self.paste_action.triggered.connect(self.paste_row)
         self.updata_action.triggered.connect(self.update_cell)
         self.insert_row_action.triggered.connect(self.insert_row)
         self.ActionTableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -742,11 +738,6 @@ class TeachPage(QFrame, teach_page_frame):
                 parent=self
             )
     
-    @Slot()
-    def show_context_menu(self, pos):
-        """右键复制粘贴菜单"""
-        self.context_menu.exec_(self.ActionTableWidget.mapToGlobal(pos))
-    
     @check_robot_arm_connection
     @check_robot_arm_is_working
     @Slot()
@@ -889,52 +880,12 @@ class TeachPage(QFrame, teach_page_frame):
     # 表格的右键菜单功能
     @Slot()
     def show_context_menu(self, pos):
-        """右键复制粘贴菜单"""
+        """右键菜单"""
         self.context_menu.exec(self.ActionTableWidget.mapToGlobal(pos))
-    
-    @Slot()
-    def copy_selected_row(self):
-        """复制选择行"""
-        selected_row = self.ActionTableWidget.currentRow()
-        if selected_row >= 0:
-            self.copied_row = []
-            for col in range(self.ActionTableWidget.columnCount()):
-                # 工具列、开关列，需要获取下拉框中的文本
-                if col in (7, 8):
-                    item_widget = self.ActionTableWidget.cellWidget(selected_row, col)
-                    if item_widget is not None:
-                        self.copied_row.append(item_widget.currentText())
-                else:
-                    item = self.ActionTableWidget.item(selected_row, col)
-                    if item is not None:
-                        self.copied_row.append(item.text())
-
-    @Slot()
-    def paste_row(self):
-        """粘贴选择行"""
-        if self.copied_row:
-            row_position = self.ActionTableWidget.rowCount()
-            self.ActionTableWidget.insertRow(row_position)
-            for col, value in enumerate(self.copied_row):
-                if col == 7:  # 工具列、开关列需要获取下拉框的选中值
-                    # 工具列添加下拉选择框
-                    arm_tool_combobox = ComboBox()
-                    arm_tool_combobox.addItems(["", "夹爪", "吸盘"])
-                    arm_tool_combobox.setCurrentText(value)
-                    self.update_table_cell_widget(row_position, col, arm_tool_combobox)
-                elif col == 8:
-                    # 开关列添加下拉选择框
-                    arm_tool_control = ComboBox()
-                    arm_tool_control.addItems(["", "关", "开"])
-                    arm_tool_control.setCurrentText(value)
-                    self.update_table_cell_widget(row_position, col, arm_tool_control)
-                else:
-                    self.update_table_cell(row_position, col, value)
     
     @Slot()
     def update_cell(self):
         """更新选中的单元格"""
-        # 获取选中的单元格
         selected_items = self.ActionTableWidget.selectedItems()
         if selected_items:
             selected_row = selected_items[0].row()
