@@ -16,13 +16,13 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QHeaderView,
-    QSizePolicy, QSpacerItem, QStackedWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget)
+    QSizePolicy, QSpacerItem, QStackedWidget, QTableWidget,
+    QTableWidgetItem, QVBoxLayout, QWidget)
 
 from qfluentwidgets import (BodyLabel, CardWidget, ComboBox, HorizontalSeparator,
     LineEdit, Pivot, ProgressBar, PushButton,
-    SegmentedWidget, StrongBodyLabel, SwitchButton, TableWidget,
-    ToolButton, TransparentToolButton, VerticalSeparator)
+    SegmentedWidget, StrongBodyLabel, SwitchButton, ToolButton,
+    TransparentToolButton, VerticalSeparator)
 
 class teach_page_frame(object):
     def setupUi(self, Frame):
@@ -92,9 +92,14 @@ class teach_page_frame(object):
 
         self.verticalLayout_7.addLayout(self.horizontalLayout)
 
-        self.ActionTableWidget = TableWidget(Frame)
-        if (self.ActionTableWidget.columnCount() < 12):
-            self.ActionTableWidget.setColumnCount(12)
+        self.HorizontalSeparator = HorizontalSeparator(Frame)
+        self.HorizontalSeparator.setObjectName(u"HorizontalSeparator")
+
+        self.verticalLayout_7.addWidget(self.HorizontalSeparator)
+
+        self.ActionTableWidget = QTableWidget(Frame)
+        if (self.ActionTableWidget.columnCount() < 11):
+            self.ActionTableWidget.setColumnCount(11)
         __qtablewidgetitem = QTableWidgetItem()
         self.ActionTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
@@ -117,17 +122,9 @@ class teach_page_frame(object):
         self.ActionTableWidget.setHorizontalHeaderItem(9, __qtablewidgetitem9)
         __qtablewidgetitem10 = QTableWidgetItem()
         self.ActionTableWidget.setHorizontalHeaderItem(10, __qtablewidgetitem10)
-        __qtablewidgetitem11 = QTableWidgetItem()
-        self.ActionTableWidget.setHorizontalHeaderItem(11, __qtablewidgetitem11)
         self.ActionTableWidget.setObjectName(u"ActionTableWidget")
-        self.ActionTableWidget.setShowGrid(False)
 
         self.verticalLayout_7.addWidget(self.ActionTableWidget)
-
-        self.HorizontalSeparator = HorizontalSeparator(Frame)
-        self.HorizontalSeparator.setObjectName(u"HorizontalSeparator")
-
-        self.verticalLayout_7.addWidget(self.HorizontalSeparator)
 
         self.ProgressBar = ProgressBar(Frame)
         self.ProgressBar.setObjectName(u"ProgressBar")

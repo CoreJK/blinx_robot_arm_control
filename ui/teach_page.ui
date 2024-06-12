@@ -223,10 +223,10 @@ PushButton:hover {
         </layout>
        </item>
        <item>
-        <widget class="TableWidget" name="ActionTableWidget">
-         <property name="showGrid">
-          <bool>false</bool>
-         </property>
+        <widget class="HorizontalSeparator" name="HorizontalSeparator"/>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="ActionTableWidget">
          <column>
           <property name="text">
            <string>J1</string>
@@ -282,15 +282,7 @@ PushButton:hover {
            <string>备注</string>
           </property>
          </column>
-         <column>
-          <property name="text">
-           <string/>
-          </property>
-         </column>
         </widget>
-       </item>
-       <item>
-        <widget class="HorizontalSeparator" name="HorizontalSeparator"/>
        </item>
        <item>
         <widget class="ProgressBar" name="ProgressBar"/>
@@ -2367,11 +2359,6 @@ PushButton:hover {
   <customwidget>
    <class>LineEdit</class>
    <extends>QLineEdit</extends>
-   <header>qfluentwidgets</header>
-  </customwidget>
-  <customwidget>
-   <class>TableWidget</class>
-   <extends>QTableWidget</extends>
    <header>qfluentwidgets</header>
   </customwidget>
  </customwidgets>
