@@ -25,7 +25,7 @@ from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot, QUrl, QRegularExpressi
 from PySide6.QtGui import QDesktopServices, QIcon, QRegularExpressionValidator
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
 from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, 
-                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition)
+                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition, Dialog)
 from qfluentwidgets import FluentIcon as FIF
 
 # 导入子页面控件布局文件
@@ -787,17 +787,20 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def remove_item(self):
         """示教控制删除一行动作"""
-        selected_rows = self.ActionTableWidget.selectionModel().selectedRows()
+        delete_confirm_window = Dialog("⚠️警告", "🤨确定要删除动作吗？\n👹删除动作不可恢复喔", parent=self)
+        if delete_confirm_window.exec():
+            selected_rows = self.ActionTableWidget.selectionModel().selectedRows()
 
-        if not selected_rows:
-            # 如果没有选中行，则删除最后一行
-            last_row = self.ActionTableWidget.rowCount() - 1
-            if last_row >= 0:
-                self.ActionTableWidget.removeRow(last_row)
-        else:
-            for row in reversed(selected_rows):
-                self.ActionTableWidget.removeRow(row.row())
-
+            if not selected_rows:
+                # 如果没有选中行，则删除最后一行
+                last_row = self.ActionTableWidget.rowCount() - 1
+                if last_row >= 0:
+                    self.ActionTableWidget.removeRow(last_row)
+            else:
+                for row in reversed(selected_rows):
+                    self.ActionTableWidget.removeRow(row.row())
+                    
+                    
     @check_robot_arm_connection
     @check_robot_arm_is_working
     @Slot()
