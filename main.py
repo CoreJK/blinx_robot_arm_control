@@ -16,13 +16,16 @@ from common.blinx_robot_module import Mirobot
 from common.check_tools import check_robot_arm_connection, check_robot_arm_is_working
 from common.socket_client import ClientSocket, Worker
 from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask, CommandReceiverTask
+from componets.table_view_control import (JointOneDelegate, JointTwoDelegate, JointThreeDelegate,
+                                          JointFourDelegate, JointFiveDelegate, JointSixDelegate, 
+                                          JointSpeedDelegate, JointDelayTimeDelegate)
 
 # UI 相关模块
 from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot, QUrl, QRegularExpression
 from PySide6.QtGui import QDesktopServices, QIcon, QRegularExpressionValidator
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
 from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, 
-                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition)
+                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition, LineEdit)
 from qfluentwidgets import FluentIcon as FIF
 
 # 导入子页面控件布局文件
@@ -703,7 +706,7 @@ class TeachPage(QFrame, teach_page_frame):
                 
                 loop_times = int(self.ActionLoopTimes.text().strip())
                 # 顺序模式下，最多执行 400 条动作
-                # todo 需要优化，判断在顺序模式下，发送的一组任务是否完成，完成后再发送下一组任务
+                # TODO: 需要优化，判断在顺序模式下，发送的一组任务是否完成，完成后再发送下一组任务
                 total_action_count = loop_times * row_count
                 if self.command_model == "SEQ":
                     if total_action_count <= 400:
@@ -757,6 +760,8 @@ class TeachPage(QFrame, teach_page_frame):
         """示教控制添加一行动作"""
         speed_percentage = self.JointSpeedEdit.text()  # 速度值，暂定百分比
         type_of_tool = self.ArmToolComboBox.currentText()  # 获取末端工具类型
+        
+        
         
         row_position = self.ActionTableWidget.rowCount()
         self.ActionTableWidget.insertRow(row_position)
@@ -1785,8 +1790,25 @@ class TeachPage(QFrame, teach_page_frame):
         self.RyAxisEdit.setValidator(only_float_validator)
         self.RzAxisEdit.setValidator(only_float_validator)
         self.ApStepEdit.setValidator(step_float_validator)
-    
-    
+
+        # 示教表格正则过滤规则
+        ColumnOnedelegate = JointOneDelegate(parent=self)
+        ColumnTwodelegate = JointTwoDelegate(parent=self)
+        ColumnThreedelegate = JointThreeDelegate(parent=self)
+        ColumnFourdelegate = JointFourDelegate(parent=self)
+        ColumnFivedelegate = JointFiveDelegate(parent=self)
+        ColumnSixdelegate = JointSixDelegate(parent=self)
+        ColumnSpeeddelegate = JointSpeedDelegate(parent=self)
+        ColumnDelayTimedelegate = JointDelayTimeDelegate(parent=self)
+        self.ActionTableWidget.setItemDelegateForColumn(0, ColumnOnedelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(1, ColumnTwodelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(2, ColumnThreedelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(3, ColumnFourdelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(4, ColumnFivedelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(5, ColumnSixdelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(6, ColumnSpeeddelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(9, ColumnDelayTimedelegate)
+        
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
     def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: Queue, joints_angle_queue: Queue):
@@ -2000,7 +2022,7 @@ class ConnectPage(QFrame, connect_page_frame):
             parent=self
         )
 
-    # todo: 机械臂串口连接配置回调函数
+    # TODO: 机械臂串口连接配置回调函数
     @Slot()
     def get_sb_info(self):
         """获取系统当前的串口信息并更新下拉框"""
