@@ -1040,15 +1040,14 @@ class TeachPage(QFrame, teach_page_frame):
                 if not (0 < speed_percentage <= 100):
                     InfoBar.error(
                         title="错误",
-                        content="机械臂关节【速度】值超过限制范围: 0 ~ 100",
+                        content="机械臂关节【速度】值超过限制范围: 1 ~ 100",
                         isClosable=True,
                         orient=Qt.Horizontal,
                         duration=3000,
                         position=InfoBarPosition.TOP,
                         parent=self
                     )
-                    self.JointSpeedEdit.setText("50")
-                    raise ValueError("机械臂关节【速度】值超过限制范围: 0 ~ 100")
+                    raise ValueError("机械臂关节【速度】值超过限制范围: 1 ~ 100")
             else:
                 InfoBar.error(
                     title="错误",
@@ -1098,17 +1097,16 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def modify_joint_angle_step(self, increase=True):
         """修改机械臂关节步长"""
-        old_degrade = self.JointStepEdit.text()
-        if old_degrade:
-                new_degrade = int(old_degrade) + 5 if increase else int(old_degrade) - 5
-                if 0 < int(old_degrade) <= 360:
+        old_degrade = 0 if self.JointStepEdit.text() == "" else self.JointStepEdit.text()
+        if old_degrade is not None:
+                new_degrade = int(old_degrade) + 1 if increase else int(old_degrade) - 1
+                if 0 < int(new_degrade) <= 100:
                     self.JointStepEdit.setText(str(new_degrade))
                     logger.debug(f"机械臂步长修改为: {new_degrade}")
                 else:
-                    self.JointStepEdit.setText(str(0))
                     InfoBar.warning(
                         title="警告",
-                        content="机械臂关节的步长(角度)范围: 0 ~ 360",
+                        content="机械臂关节的步长(角度)范围: 0 ~ 100",
                         isClosable=True,
                         orient=Qt.Horizontal,
                         duration=3000,
@@ -1131,15 +1129,14 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def modify_joint_speed_percentage(self, increase=True):
         """修改关节运动速度百分比"""
-        speed_percentage_edit = self.JointSpeedEdit.text()
-        if speed_percentage_edit:
+        speed_percentage_edit = 0 if self.JointSpeedEdit.text() == "" else self.JointSpeedEdit.text()
+        if speed_percentage_edit is not None:
             old_speed_percentage = int(speed_percentage_edit)
-            new_speed_percentage = old_speed_percentage + 5 if increase else old_speed_percentage - 5
-            if 0 <= new_speed_percentage <= 100:
+            new_speed_percentage = old_speed_percentage + 1 if increase else old_speed_percentage - 1
+            if 0 < new_speed_percentage <= 100:
                 self.JointSpeedEdit.setText(str(new_speed_percentage))
                 logger.debug(f"机械臂速度修改为: {new_speed_percentage}")
             else:
-                self.JointSpeedEdit.setText(str(50))
                 InfoBar.warning(
                     title="警告",
                     content=f"机械臂关节的速度范围: 0 ~ 100",
@@ -1165,8 +1162,8 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def modify_joint_delay_time(self, increase=True):
         """修改机械臂延时时间"""
-        delay_time_edit = self.JointDelayTimeEdit.text()
-        if delay_time_edit:
+        delay_time_edit = 0 if self.JointDelayTimeEdit.text() == "" else self.JointDelayTimeEdit.text()
+        if delay_time_edit is not None:
             old_delay_time = int(delay_time_edit.strip())
             new_delay_time = old_delay_time + 1 if increase else old_delay_time - 1
             if 0 <= new_delay_time <= 30:
@@ -1322,16 +1319,27 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def tool_coordinate_step_modify(self, action="add"):
         """末端工具坐标步长增减函数"""
-        coordinate_step = self.CoordinateStepEdit.text()
-        if coordinate_step:
+        coordinate_step = 0 if self.CoordinateStepEdit.text() == "" else self.CoordinateStepEdit.text()
+        if coordinate_step is not None:
             old_coordinate_step = self._decimal_round(coordinate_step, accuracy='0.001')
             if action == "add":
                 new_coordinate_step = old_coordinate_step + Decimal('1')
             else:
                 new_coordinate_step = old_coordinate_step - Decimal('1')
             
-            logger.debug(f"末端工具坐标步长设置为: {new_coordinate_step}")
-            self.CoordinateStepEdit.setText(str(new_coordinate_step))
+            if Decimal('000.000') < new_coordinate_step <= Decimal('100.000'):
+                logger.debug(f"末端工具坐标步长设置为: {new_coordinate_step}")
+                self.CoordinateStepEdit.setText(str(new_coordinate_step))
+            else:
+                InfoBar.warning(
+                    title="警告",
+                    content="末端工具坐标步长范围: 000.000 ~ 100.000",
+                    isClosable=True,
+                    orient=Qt.Horizontal,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
         else:
             InfoBar.error(
                 title="错误",
@@ -1452,8 +1460,8 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def tool_pose_step_modify(self, action="add"):
         """末端工具姿态步长增减函数"""
-        pose_step = self.ApStepEdit.text()
-        if pose_step:
+        pose_step = 0 if self.ApStepEdit.text() == "" else self.ApStepEdit.text()
+        if pose_step is not None:
             old_pose_step = self._decimal_round(pose_step, accuracy='0.01')
             if action == "add":
                 new_pose_step = old_pose_step + Decimal('1')
@@ -1461,8 +1469,19 @@ class TeachPage(QFrame, teach_page_frame):
                 new_pose_step = old_pose_step - Decimal('1')
             else:
                 raise ValueError("action 参数只能为 add 或 sub")
-            logger.debug(f"末端工具姿态步长设置为: {new_pose_step}")
-            self.ApStepEdit.setText(str(new_pose_step))
+            if Decimal('0.00') < new_pose_step <= Decimal('100.00'):
+                logger.debug(f"末端工具姿态步长设置为: {new_pose_step}")
+                self.ApStepEdit.setText(str(new_pose_step))
+            else:
+                InfoBar.warning(
+                    title="警告",
+                    content="末端工具姿态步长范围: 0.00 ~ 100.00",
+                    isClosable=True,
+                    orient=Qt.Horizontal,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
         else:
             InfoBar.error(
                 title="错误",
@@ -1730,16 +1749,20 @@ class TeachPage(QFrame, teach_page_frame):
     def init_input_validator(self):
         """设置输入框的过滤规则"""
         # 只允许输入阿拉伯数字
-        only_digidts_regex = QRegularExpression(r'^[0-9]{1,3}$')
+        only_digidts_regex = QRegularExpression(r'^([1-9][0-9]?|100)$')
+        joint_delay_time_regex = QRegularExpression(r'^(30|[1-2]?[0-9]|0)$')
         only_digidts_validator = QRegularExpressionValidator(only_digidts_regex, self)
+        joint_delay_time_validator = QRegularExpressionValidator(joint_delay_time_regex, self)
         self.ActionLoopTimes.setValidator(only_digidts_validator)
         self.JointStepEdit.setValidator(only_digidts_validator)
         self.JointSpeedEdit.setValidator(only_digidts_validator)
-        self.JointDelayTimeEdit.setValidator(only_digidts_validator)
+        self.JointDelayTimeEdit.setValidator(joint_delay_time_validator)
         
         # 只允许输入浮点数
-        only_float_regex = QRegularExpression(r'^-?\d{1,3}(\.\d{1,3})?$')
+        only_float_regex = QRegularExpression(r'^\d{1,3}(\.\d{1,3})?$')
+        step_float_regex = QRegularExpression(r'^(100|[0-9][0-9]?)(\.(100|[0-9][0-9]?))?$')
         only_float_validator = QRegularExpressionValidator(only_float_regex, self)
+        step_float_validator = QRegularExpressionValidator(step_float_regex, self)
         
         # 关节控制正则过滤
         self.JointOneEdit.setValidator(only_float_validator)
@@ -1753,13 +1776,13 @@ class TeachPage(QFrame, teach_page_frame):
         self.XAxisEdit.setValidator(only_float_validator)
         self.YAxisEdit.setValidator(only_float_validator)
         self.ZAxisEdit.setValidator(only_float_validator)
-        self.CoordinateStepEdit.setValidator(only_float_validator)
+        self.CoordinateStepEdit.setValidator(step_float_validator)
         
         # 末端工具位置与姿态正则过滤
         self.RxAxisEdit.setValidator(only_float_validator)
         self.RyAxisEdit.setValidator(only_float_validator)
         self.RzAxisEdit.setValidator(only_float_validator)
-        self.ApStepEdit.setValidator(only_digidts_validator)
+        self.ApStepEdit.setValidator(step_float_validator)
     
     
 class ConnectPage(QFrame, connect_page_frame):
