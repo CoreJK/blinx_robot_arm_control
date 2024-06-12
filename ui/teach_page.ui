@@ -398,28 +398,12 @@ PushButton:hover {
              <item>
               <widget class="BodyLabel" name="ActionModelLabel">
                <property name="text">
-                <string>工作模式</string>
+                <string>指令执行模式</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="SwitchButton" name="ActionModelSwitchButton">
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-               <property name="text">
-                <string>顺序</string>
-               </property>
-               <property name="onText">
-                <string>顺序</string>
-               </property>
-               <property name="offText">
-                <string>实时</string>
-               </property>
-               <property name="lightCustomQss" stdset="0">
-                <string/>
-               </property>
-              </widget>
+              <widget class="ComboBox" name="CommandModeComboBox"/>
              </item>
              <item>
               <spacer name="horizontalSpacer_7">
@@ -447,7 +431,7 @@ PushButton:hover {
              <item>
               <widget class="BodyLabel" name="ActionRecordLabel">
                <property name="text">
-                <string>工作录制</string>
+                <string>关节动作录制</string>
                </property>
               </widget>
              </item>
@@ -485,7 +469,7 @@ PushButton:hover {
           <widget class="PushButton" name="RobotArmStopButton">
            <property name="minimumSize">
             <size>
-             <width>170</width>
+             <width>150</width>
              <height>80</height>
             </size>
            </property>

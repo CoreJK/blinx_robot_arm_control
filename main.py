@@ -209,10 +209,16 @@ class TeachPage(QFrame, teach_page_frame):
         self.ArmToolOptions = self.ArmToolComboBox.addItems(self.tool_type)
         self.ArmToolComboBox.setCurrentText("吸盘")
         
+        # 机械臂工作模式下拉框
+        self.command_model_type = ["顺序模式", "实时模式"]
+        self.CommandModeComboBox.addItems(self.command_model_type)
+        self.CommandModeComboBox.setPlaceholderText("顺序模式")
+        self.CommandModeComboBox.setCurrentText(0)
+        
         # 示教控制操作按钮槽函数绑定
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
-        self.ActionModelSwitchButton.checkedChanged.connect(self.change_command_model)
+        self.CommandModeComboBox.currentIndexChanged.connect(self.change_command_mode)
         self.ActionStepRunButton.clicked.connect(self.run_action_step)
         self.ActionRunButton.clicked.connect(self.run_all_action)
         self.ActionLoopRunButton.clicked.connect(self.run_action_loop)
@@ -445,11 +451,13 @@ class TeachPage(QFrame, teach_page_frame):
     @check_robot_arm_connection
     @check_robot_arm_is_working
     @Slot()
-    def change_command_model(self, isChecked: bool):
-        """切换命令模式"""
-        # INT: 实时指令模式(True)
-        # SEQ: 顺序执行模式(False)
-        self.command_model = "SEQ" if isChecked else "INT"
+    def change_command_mode(self, mode_index):
+        """切换命令模式
+        
+        :params mode_index: 0 顺序模式(SEQ), 1 实时模式(INT)
+        """
+        logger.debug(f"命令模式当前索引: {mode_index}")
+        self.command_model = "SEQ" if mode_index == 0 else "INT"
         logger.warning(f"命令模式切换: {self.command_model} !")
         command_model_payload = {"command": "set_robot_mode", "data": [self.command_model]}
         command_model_payload_str = json.dumps(command_model_payload).replace(' ', "") + '\r\n'
@@ -1665,11 +1673,11 @@ class TeachPage(QFrame, teach_page_frame):
                     
                     if cmd_model == "SEQ":
                         logger.warning(f"机械臂当前为 SEQ 顺序模式!")
-                        self.ActionModelSwitchButton.setChecked(True)
+                        self.CommandModeComboBox.setCurrentIndex(0)
                         self.command_model = "SEQ"
                     else:
                         logger.warning(f"机械臂当前为 INT 实时模式!")
-                        self.ActionModelSwitchButton.setChecked(False)
+                        self.CommandModeComboBox.setCurrentIndex(1)
                         self.command_model = "INT"
                         
                     logger.warning("更新机械臂命令模式定时器停止!")

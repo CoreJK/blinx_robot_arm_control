@@ -186,11 +186,10 @@ class teach_page_frame(object):
 
         self.horizontalLayout_5.addWidget(self.ActionModelLabel)
 
-        self.ActionModelSwitchButton = SwitchButton(Frame)
-        self.ActionModelSwitchButton.setObjectName(u"ActionModelSwitchButton")
-        self.ActionModelSwitchButton.setChecked(True)
+        self.CommandModeComboBox = ComboBox(Frame)
+        self.CommandModeComboBox.setObjectName(u"CommandModeComboBox")
 
-        self.horizontalLayout_5.addWidget(self.ActionModelSwitchButton)
+        self.horizontalLayout_5.addWidget(self.CommandModeComboBox)
 
         self.horizontalSpacer_7 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
@@ -228,7 +227,7 @@ class teach_page_frame(object):
 
         self.RobotArmStopButton = PushButton(Frame)
         self.RobotArmStopButton.setObjectName(u"RobotArmStopButton")
-        self.RobotArmStopButton.setMinimumSize(QSize(170, 80))
+        self.RobotArmStopButton.setMinimumSize(QSize(150, 80))
         self.RobotArmStopButton.setMaximumSize(QSize(90, 90))
 
         self.horizontalLayout_9.addWidget(self.RobotArmStopButton)
@@ -1141,12 +1140,8 @@ class teach_page_frame(object):
 "    background: rgb(33, 150, 243);\n"
 "    color:white;\n"
 "}", None))
-        self.ActionModelLabel.setText(QCoreApplication.translate("Frame", u"\u5de5\u4f5c\u6a21\u5f0f", None))
-        self.ActionModelSwitchButton.setText(QCoreApplication.translate("Frame", u"\u987a\u5e8f", None))
-        self.ActionModelSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u987a\u5e8f", None))
-        self.ActionModelSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u5b9e\u65f6", None))
-        self.ActionModelSwitchButton.setProperty("lightCustomQss", "")
-        self.ActionRecordLabel.setText(QCoreApplication.translate("Frame", u"\u5de5\u4f5c\u5f55\u5236", None))
+        self.ActionModelLabel.setText(QCoreApplication.translate("Frame", u"\u6307\u4ee4\u6267\u884c\u6a21\u5f0f", None))
+        self.ActionRecordLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u8282\u52a8\u4f5c\u5f55\u5236", None))
         self.RecordActivateSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u5f00\u542f", None))
         self.RecordActivateSwitchButton.setOffText(QCoreApplication.translate("Frame", u"\u5173\u95ed", None))
         self.RobotArmStopButton.setText(QCoreApplication.translate("Frame", u"\u6025\u505c", None))
