@@ -5,6 +5,7 @@ import simplejson as json
 import shelve
 import sys
 import time
+from datetime import datetime
 from decimal import Decimal
 from functools import partial
 from queue import Queue
@@ -394,7 +395,8 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()                    
     def export_data(self):
         """导出动作"""
-        file_name, _ = QFileDialog.getSaveFileName(self, "导出动作文件", "", "JSON Files (*.json);;All Files (*)",
+        file_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_name, _ = QFileDialog.getSaveFileName(self, "导出动作文件", f"robot_arm_action_{file_timestamp}.json", "JSON Files (*.json);;All Files (*)",
                                                    )
         if file_name:
             logger.info("开始导出动作文件")
