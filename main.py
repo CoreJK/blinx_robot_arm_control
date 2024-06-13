@@ -650,7 +650,7 @@ class TeachPage(QFrame, teach_page_frame):
     def run_action_step(self):
         """单次执行选定的动作"""
         # 获取到选定的动作
-        if (selected_row := self.ActionTableWidget.currentRow()) > 0:
+        if (selected_row := self.ActionTableWidget.currentRow()) >= 0:
             InfoBar.success(
                 title="成功",
                 content=f"【单次执行】正则执行第 {selected_row + 1} 个动作",
