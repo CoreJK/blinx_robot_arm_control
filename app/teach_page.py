@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'teach_page.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.3
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -1150,7 +1150,15 @@ class teach_page_frame(object):
 "    color: white;\n"
 "}\n"
 "PushButton:hover {\n"
-"    background: rgb(225, 41, 41);\n"
+"    background: rgba(225, 41, 41, 0.5);\n"
+"    color: white;\n"
+"}\n"
+"PushButton:pressed {\n"
+"    background: rgb(200, 20, 20);\n"
+"    color: white;\n"
+"}\n"
+"PushButton:disabled {\n"
+"    background: rgba(225, 41, 41, 0.5);\n"
 "    color: white;\n"
 "}", None))
         self.JointOneLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82821", None))

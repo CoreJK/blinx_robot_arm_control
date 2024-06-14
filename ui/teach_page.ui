@@ -488,7 +488,15 @@ PushButton:hover {
     color: white;
 }
 PushButton:hover {
-    background: rgb(225, 41, 41);
+    background: rgba(225, 41, 41, 0.5);
+    color: white;
+}
+PushButton:pressed {
+    background: rgb(200, 20, 20);
+    color: white;
+}
+PushButton:disabled {
+    background: rgba(225, 41, 41, 0.5);
     color: white;
 }</string>
            </property>
