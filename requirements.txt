@@ -4,12 +4,13 @@ loguru==0.7.2
 numpy==1.22.4
 Pypubsub==4.0.3
 pyserial==3.5
-PySide6==6.6.3.1
+PySide6==6.6.2
 PySide6-Fluent-Widgets==1.5.7
-PySide6_Addons==6.6.3.1
-PySide6_Essentials==6.6.3.1
+PySide6_Addons==6.6.2
+PySide6_Essentials==6.6.2
 PySideSix-Frameless-Window==0.3.12
 pywin32==306
-shiboken6==6.6.3.1
+shiboken6==6.6.2
 simplejson==3.19.2
 win32-setctime==1.1.0
+zstandard==0.22.0

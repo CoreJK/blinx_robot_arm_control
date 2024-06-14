@@ -1226,9 +1226,9 @@ class TeachPage(QFrame, teach_page_frame):
         InfoBar.warning(
             title="警告",
             content="机械臂急停! \n请排除完问题后, 点击两次:【初始化】按钮",
-            isClosable=False,
+            isClosable=True,
             orient=Qt.Horizontal,
-            duration=3000,
+            duration=-1,
             position=InfoBarPosition.TOP,
             parent=self
             )
