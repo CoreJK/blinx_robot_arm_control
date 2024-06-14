@@ -198,7 +198,11 @@ class TeachPage(QFrame, teach_page_frame):
         self.table_action_thread_flag = True  # 顺序执行示教动作线程标志位
         self.robot_arm_table_action_status = False  # 顺序执行示教动作任务进行标志位
         self.robot_arm_is_connected = False  # 机械臂连接状态
+        self.robot_arm_emergency_stop = False  # 机械臂急停状态
+        self.init_button_clicks = 0  # 初始化按钮点击次数，用于机械臂急停按钮状态切换
         self.command_model = "SEQ"  # 用于示教执行命令时，判断机械臂的命令模式的标志位 SEQ(顺序指令), INT(实时指令)
+        
+        # 线程与队列
         self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
         self.joints_angle_queue = joints_angle_queue  # 查询到的机械臂关节角度队列
@@ -562,6 +566,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def run_all_action(self):
         """顺序执行示教动作"""
@@ -646,6 +651,7 @@ class TeachPage(QFrame, teach_page_frame):
 
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def run_action_step(self):
         """单次执行选定的动作"""
@@ -692,6 +698,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def run_action_loop(self):
         """循环执行动作"""
@@ -754,6 +761,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def add_item(self):
         """示教控制添加一行动作"""
@@ -792,6 +800,7 @@ class TeachPage(QFrame, teach_page_frame):
 
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def remove_item(self):
         """示教控制删除一行动作"""
@@ -811,6 +820,7 @@ class TeachPage(QFrame, teach_page_frame):
                     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def update_row(self):
         """示教控制更新指定行的动作"""
@@ -851,6 +861,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def update_column(self):
         """更新选中的列"""
@@ -982,6 +993,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def modify_joint_angle(self, joint_number, min_degrade, max_degrade, increase=True):
         """机械臂关节角度增减操作"""
@@ -1165,6 +1177,14 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def robot_arm_initialize(self):
         """机械臂初始化"""
+        if self.robot_arm_emergency_stop:
+            self.init_button_clicks += 1
+            if self.init_button_clicks == 2:
+                self.robot_arm_emergency_stop = False
+                self.init_button_clicks = 0
+                self.RobotArmStopButton.setText("急停")
+                self.RobotArmStopButton.setEnabled(True)
+                
         command = json.dumps({"command": "set_joint_initialize", "data": [0]}).replace('', "") + '\r\n'
         self.command_queue.put(command.encode())
         self.JointDelayTimeEdit.setText("0")  # 复位时延时时间设置为 0
@@ -1184,6 +1204,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def reset_to_zero(self):
         """机械臂回零"""
@@ -1213,18 +1234,26 @@ class TeachPage(QFrame, teach_page_frame):
         # 重置线程工作状态
         pub.sendMessage('tale_action_thread_flag', flag=False)  # 示教线程标志位设置为 False
         self.update_table_action_task_status(status_flag=False)
+        
+        # 机械臂急停状态更新
+        self.robot_arm_emergency_stop = True
+        
         InfoBar.warning(
             title="警告",
-            content="机械臂急停! \n请排除完问题后, 点击两次:【初始化】按钮",
+            content="机械臂急停!\n请排除完问题后, 点击两次:【初始化】按钮，解除急停状态!",
             isClosable=True,
             orient=Qt.Horizontal,
             duration=-1,
             position=InfoBarPosition.TOP,
             parent=self
             )
+        
+        self.RobotArmStopButton.setText("机械臂已急停")
+        self.RobotArmStopButton.setEnabled(False)
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def tool_switch_control(self, isChecked: bool):
         """吸盘工具开"""
@@ -1251,6 +1280,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def end_tool_coordinate_operate(self, axis: str, action: str = "add"):
         """末端工具坐标增减函数"""

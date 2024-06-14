@@ -122,6 +122,10 @@ PushButton:hover {
 PushButton:hover {
     background: rgb(33, 150, 243);
     color: white;
+}
+PushButton:disabled {
+    background: rgba(33, 150, 243, 0.5);
+    color: white;
 }</string>
              </property>
             </widget>
@@ -138,6 +142,10 @@ PushButton:hover {
 }
 PushButton:hover {
     background: rgb(33, 150, 243);
+    color: white;
+}
+PushButton:disabled {
+    background: rgba(33, 150, 243, 0.5);
     color: white;
 }</string>
              </property>

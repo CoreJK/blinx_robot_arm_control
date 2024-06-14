@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'connect_page.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.3
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -239,6 +239,10 @@ class connect_page_frame(object):
 "PushButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "    color: white;\n"
+"}\n"
+"PushButton:disabled {\n"
+"    background: rgba(33, 150, 243, 0.5);\n"
+"    color: white;\n"
 "}", None))
         self.RobotArmDisconnectButton.setText(QCoreApplication.translate("Frame", u"\u65ad\u5f00\u8fde\u63a5", None))
         self.RobotArmDisconnectButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
@@ -247,6 +251,10 @@ class connect_page_frame(object):
 "}\n"
 "PushButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
+"    color: white;\n"
+"}\n"
+"PushButton:disabled {\n"
+"    background: rgba(33, 150, 243, 0.5);\n"
 "    color: white;\n"
 "}", None))
         self.HeaderCardWidget_2.setTitle(QCoreApplication.translate("Frame", u"\u673a\u68b0\u81c2 WiFi \u6a21\u5f0f\u914d\u7f6e", None))
