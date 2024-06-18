@@ -214,9 +214,9 @@ class TeachPage(QFrame, teach_page_frame):
         self.ArmToolComboBox.setCurrentText("吸盘")
         
         # 机械臂工作模式下拉框
-        self.command_model_type = ["顺序模式", "实时模式"]
+        self.command_model_type = ["顺序执行", "立即执行"]
         self.CommandModeComboBox.addItems(self.command_model_type)
-        self.CommandModeComboBox.setPlaceholderText("顺序模式")
+        self.CommandModeComboBox.setPlaceholderText("顺序执行")
         self.CommandModeComboBox.setCurrentText(0)
         
         # 示教控制操作按钮槽函数绑定
@@ -476,9 +476,9 @@ class TeachPage(QFrame, teach_page_frame):
                 if self.table_action_thread_flag:
                     pub.subscribe(self._check_tale_action_thread_flag, 'tale_action_thread_flag')
                     if self.command_model == "SEQ":
-                        logger.warning(f"【顺序模式】机械臂正在发送第 {each_row + 1} 个动作")
+                        logger.warning(f"【顺序执行】模式，机械臂正在发送第 {each_row + 1} 个动作")
                     else:
-                        logger.warning(f"【实时模式】机械臂正在执行第 {each_row + 1} 个动作")
+                        logger.warning(f"【立即执行】模式，机械臂正在执行第 {each_row + 1} 个动作")
                     
                     # 更新任务执行的进度条
                     self.ProgressBar.setVal(100 * (each_row + 1) / total_action_row)
