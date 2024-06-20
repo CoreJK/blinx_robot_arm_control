@@ -13,7 +13,7 @@ from pubsub import pub
 
 import common.settings as settings
 from common.blinx_robot_module import Mirobot
-from common.check_tools import check_robot_arm_connection, check_robot_arm_is_working
+from common.check_tools import check_robot_arm_connection, check_robot_arm_is_working, check_robot_arm_emergency_stop
 from common.socket_client import ClientSocket, Worker
 from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask, CommandReceiverTask
 from componets.table_view_control import (JointOneDelegate, JointTwoDelegate, JointThreeDelegate,
@@ -2174,7 +2174,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
     def initWindow(self):
         """初始化窗口"""
         self.resize(1531, 850)
-        self.setWindowTitle("比邻星六轴机械臂上位机 v4.3.3")
+        self.setWindowTitle("比邻星六轴机械臂上位机 v4.5.3")
         self.setWindowIcon(QIcon(str(settings.WINDOWS_ICON_PATH)))
         setThemeColor('#00AAFF')
         
@@ -2205,7 +2205,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         """弹出帮助信息框"""
         w = MessageBox(
             '📖帮助',
-            '🎊欢迎使用比邻星六轴机械臂上位机 v4.3.3🎊\n\n👇使用文档请访问官网获取👇',
+            '🎊欢迎使用比邻星六轴机械臂上位机 v4.5.3🎊\n\n👇使用文档请访问官网获取👇',
             self
         )
         w.yesButton.setText('直达官网🚀')
