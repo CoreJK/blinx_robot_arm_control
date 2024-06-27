@@ -704,23 +704,24 @@ class TeachPage(QFrame, teach_page_frame):
         """循环执行动作"""
         if (row_count := self.ActionTableWidget.rowCount()) > 0:
             if self.ActionLoopTimes.text().isdigit():
-                
-                InfoBar.success(
-                    title="成功",
-                    content="【循环执行】任务开始",
-                    orient=Qt.Horizontal,
-                    duration=3000,
-                    isClosable=True,
-                    position=InfoBarPosition.TOP_LEFT,
-                    parent=self
-                )
-                
                 loop_times = int(self.ActionLoopTimes.text().strip())
+                
                 # 顺序模式下，最多执行 400 条动作
                 # TODO: 需要优化，判断在顺序模式下，发送的一组任务是否完成，完成后再发送下一组任务
                 total_action_count = loop_times * row_count
                 if self.command_model == "SEQ":
                     if total_action_count <= 400:
+                        
+                        InfoBar.success(
+                            title="成功",
+                            content="【循环执行】任务开始",
+                            orient=Qt.Horizontal,
+                            duration=3000,
+                            isClosable=True,
+                            position=InfoBarPosition.TOP_LEFT,
+                            parent=self
+                        )
+                        
                         loop_work_thread = Worker(self.arm_action_loop_thread, loop_times)
                         self.thread_pool.start(loop_work_thread)
                     else:
@@ -729,13 +730,22 @@ class TeachPage(QFrame, teach_page_frame):
                             content=f"顺序模式下，最多执行 400 条动作\n当前 {total_action_count} 条，请减少循环次数!",
                             isClosable=True,
                             orient=Qt.Horizontal,
-                            duration=3000,
-                            position=InfoBarPosition.TOP_LEFT,
+                            duration=-1,
+                            position=InfoBarPosition.TOP,
                             parent=self
                         )
                 elif self.command_model == "INT":
                     loop_work_thread = Worker(self.arm_action_loop_thread, loop_times)
                     self.thread_pool.start(loop_work_thread)
+                    InfoBar.success(
+                            title="成功",
+                            content="【循环执行】任务开始",
+                            orient=Qt.Horizontal,
+                            duration=3000,
+                            isClosable=True,
+                            position=InfoBarPosition.TOP_LEFT,
+                            parent=self
+                        )
                 else:
                     logger.error(f"未知命令模式: {self.command_model}")
             else:
