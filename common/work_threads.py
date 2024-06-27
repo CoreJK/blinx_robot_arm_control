@@ -202,7 +202,7 @@ class CommandReceiverTask(QRunnable):
                     if response_str.startswith('{') and response_str.endswith('\r\n'):
                         # 命令缓冲区
                         recv_buffer = self.split_by_symbol(response_str, split_symbol='\r\n')
-                        # todo 分流命令, 需要做并发处理
+                        # TODO: 分流命令, 需要做并发处理
                         self.get_joints_move_status(recv_buffer)
                     else:
                         logger.warning(f"数据不完整: {response_str}")

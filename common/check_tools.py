@@ -38,3 +38,22 @@ def check_robot_arm_is_working(func):
         else:
             return func(self, *args, **kwargs)
     return wrapper
+
+
+def check_robot_arm_emergency_stop(func):
+    """检查机械臂是否处于急停状态的装饰器"""
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        if self.robot_arm_emergency_stop:
+            InfoBar.warning(
+                title="警告",
+                content="⚠️机械臂处于急停状态！\n请解除急停状态后再操作机械臂！",
+                orient=Qt.Horizontal,
+                position=InfoBarPosition.TOP,
+                isClosable=True,
+                duration=5000,
+                parent=self
+            )
+        else:
+            return func(self, *args, **kwargs)
+    return wrapper

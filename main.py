@@ -5,22 +5,26 @@ import simplejson as json
 import shelve
 import sys
 import time
+from datetime import datetime
 from decimal import Decimal
 from functools import partial
 from queue import Queue
 from pubsub import pub
 
 import common.settings as settings
-from common.check_tools import check_robot_arm_connection, check_robot_arm_is_working
+from common.check_tools import check_robot_arm_connection, check_robot_arm_is_working, check_robot_arm_emergency_stop
 from common.socket_client import ClientSocket, Worker
 from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask, CommandReceiverTask
+from componets.table_view_control import (JointOneDelegate, JointTwoDelegate, JointThreeDelegate,
+                                          JointFourDelegate, JointFiveDelegate, JointSixDelegate, 
+                                          JointSpeedDelegate, JointDelayTimeDelegate)
 
 # UI 相关模块
 from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot, QUrl, QRegularExpression
 from PySide6.QtGui import QDesktopServices, QIcon, QRegularExpressionValidator
 from PySide6.QtWidgets import (QApplication, QFrame, QMenu, QTableWidgetItem, QFileDialog)
 from qfluentwidgets import (MSFluentWindow, CardWidget, ComboBox, 
-                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition)
+                            NavigationItemPosition, MessageBox, setThemeColor, InfoBar, InfoBarPosition, Dialog)
 from qfluentwidgets import FluentIcon as FIF
 
 # 导入子页面控件布局文件
@@ -53,7 +57,7 @@ class CommandPage(QFrame, command_page_frame):
         
     def initButtonIcon(self):
         """初始化按钮图标"""
-        self.CommandSendButton.setIcon(FIF.SEND)
+        self.CommandSendButton.setIcon(FIF.SEND.icon(color="#ffffff"))
         self.CommandSendButton.setText('发送')
 
     def initGetRobotArmStatusTask(self):
@@ -188,7 +192,11 @@ class TeachPage(QFrame, teach_page_frame):
         self.table_action_thread_flag = True  # 顺序执行示教动作线程标志位
         self.robot_arm_table_action_status = False  # 顺序执行示教动作任务进行标志位
         self.robot_arm_is_connected = False  # 机械臂连接状态
+        self.robot_arm_emergency_stop = False  # 机械臂急停状态
+        self.init_button_clicks = 0  # 初始化按钮点击次数，用于机械臂急停按钮状态切换
         self.command_model = "SEQ"  # 用于示教执行命令时，判断机械臂的命令模式的标志位 SEQ(顺序指令), INT(实时指令)
+        
+        # 线程与队列
         self.thread_pool = thread_pool  
         self.command_queue = command_queue  # 控制命令队列
         self.joints_angle_queue = joints_angle_queue  # 查询到的机械臂关节角度队列
@@ -205,10 +213,16 @@ class TeachPage(QFrame, teach_page_frame):
         self.ArmToolOptions = self.ArmToolComboBox.addItems(self.tool_type)
         self.ArmToolComboBox.setCurrentText("吸盘")
         
+        # 机械臂工作模式下拉框
+        self.command_model_type = ["顺序执行", "立即执行"]
+        self.CommandModeComboBox.addItems(self.command_model_type)
+        self.CommandModeComboBox.setPlaceholderText("顺序执行")
+        self.CommandModeComboBox.setCurrentText(0)
+        
         # 示教控制操作按钮槽函数绑定
         self.ActionImportButton.clicked.connect(self.import_data)
         self.ActionOutputButton.clicked.connect(self.export_data)
-        self.ActionModelSwitchButton.checkedChanged.connect(self.change_command_model)
+        self.CommandModeComboBox.currentIndexChanged.connect(self.change_command_mode)
         self.ActionStepRunButton.clicked.connect(self.run_action_step)
         self.ActionRunButton.clicked.connect(self.run_all_action)
         self.ActionLoopRunButton.clicked.connect(self.run_action_loop)
@@ -237,12 +251,8 @@ class TeachPage(QFrame, teach_page_frame):
         
         # 示教控制添加右键的上下文菜单
         self.context_menu = QMenu(self)
-        self.copy_action = self.context_menu.addAction("复制")
-        self.paste_action = self.context_menu.addAction("粘贴")  # 默认粘贴到最后一行
-        self.updata_action = self.context_menu.addAction("更新单元格")  # 暂时无法使用
+        self.updata_action = self.context_menu.addAction("更新单元格")  # TODO: 暂时无法使用
         self.insert_row_action = self.context_menu.addAction("插入一行")  # 默认插入到最后一行，无法插入当前行的下一行
-        self.copy_action.triggered.connect(self.copy_selected_row)
-        self.paste_action.triggered.connect(self.paste_row)
         self.updata_action.triggered.connect(self.update_cell)
         self.insert_row_action.triggered.connect(self.insert_row)
         self.ActionTableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -394,7 +404,8 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()                    
     def export_data(self):
         """导出动作"""
-        file_name, _ = QFileDialog.getSaveFileName(self, "导出动作文件", "", "JSON Files (*.json);;All Files (*)",
+        file_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_name, _ = QFileDialog.getSaveFileName(self, "导出动作文件", f"robot_arm_action_{file_timestamp}.json", "JSON Files (*.json);;All Files (*)",
                                                    )
         if file_name:
             logger.info("开始导出动作文件")
@@ -444,11 +455,13 @@ class TeachPage(QFrame, teach_page_frame):
     @check_robot_arm_connection
     @check_robot_arm_is_working
     @Slot()
-    def change_command_model(self, isChecked: bool):
-        """切换命令模式"""
-        # INT: 实时指令模式(True)
-        # SEQ: 顺序执行模式(False)
-        self.command_model = "SEQ" if isChecked else "INT"
+    def change_command_mode(self, mode_index):
+        """切换命令模式
+        
+        :params mode_index: 0 顺序模式(SEQ), 1 实时模式(INT)
+        """
+        logger.debug(f"命令模式当前索引: {mode_index}")
+        self.command_model = "SEQ" if mode_index == 0 else "INT"
         logger.warning(f"命令模式切换: {self.command_model} !")
         command_model_payload = {"command": "set_robot_mode", "data": [self.command_model]}
         command_model_payload_str = json.dumps(command_model_payload).replace(' ', "") + '\r\n'
@@ -463,9 +476,9 @@ class TeachPage(QFrame, teach_page_frame):
                 if self.table_action_thread_flag:
                     pub.subscribe(self._check_tale_action_thread_flag, 'tale_action_thread_flag')
                     if self.command_model == "SEQ":
-                        logger.warning(f"【顺序模式】机械臂正在发送第 {each_row + 1} 个动作")
+                        logger.warning(f"【顺序执行】模式，机械臂正在发送第 {each_row + 1} 个动作")
                     else:
-                        logger.warning(f"【实时模式】机械臂正在执行第 {each_row + 1} 个动作")
+                        logger.warning(f"【立即执行】模式，机械臂正在执行第 {each_row + 1} 个动作")
                     
                     # 更新任务执行的进度条
                     self.ProgressBar.setVal(100 * (each_row + 1) / total_action_row)
@@ -547,6 +560,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def run_all_action(self):
         """顺序执行示教动作"""
@@ -631,11 +645,12 @@ class TeachPage(QFrame, teach_page_frame):
 
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def run_action_step(self):
         """单次执行选定的动作"""
         # 获取到选定的动作
-        if (selected_row := self.ActionTableWidget.currentRow()) > 0:
+        if (selected_row := self.ActionTableWidget.currentRow()) >= 0:
             InfoBar.success(
                 title="成功",
                 content=f"【单次执行】正则执行第 {selected_row + 1} 个动作",
@@ -677,28 +692,30 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def run_action_loop(self):
         """循环执行动作"""
         if (row_count := self.ActionTableWidget.rowCount()) > 0:
             if self.ActionLoopTimes.text().isdigit():
-                
-                InfoBar.success(
-                    title="成功",
-                    content="【循环执行】任务开始",
-                    orient=Qt.Horizontal,
-                    duration=3000,
-                    isClosable=True,
-                    position=InfoBarPosition.TOP_LEFT,
-                    parent=self
-                )
-                
                 loop_times = int(self.ActionLoopTimes.text().strip())
+                
                 # 顺序模式下，最多执行 400 条动作
-                # todo 需要优化，判断在顺序模式下，发送的一组任务是否完成，完成后再发送下一组任务
+                # TODO: 需要优化，判断在顺序模式下，发送的一组任务是否完成，完成后再发送下一组任务
                 total_action_count = loop_times * row_count
                 if self.command_model == "SEQ":
                     if total_action_count <= 400:
+                        
+                        InfoBar.success(
+                            title="成功",
+                            content="【循环执行】任务开始",
+                            orient=Qt.Horizontal,
+                            duration=3000,
+                            isClosable=True,
+                            position=InfoBarPosition.TOP_LEFT,
+                            parent=self
+                        )
+                        
                         loop_work_thread = Worker(self.arm_action_loop_thread, loop_times)
                         self.thread_pool.start(loop_work_thread)
                     else:
@@ -707,13 +724,22 @@ class TeachPage(QFrame, teach_page_frame):
                             content=f"顺序模式下，最多执行 400 条动作\n当前 {total_action_count} 条，请减少循环次数!",
                             isClosable=True,
                             orient=Qt.Horizontal,
-                            duration=3000,
-                            position=InfoBarPosition.TOP_LEFT,
+                            duration=-1,
+                            position=InfoBarPosition.TOP,
                             parent=self
                         )
                 elif self.command_model == "INT":
                     loop_work_thread = Worker(self.arm_action_loop_thread, loop_times)
                     self.thread_pool.start(loop_work_thread)
+                    InfoBar.success(
+                            title="成功",
+                            content="【循环执行】任务开始",
+                            orient=Qt.Horizontal,
+                            duration=3000,
+                            isClosable=True,
+                            position=InfoBarPosition.TOP_LEFT,
+                            parent=self
+                        )
                 else:
                     logger.error(f"未知命令模式: {self.command_model}")
             else:
@@ -737,18 +763,16 @@ class TeachPage(QFrame, teach_page_frame):
                 parent=self
             )
     
-    @Slot()
-    def show_context_menu(self, pos):
-        """右键复制粘贴菜单"""
-        self.context_menu.exec_(self.ActionTableWidget.mapToGlobal(pos))
-    
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def add_item(self):
         """示教控制添加一行动作"""
         speed_percentage = self.JointSpeedEdit.text()  # 速度值，暂定百分比
         type_of_tool = self.ArmToolComboBox.currentText()  # 获取末端工具类型
+        
+        
         
         row_position = self.ActionTableWidget.rowCount()
         self.ActionTableWidget.insertRow(row_position)
@@ -780,22 +804,27 @@ class TeachPage(QFrame, teach_page_frame):
 
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def remove_item(self):
         """示教控制删除一行动作"""
         selected_rows = self.ActionTableWidget.selectionModel().selectedRows()
-
+        delete_confirm_window = Dialog("⚠️警告", "确定要删除选择的动作吗？删除动作不可恢复(不选择动作，默认从最后一行开始删除)", parent=self)
         if not selected_rows:
             # 如果没有选中行，则删除最后一行
-            last_row = self.ActionTableWidget.rowCount() - 1
-            if last_row >= 0:
-                self.ActionTableWidget.removeRow(last_row)
+            if delete_confirm_window.exec():
+                last_row = self.ActionTableWidget.rowCount() - 1
+                if last_row >= 0:
+                    self.ActionTableWidget.removeRow(last_row)
         else:
-            for row in reversed(selected_rows):
-                self.ActionTableWidget.removeRow(row.row())
-
+            if delete_confirm_window.exec():
+                for row in reversed(selected_rows):
+                    self.ActionTableWidget.removeRow(row.row())
+                    
+                    
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def update_row(self):
         """示教控制更新指定行的动作"""
@@ -836,6 +865,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def update_column(self):
         """更新选中的列"""
@@ -882,52 +912,12 @@ class TeachPage(QFrame, teach_page_frame):
     # 表格的右键菜单功能
     @Slot()
     def show_context_menu(self, pos):
-        """右键复制粘贴菜单"""
+        """右键菜单"""
         self.context_menu.exec(self.ActionTableWidget.mapToGlobal(pos))
-    
-    @Slot()
-    def copy_selected_row(self):
-        """复制选择行"""
-        selected_row = self.ActionTableWidget.currentRow()
-        if selected_row >= 0:
-            self.copied_row = []
-            for col in range(self.ActionTableWidget.columnCount()):
-                # 工具列、开关列，需要获取下拉框中的文本
-                if col in (7, 8):
-                    item_widget = self.ActionTableWidget.cellWidget(selected_row, col)
-                    if item_widget is not None:
-                        self.copied_row.append(item_widget.currentText())
-                else:
-                    item = self.ActionTableWidget.item(selected_row, col)
-                    if item is not None:
-                        self.copied_row.append(item.text())
-
-    @Slot()
-    def paste_row(self):
-        """粘贴选择行"""
-        if self.copied_row:
-            row_position = self.ActionTableWidget.rowCount()
-            self.ActionTableWidget.insertRow(row_position)
-            for col, value in enumerate(self.copied_row):
-                if col == 7:  # 工具列、开关列需要获取下拉框的选中值
-                    # 工具列添加下拉选择框
-                    arm_tool_combobox = ComboBox()
-                    arm_tool_combobox.addItems(["", "夹爪", "吸盘"])
-                    arm_tool_combobox.setCurrentText(value)
-                    self.update_table_cell_widget(row_position, col, arm_tool_combobox)
-                elif col == 8:
-                    # 开关列添加下拉选择框
-                    arm_tool_control = ComboBox()
-                    arm_tool_control.addItems(["", "关", "开"])
-                    arm_tool_control.setCurrentText(value)
-                    self.update_table_cell_widget(row_position, col, arm_tool_control)
-                else:
-                    self.update_table_cell(row_position, col, value)
     
     @Slot()
     def update_cell(self):
         """更新选中的单元格"""
-        # 获取选中的单元格
         selected_items = self.ActionTableWidget.selectedItems()
         if selected_items:
             selected_row = selected_items[0].row()
@@ -1024,6 +1014,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def modify_joint_angle(self, joint_number, min_degrade, max_degrade, increase=True):
         """机械臂关节角度增减操作"""
@@ -1051,15 +1042,14 @@ class TeachPage(QFrame, teach_page_frame):
                 if not (0 < speed_percentage <= 100):
                     InfoBar.error(
                         title="错误",
-                        content="机械臂关节【速度】值超过限制范围: 0 ~ 100",
+                        content="机械臂关节【速度】值超过限制范围: 1 ~ 100",
                         isClosable=True,
                         orient=Qt.Horizontal,
                         duration=3000,
                         position=InfoBarPosition.TOP,
                         parent=self
                     )
-                    self.JointSpeedEdit.setText("50")
-                    raise ValueError("机械臂关节【速度】值超过限制范围: 0 ~ 100")
+                    raise ValueError("机械臂关节【速度】值超过限制范围: 1 ~ 100")
             else:
                 InfoBar.error(
                     title="错误",
@@ -1091,7 +1081,6 @@ class TeachPage(QFrame, teach_page_frame):
                     position=InfoBarPosition.TOP,
                     parent=self
                 )
-                self.JointStepEdit.setText("5")  # 重置步长值
                 logger.error(f"第 {joint_number} 关节角度超出范围: {min_degrade} ~ {max_degrade}")
             else:
                 # 构造发送命令
@@ -1109,17 +1098,16 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def modify_joint_angle_step(self, increase=True):
         """修改机械臂关节步长"""
-        old_degrade = self.JointStepEdit.text()
-        if old_degrade:
-                new_degrade = int(old_degrade) + 5 if increase else int(old_degrade) - 5
-                if 0 < int(old_degrade) <= 360:
+        old_degrade = 0 if self.JointStepEdit.text() == "" else self.JointStepEdit.text()
+        if old_degrade is not None:
+                new_degrade = int(old_degrade) + 1 if increase else int(old_degrade) - 1
+                if 0 < int(new_degrade) <= 100:
                     self.JointStepEdit.setText(str(new_degrade))
                     logger.debug(f"机械臂步长修改为: {new_degrade}")
                 else:
-                    self.JointStepEdit.setText(str(0))
                     InfoBar.warning(
                         title="警告",
-                        content="机械臂关节的步长(角度)范围: 0 ~ 360",
+                        content="机械臂关节的步长(角度)范围: 0 ~ 100",
                         isClosable=True,
                         orient=Qt.Horizontal,
                         duration=3000,
@@ -1142,15 +1130,14 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def modify_joint_speed_percentage(self, increase=True):
         """修改关节运动速度百分比"""
-        speed_percentage_edit = self.JointSpeedEdit.text()
-        if speed_percentage_edit:
+        speed_percentage_edit = 0 if self.JointSpeedEdit.text() == "" else self.JointSpeedEdit.text()
+        if speed_percentage_edit is not None:
             old_speed_percentage = int(speed_percentage_edit)
-            new_speed_percentage = old_speed_percentage + 5 if increase else old_speed_percentage - 5
-            if 0 <= new_speed_percentage <= 100:
+            new_speed_percentage = old_speed_percentage + 1 if increase else old_speed_percentage - 1
+            if 0 < new_speed_percentage <= 100:
                 self.JointSpeedEdit.setText(str(new_speed_percentage))
                 logger.debug(f"机械臂速度修改为: {new_speed_percentage}")
             else:
-                self.JointSpeedEdit.setText(str(50))
                 InfoBar.warning(
                     title="警告",
                     content=f"机械臂关节的速度范围: 0 ~ 100",
@@ -1176,8 +1163,8 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def modify_joint_delay_time(self, increase=True):
         """修改机械臂延时时间"""
-        delay_time_edit = self.JointDelayTimeEdit.text()
-        if delay_time_edit:
+        delay_time_edit = 0 if self.JointDelayTimeEdit.text() == "" else self.JointDelayTimeEdit.text()
+        if delay_time_edit is not None:
             old_delay_time = int(delay_time_edit.strip())
             new_delay_time = old_delay_time + 1 if increase else old_delay_time - 1
             if 0 <= new_delay_time <= 30:
@@ -1210,6 +1197,14 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def robot_arm_initialize(self):
         """机械臂初始化"""
+        if self.robot_arm_emergency_stop:
+            self.init_button_clicks += 1
+            if self.init_button_clicks == 2:
+                self.robot_arm_emergency_stop = False
+                self.init_button_clicks = 0
+                self.RobotArmStopButton.setText("急停")
+                self.RobotArmStopButton.setEnabled(True)
+                
         command = json.dumps({"command": "set_joint_initialize", "data": [0]}).replace('', "") + '\r\n'
         self.command_queue.put(command.encode())
         self.JointDelayTimeEdit.setText("0")  # 复位时延时时间设置为 0
@@ -1229,6 +1224,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def reset_to_zero(self):
         """机械臂回零"""
@@ -1258,18 +1254,26 @@ class TeachPage(QFrame, teach_page_frame):
         # 重置线程工作状态
         pub.sendMessage('tale_action_thread_flag', flag=False)  # 示教线程标志位设置为 False
         self.update_table_action_task_status(status_flag=False)
+        
+        # 机械臂急停状态更新
+        self.robot_arm_emergency_stop = True
+        
         InfoBar.warning(
             title="警告",
-            content="机械臂急停! \n请排除完问题后, 点击两次:【初始化】按钮",
-            isClosable=False,
+            content="机械臂急停!\n请排除完问题后, 点击两次:【初始化】按钮，解除急停状态!",
+            isClosable=True,
             orient=Qt.Horizontal,
-            duration=3000,
+            duration=-1,
             position=InfoBarPosition.TOP,
             parent=self
             )
+        
+        self.RobotArmStopButton.setText("机械臂已急停")
+        self.RobotArmStopButton.setEnabled(False)
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def tool_switch_control(self, isChecked: bool):
         """吸盘工具开"""
@@ -1296,6 +1300,7 @@ class TeachPage(QFrame, teach_page_frame):
     
     @check_robot_arm_connection
     @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
     @Slot()
     def end_tool_coordinate_operate(self, axis: str, action: str = "add"):
         """末端工具坐标增减函数"""
@@ -1333,16 +1338,27 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def tool_coordinate_step_modify(self, action="add"):
         """末端工具坐标步长增减函数"""
-        coordinate_step = self.CoordinateStepEdit.text()
-        if coordinate_step:
+        coordinate_step = 0 if self.CoordinateStepEdit.text() == "" else self.CoordinateStepEdit.text()
+        if coordinate_step is not None:
             old_coordinate_step = self._decimal_round(coordinate_step, accuracy='0.001')
             if action == "add":
                 new_coordinate_step = old_coordinate_step + Decimal('1')
             else:
                 new_coordinate_step = old_coordinate_step - Decimal('1')
             
-            logger.debug(f"末端工具坐标步长设置为: {new_coordinate_step}")
-            self.CoordinateStepEdit.setText(str(new_coordinate_step))
+            if Decimal('000.000') < new_coordinate_step <= Decimal('100.000'):
+                logger.debug(f"末端工具坐标步长设置为: {new_coordinate_step}")
+                self.CoordinateStepEdit.setText(str(new_coordinate_step))
+            else:
+                InfoBar.warning(
+                    title="警告",
+                    content="末端工具坐标步长范围: 000.000 ~ 100.000",
+                    isClosable=True,
+                    orient=Qt.Horizontal,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
         else:
             InfoBar.error(
                 title="错误",
@@ -1463,8 +1479,8 @@ class TeachPage(QFrame, teach_page_frame):
     @Slot()
     def tool_pose_step_modify(self, action="add"):
         """末端工具姿态步长增减函数"""
-        pose_step = self.ApStepEdit.text()
-        if pose_step:
+        pose_step = 0 if self.ApStepEdit.text() == "" else self.ApStepEdit.text()
+        if pose_step is not None:
             old_pose_step = self._decimal_round(pose_step, accuracy='0.01')
             if action == "add":
                 new_pose_step = old_pose_step + Decimal('1')
@@ -1472,8 +1488,19 @@ class TeachPage(QFrame, teach_page_frame):
                 new_pose_step = old_pose_step - Decimal('1')
             else:
                 raise ValueError("action 参数只能为 add 或 sub")
-            logger.debug(f"末端工具姿态步长设置为: {new_pose_step}")
-            self.ApStepEdit.setText(str(new_pose_step))
+            if Decimal('0.00') < new_pose_step <= Decimal('100.00'):
+                logger.debug(f"末端工具姿态步长设置为: {new_pose_step}")
+                self.ApStepEdit.setText(str(new_pose_step))
+            else:
+                InfoBar.warning(
+                    title="警告",
+                    content="末端工具姿态步长范围: 0.00 ~ 100.00",
+                    isClosable=True,
+                    orient=Qt.Horizontal,
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
         else:
             InfoBar.error(
                 title="错误",
@@ -1520,60 +1547,60 @@ class TeachPage(QFrame, teach_page_frame):
         
     def initButtonIcon(self):
         """初始化按钮图标"""
-        self.ActionImportButton.setIcon(FIF.DOWNLOAD)
-        self.ActionOutputButton.setIcon(FIF.UP)
-        self.ActionStepRunButton.setIcon(FIF.PLAY)
-        self.ActionRunButton.setIcon(FIF.ALIGNMENT)
-        self.ActionLoopRunButton.setIcon(FIF.ROTATE)
-        self.ActionAddButton.setIcon(FIF.ADD_TO)
-        self.ActionDeleteButton.setIcon(FIF.DELETE)
-        self.ActionUpdateRowButton.setIcon(FIF.MENU)
+        self.ActionImportButton.setIcon(FIF.DOWNLOAD.icon(color="#ffffff"))
+        self.ActionOutputButton.setIcon(FIF.UP.icon(color="#ffffff"))
+        self.ActionStepRunButton.setIcon(FIF.PLAY.icon(color="#ffffff"))
+        self.ActionRunButton.setIcon(FIF.ALIGNMENT.icon(color="#ffffff"))
+        self.ActionLoopRunButton.setIcon(FIF.ROTATE.icon(color="#ffffff"))
+        self.ActionAddButton.setIcon(FIF.ADD_TO.icon(color="#ffffff"))
+        self.ActionDeleteButton.setIcon(FIF.DELETE.icon(color="#ffffff"))
+        self.ActionUpdateRowButton.setIcon(FIF.MENU.icon(color="#ffffff"))
         # 工作模式、动作录制按钮
         self.ActionModeIcon.setIcon(FIF.CONNECT)
         self.ActionRecordIcon.setIcon(FIF.MOVIE)
-        self.RobotArmStopButton.setIcon(FIF.UPDATE)
+        self.RobotArmStopButton.setIcon(FIF.UPDATE.icon(color="#ffffff"))
         # 关节控制按钮图标
-        self.JointOneAddButton.setIcon(FIF.ADD)
-        self.JointOneSubButton.setIcon(FIF.REMOVE)
-        self.JointTwoAddButton.setIcon(FIF.ADD)
-        self.JointTwoSubButton.setIcon(FIF.REMOVE)
-        self.JointThreeAddButton.setIcon(FIF.ADD)
-        self.JointThreeSubButton.setIcon(FIF.REMOVE)
-        self.JointFourAddButton.setIcon(FIF.ADD)
-        self.JointFourSubButton.setIcon(FIF.REMOVE)
-        self.JointFiveAddButton.setIcon(FIF.ADD)
-        self.JointFiveSubButton.setIcon(FIF.REMOVE)
-        self.JointSixAddButton.setIcon(FIF.ADD)
-        self.JointSixSubButton.setIcon(FIF.REMOVE)
-        self.JointStepAddButton.setIcon(FIF.ADD)
-        self.JointStepSubButton.setIcon(FIF.REMOVE)
-        self.JointSpeedUpButton.setIcon(FIF.ADD)
-        self.JointSpeedDecButton.setIcon(FIF.REMOVE)
-        self.JointDelayTimeAddButton.setIcon(FIF.ADD)
-        self.JointDelayTimeSubButton.setIcon(FIF.REMOVE)
+        self.JointOneAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.JointOneSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.JointTwoAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.JointTwoSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.JointThreeAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.JointThreeSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.JointFourAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.JointFourSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.JointFiveAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.JointFiveSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.JointSixAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.JointSixSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.JointStepAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.JointStepSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.JointSpeedUpButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.JointSpeedDecButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.JointDelayTimeAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.JointDelayTimeSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
         # 坐标控制按钮图标
-        self.XAxisAddButton.setIcon(FIF.ADD)
-        self.XAxisSubButton.setIcon(FIF.REMOVE)
-        self.YAxisAddButton.setIcon(FIF.ADD)
-        self.YAxisSubButton.setIcon(FIF.REMOVE)
-        self.ZAxisAddButton.setIcon(FIF.ADD)
-        self.ZAxisSubButton.setIcon(FIF.REMOVE)
-        self.CoordinateAddButton.setIcon(FIF.ADD)
-        self.CoordinateStepSubButton.setIcon(FIF.REMOVE)
+        self.XAxisAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.XAxisSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.YAxisAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.YAxisSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.ZAxisAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.ZAxisSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.CoordinateAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.CoordinateStepSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
         # 姿态控制按钮图标
-        self.RxAxisAddButton.setIcon(FIF.ADD)
-        self.RxAxisSubButton.setIcon(FIF.REMOVE)
-        self.RyAxisAddButton.setIcon(FIF.ADD)
-        self.RyAxisSubButton.setIcon(FIF.REMOVE)
-        self.RzAxisAddButton.setIcon(FIF.ADD)
-        self.RzAxisSubButton.setIcon(FIF.REMOVE)
-        self.ApStepAddButton.setIcon(FIF.ADD)
-        self.ApStepSubButton.setIcon(FIF.REMOVE)
+        self.RxAxisAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.RxAxisSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.RyAxisAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.RyAxisSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.RzAxisAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.RzAxisSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
+        self.ApStepAddButton.setIcon(FIF.ADD.icon(color="#ffffff"))
+        self.ApStepSubButton.setIcon(FIF.REMOVE.icon(color="#ffffff"))
         # 工具控制按钮图标
         self.ToolIcon.setIcon(FIF.DEVELOPER_TOOLS)
         self.ToolsControlIcon.setIcon(FIF.ROBOT)
         self.RobotArmZeroButton.setIcon(FIF.HOME)
-        self.RobotArmResetButton.setIcon(FIF.SYNC)
+        self.RobotArmResetButton.setIcon(FIF.SYNC.icon(color="#ffffff"))
         
     
     def update_joint_degrees_text(self, angle_data_list: list):
@@ -1686,11 +1713,11 @@ class TeachPage(QFrame, teach_page_frame):
                     
                     if cmd_model == "SEQ":
                         logger.warning(f"机械臂当前为 SEQ 顺序模式!")
-                        self.ActionModelSwitchButton.setChecked(True)
+                        self.CommandModeComboBox.setCurrentIndex(0)
                         self.command_model = "SEQ"
                     else:
                         logger.warning(f"机械臂当前为 INT 实时模式!")
-                        self.ActionModelSwitchButton.setChecked(False)
+                        self.CommandModeComboBox.setCurrentIndex(1)
                         self.command_model = "INT"
                         
                     logger.warning("更新机械臂命令模式定时器停止!")
@@ -1733,16 +1760,20 @@ class TeachPage(QFrame, teach_page_frame):
     def init_input_validator(self):
         """设置输入框的过滤规则"""
         # 只允许输入阿拉伯数字
-        only_digidts_regex = QRegularExpression(r'^[0-9]{1,3}$')
+        only_digidts_regex = QRegularExpression(r'^([1-9][0-9]?|100)$')
+        joint_delay_time_regex = QRegularExpression(r'^(30|[1-2]?[0-9]|0)$')
         only_digidts_validator = QRegularExpressionValidator(only_digidts_regex, self)
+        joint_delay_time_validator = QRegularExpressionValidator(joint_delay_time_regex, self)
         self.ActionLoopTimes.setValidator(only_digidts_validator)
         self.JointStepEdit.setValidator(only_digidts_validator)
         self.JointSpeedEdit.setValidator(only_digidts_validator)
-        self.JointDelayTimeEdit.setValidator(only_digidts_validator)
+        self.JointDelayTimeEdit.setValidator(joint_delay_time_validator)
         
         # 只允许输入浮点数
-        only_float_regex = QRegularExpression(r'^-?\d{1,3}(\.\d{1,3})?$')
+        only_float_regex = QRegularExpression(r'^\d{1,3}(\.\d{1,3})?$')
+        step_float_regex = QRegularExpression(r'^(100|[0-9][0-9]?)(\.(100|[0-9][0-9]?))?$')
         only_float_validator = QRegularExpressionValidator(only_float_regex, self)
+        step_float_validator = QRegularExpressionValidator(step_float_regex, self)
         
         # 关节控制正则过滤
         self.JointOneEdit.setValidator(only_float_validator)
@@ -1756,15 +1787,32 @@ class TeachPage(QFrame, teach_page_frame):
         self.XAxisEdit.setValidator(only_float_validator)
         self.YAxisEdit.setValidator(only_float_validator)
         self.ZAxisEdit.setValidator(only_float_validator)
-        self.CoordinateStepEdit.setValidator(only_float_validator)
+        self.CoordinateStepEdit.setValidator(step_float_validator)
         
         # 末端工具位置与姿态正则过滤
         self.RxAxisEdit.setValidator(only_float_validator)
         self.RyAxisEdit.setValidator(only_float_validator)
         self.RzAxisEdit.setValidator(only_float_validator)
-        self.ApStepEdit.setValidator(only_digidts_validator)
-    
-    
+        self.ApStepEdit.setValidator(step_float_validator)
+
+        # 示教表格正则过滤规则
+        ColumnOnedelegate = JointOneDelegate(parent=self)
+        ColumnTwodelegate = JointTwoDelegate(parent=self)
+        ColumnThreedelegate = JointThreeDelegate(parent=self)
+        ColumnFourdelegate = JointFourDelegate(parent=self)
+        ColumnFivedelegate = JointFiveDelegate(parent=self)
+        ColumnSixdelegate = JointSixDelegate(parent=self)
+        ColumnSpeeddelegate = JointSpeedDelegate(parent=self)
+        ColumnDelayTimedelegate = JointDelayTimeDelegate(parent=self)
+        self.ActionTableWidget.setItemDelegateForColumn(0, ColumnOnedelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(1, ColumnTwodelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(2, ColumnThreedelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(3, ColumnFourdelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(4, ColumnFivedelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(5, ColumnSixdelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(6, ColumnSpeeddelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(9, ColumnDelayTimedelegate)
+        
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
     def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: Queue, joints_angle_queue: Queue, coordinate_queue: Queue):
@@ -1979,7 +2027,7 @@ class ConnectPage(QFrame, connect_page_frame):
             parent=self
         )
 
-    # todo: 机械臂串口连接配置回调函数
+    # TODO: 机械臂串口连接配置回调函数
     @Slot()
     def get_sb_info(self):
         """获取系统当前的串口信息并更新下拉框"""
@@ -2140,7 +2188,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
     def initWindow(self):
         """初始化窗口"""
         self.resize(1531, 850)
-        self.setWindowTitle("比邻星六轴机械臂上位机 v4.3.3")
+        self.setWindowTitle("比邻星六轴机械臂上位机 v4.5.3")
         self.setWindowIcon(QIcon(str(settings.WINDOWS_ICON_PATH)))
         setThemeColor('#00AAFF')
         
@@ -2171,7 +2219,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
         """弹出帮助信息框"""
         w = MessageBox(
             '📖帮助',
-            '🎊欢迎使用比邻星六轴机械臂上位机 v4.3.3🎊\n\n👇使用文档请访问官网获取👇',
+            '🎊欢迎使用比邻星六轴机械臂上位机 v4.5.3🎊\n\n👇使用文档请访问官网获取👇',
             self
         )
         w.yesButton.setText('直达官网🚀')
