@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'command_page.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.2
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -93,14 +93,10 @@ class command_page_frame(object):
     def retranslateUi(self, Frame):
         Frame.setWindowTitle(QCoreApplication.translate("Frame", u"Frame", None))
         self.SendLabel.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u53d1\u9001", None))
+        self.SendLabel.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {     background: rgb(33, 150, 243);     color:white; } PushButton:hover {     background: rgb(33, 150, 243);     color:white; }", None))
         self.ResponseLabel.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u63a5\u6536", None))
         self.CommandArmRunLogLabel.setText(QCoreApplication.translate("Frame", u"\u547d\u4ee4\u7f16\u8f91\u7a97\u53e3", None))
         self.CommandSendButton.setText(QCoreApplication.translate("Frame", u"\u53d1\u9001", None))
-        self.CommandSendButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
-"    background: rgb(125, 214, 249);\n"
-"}\n"
-"PushButton:hover {\n"
-"    background: rgb(125, 214, 249);\n"
-"}", None))
+        self.CommandSendButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {     background: rgb(33, 150, 243);     color:white; } PushButton:hover {     background: rgb(33, 150, 243);     color:white; }", None))
     # retranslateUi
 
