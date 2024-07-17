@@ -1189,6 +1189,13 @@ class TeachPage(QFrame, teach_page_frame):
         """机械臂初始化"""
         if self.robot_arm_emergency_stop:
             self.init_button_clicks += 1
+            if self.init_button_clicks == 1:
+                confirm_initialize = Dialog("机械臂处于急停状态", "请再次点击初始化按钮，解除急停状态!")
+                confirm_initialize.yesButton.setText("确定")
+                confirm_initialize.cancelButton.hide()
+                confirm_initialize.buttonLayout.insertStretch(1)
+                confirm_initialize.exec()
+            
             if self.init_button_clicks == 2:
                 self.robot_arm_emergency_stop = False
                 self.init_button_clicks = 0
