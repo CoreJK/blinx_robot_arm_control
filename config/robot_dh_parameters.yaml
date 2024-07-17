@@ -26,7 +26,7 @@
 - joint: 4
   alpha: pi / 2
   a: 0
-  d: 0.2205
+  d: 0.223
   theta: 0
   qlim: [-150, 150]
 
@@ -42,6 +42,6 @@
 - joint: 6
   alpha: 0
   a: 0
-  d: -0.045
+  d: -0.10879
   theta: 0
   qlim: [-180, 180]
