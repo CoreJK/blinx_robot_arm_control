@@ -28,11 +28,11 @@ class teach_page_frame(object):
     def setupUi(self, Frame):
         if not Frame.objectName():
             Frame.setObjectName(u"Frame")
-        Frame.resize(1312, 676)
-        self.horizontalLayout_15 = QHBoxLayout(Frame)
-        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
-        self.horizontalLayout_12 = QHBoxLayout()
-        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        Frame.resize(1318, 718)
+        self.horizontalLayout_19 = QHBoxLayout(Frame)
+        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
+        self.horizontalLayout_18 = QHBoxLayout()
+        self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
         self.verticalLayout_7 = QVBoxLayout()
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.horizontalLayout = QHBoxLayout()
@@ -161,15 +161,15 @@ class teach_page_frame(object):
         self.verticalLayout_7.addLayout(self.horizontalLayout_2)
 
 
-        self.horizontalLayout_12.addLayout(self.verticalLayout_7)
+        self.horizontalLayout_18.addLayout(self.verticalLayout_7)
 
         self.VerticalSeparator = VerticalSeparator(Frame)
         self.VerticalSeparator.setObjectName(u"VerticalSeparator")
 
-        self.horizontalLayout_12.addWidget(self.VerticalSeparator)
+        self.horizontalLayout_18.addWidget(self.VerticalSeparator)
 
-        self.verticalLayout_4 = QVBoxLayout()
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.verticalLayout_9 = QVBoxLayout()
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.verticalLayout_5 = QVBoxLayout()
@@ -233,13 +233,13 @@ class teach_page_frame(object):
         self.horizontalLayout_9.addWidget(self.RobotArmStopButton)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_9)
+        self.verticalLayout_9.addLayout(self.horizontalLayout_9)
 
         self.RobotArmControlSegmentedWidget = SegmentedWidget(Frame)
         self.RobotArmControlSegmentedWidget.setObjectName(u"RobotArmControlSegmentedWidget")
         self.RobotArmControlSegmentedWidget.setMinimumSize(QSize(188, 31))
 
-        self.verticalLayout_4.addWidget(self.RobotArmControlSegmentedWidget)
+        self.verticalLayout_9.addWidget(self.RobotArmControlSegmentedWidget)
 
         self.ArmActionControlStackWidget = QStackedWidget(Frame)
         self.ArmActionControlStackWidget.setObjectName(u"ArmActionControlStackWidget")
@@ -946,12 +946,105 @@ class teach_page_frame(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.ArmActionControlStackWidget.addWidget(self.ArmEndToolsPositionControlPage)
 
-        self.verticalLayout_4.addWidget(self.ArmActionControlStackWidget)
+        self.verticalLayout_9.addWidget(self.ArmActionControlStackWidget)
 
+        self.horizontalLayout_17 = QHBoxLayout()
+        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
+        self.verticalLayout_4 = QVBoxLayout()
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.verticalLayout_9 = QVBoxLayout()
-        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.SwitchButtonOneIcon = TransparentToolButton(Frame)
+        self.SwitchButtonOneIcon.setObjectName(u"SwitchButtonOneIcon")
+
+        self.horizontalLayout_4.addWidget(self.SwitchButtonOneIcon)
+
+        self.SwitchButtonOneLable = BodyLabel(Frame)
+        self.SwitchButtonOneLable.setObjectName(u"SwitchButtonOneLable")
+        font = QFont()
+        font.setBold(False)
+        self.SwitchButtonOneLable.setFont(font)
+
+        self.horizontalLayout_4.addWidget(self.SwitchButtonOneLable)
+
+        self.SwitchButtonOne = SwitchButton(Frame)
+        self.SwitchButtonOne.setObjectName(u"SwitchButtonOne")
+
+        self.horizontalLayout_4.addWidget(self.SwitchButtonOne)
+
+
+        self.verticalLayout_4.addLayout(self.horizontalLayout_4)
+
+        self.horizontalLayout_15 = QHBoxLayout()
+        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+        self.SwitchButtonTwoIcon = TransparentToolButton(Frame)
+        self.SwitchButtonTwoIcon.setObjectName(u"SwitchButtonTwoIcon")
+
+        self.horizontalLayout_15.addWidget(self.SwitchButtonTwoIcon)
+
+        self.SwitchButtonTwoLable = BodyLabel(Frame)
+        self.SwitchButtonTwoLable.setObjectName(u"SwitchButtonTwoLable")
+
+        self.horizontalLayout_15.addWidget(self.SwitchButtonTwoLable)
+
+        self.SwitchButtonTwo = SwitchButton(Frame)
+        self.SwitchButtonTwo.setObjectName(u"SwitchButtonTwo")
+
+        self.horizontalLayout_15.addWidget(self.SwitchButtonTwo)
+
+
+        self.verticalLayout_4.addLayout(self.horizontalLayout_15)
+
+        self.horizontalLayout_12 = QHBoxLayout()
+        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        self.SwitchButtonThreeIcon = TransparentToolButton(Frame)
+        self.SwitchButtonThreeIcon.setObjectName(u"SwitchButtonThreeIcon")
+
+        self.horizontalLayout_12.addWidget(self.SwitchButtonThreeIcon)
+
+        self.SwitchButtonThreeLable = BodyLabel(Frame)
+        self.SwitchButtonThreeLable.setObjectName(u"SwitchButtonThreeLable")
+
+        self.horizontalLayout_12.addWidget(self.SwitchButtonThreeLable)
+
+        self.SwitchButtonThree = SwitchButton(Frame)
+        self.SwitchButtonThree.setObjectName(u"SwitchButtonThree")
+
+        self.horizontalLayout_12.addWidget(self.SwitchButtonThree)
+
+
+        self.verticalLayout_4.addLayout(self.horizontalLayout_12)
+
+        self.horizontalLayout_16 = QHBoxLayout()
+        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
+        self.SwitchButtonFourIcon = TransparentToolButton(Frame)
+        self.SwitchButtonFourIcon.setObjectName(u"SwitchButtonFourIcon")
+
+        self.horizontalLayout_16.addWidget(self.SwitchButtonFourIcon)
+
+        self.SwitchButtonFourLable = BodyLabel(Frame)
+        self.SwitchButtonFourLable.setObjectName(u"SwitchButtonFourLable")
+
+        self.horizontalLayout_16.addWidget(self.SwitchButtonFourLable)
+
+        self.SwitchButtonFour = SwitchButton(Frame)
+        self.SwitchButtonFour.setObjectName(u"SwitchButtonFour")
+
+        self.horizontalLayout_16.addWidget(self.SwitchButtonFour)
+
+
+        self.verticalLayout_4.addLayout(self.horizontalLayout_16)
+
+
+        self.horizontalLayout_17.addLayout(self.verticalLayout_4)
+
+        self.VerticalSeparator_2 = VerticalSeparator(Frame)
+        self.VerticalSeparator_2.setObjectName(u"VerticalSeparator_2")
+
+        self.horizontalLayout_17.addWidget(self.VerticalSeparator_2)
+
+        self.verticalLayout_8 = QVBoxLayout()
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.horizontalLayout_tools = QHBoxLayout()
         self.horizontalLayout_tools.setSpacing(6)
         self.horizontalLayout_tools.setObjectName(u"horizontalLayout_tools")
@@ -972,7 +1065,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_tools.setStretch(2, 8)
 
-        self.verticalLayout_9.addLayout(self.horizontalLayout_tools)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_tools)
 
         self.horizontalLayout_tool_control = QHBoxLayout()
         self.horizontalLayout_tool_control.setObjectName(u"horizontalLayout_tool_control")
@@ -992,10 +1085,7 @@ class teach_page_frame(object):
         self.horizontalLayout_tool_control.addWidget(self.ArmToolSwitchButton)
 
 
-        self.verticalLayout_9.addLayout(self.horizontalLayout_tool_control)
-
-
-        self.horizontalLayout_4.addLayout(self.verticalLayout_9)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_tool_control)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
@@ -1012,18 +1102,19 @@ class teach_page_frame(object):
         self.horizontalLayout_3.addWidget(self.RobotArmResetButton)
 
 
-        self.horizontalLayout_4.addLayout(self.horizontalLayout_3)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_3)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_4)
+        self.horizontalLayout_17.addLayout(self.verticalLayout_8)
 
 
-        self.horizontalLayout_12.addLayout(self.verticalLayout_4)
+        self.verticalLayout_9.addLayout(self.horizontalLayout_17)
 
-        self.horizontalLayout_12.setStretch(0, 7)
-        self.horizontalLayout_12.setStretch(2, 3)
 
-        self.horizontalLayout_15.addLayout(self.horizontalLayout_12)
+        self.horizontalLayout_18.addLayout(self.verticalLayout_9)
+
+
+        self.horizontalLayout_19.addLayout(self.horizontalLayout_18)
 
 
         self.retranslateUi(Frame)
@@ -1422,6 +1513,18 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
+        self.SwitchButtonOneLable.setText(QCoreApplication.translate("Frame", u"IO 1", None))
+        self.SwitchButtonOne.setOnText(QCoreApplication.translate("Frame", u"\u5f00", None))
+        self.SwitchButtonOne.setOffText(QCoreApplication.translate("Frame", u"\u5173", None))
+        self.SwitchButtonTwoLable.setText(QCoreApplication.translate("Frame", u"IO 2", None))
+        self.SwitchButtonTwo.setOnText(QCoreApplication.translate("Frame", u"\u5f00", None))
+        self.SwitchButtonTwo.setOffText(QCoreApplication.translate("Frame", u"\u5173", None))
+        self.SwitchButtonThreeLable.setText(QCoreApplication.translate("Frame", u"IO 3", None))
+        self.SwitchButtonThree.setOnText(QCoreApplication.translate("Frame", u"\u5f00", None))
+        self.SwitchButtonThree.setOffText(QCoreApplication.translate("Frame", u"\u5173", None))
+        self.SwitchButtonFourLable.setText(QCoreApplication.translate("Frame", u"IO 4", None))
+        self.SwitchButtonFour.setOnText(QCoreApplication.translate("Frame", u"\u5f00", None))
+        self.SwitchButtonFour.setOffText(QCoreApplication.translate("Frame", u"\u5173", None))
         self.ArmToolLabel.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177", None))
         self.BodyLabel.setText(QCoreApplication.translate("Frame", u"\u6267\u884c", None))
         self.ArmToolSwitchButton.setOnText(QCoreApplication.translate("Frame", u"\u5438\u53d6", None))

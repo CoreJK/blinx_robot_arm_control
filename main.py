@@ -261,6 +261,7 @@ class TeachPage(QFrame, teach_page_frame):
 
 
         # 实例化机械臂关节控制回调函数绑定
+        # TODO: 关节限位需要写到外部配置文件中去
         self.JointOneAddButton.clicked.connect(partial(self.modify_joint_angle, 1, -130, 135, increase=True))
         self.JointOneSubButton.clicked.connect(partial(self.modify_joint_angle, 1, -130, 135, increase=False))
         self.JointTwoAddButton.clicked.connect(partial(self.modify_joint_angle, 2, -86, 96, increase=True))
@@ -281,13 +282,17 @@ class TeachPage(QFrame, teach_page_frame):
         self.JointDelayTimeSubButton.clicked.connect(partial(self.modify_joint_delay_time, increase=False))
 
         
-        # # 复位和急停按钮绑定
+        # 复位和急停按钮绑定
         self.RobotArmResetButton.clicked.connect(self.robot_arm_initialize)
         self.RobotArmZeroButton.clicked.connect(self.reset_to_zero)
         self.RobotArmStopButton.clicked.connect(self.stop_robot_arm_emergency)
         
-        # # 末端工具控制组回调函数绑定
+        # 末端工具控制组回调函数绑定
         self.ArmToolSwitchButton.checkedChanged.connect(self.tool_switch_control)
+        self.SwitchButtonOne.checkedChanged.connect(partial(self.set_extend_io_status, 1))
+        self.SwitchButtonTwo.checkedChanged.connect(partial(self.set_extend_io_status, 2))
+        self.SwitchButtonThree.checkedChanged.connect(partial(self.set_extend_io_status, 3))
+        self.SwitchButtonFour.checkedChanged.connect(partial(self.set_extend_io_status, 4))
         
         # 末端工具坐标增减回调函数绑定 
         self.XAxisAddButton.clicked.connect(partial(self.end_tool_coordinate_operate, axis='x', action="add"))
@@ -544,7 +549,6 @@ class TeachPage(QFrame, teach_page_frame):
             self.update_table_action_task_status(status_flag=False)
         else:
             logger.warning("机械臂没有动作可以执行!")
-                
             
     def _check_flag(self, flag=True):
         """线程工作控制位"""
@@ -820,7 +824,6 @@ class TeachPage(QFrame, teach_page_frame):
             if delete_confirm_window.exec():
                 for row in reversed(selected_rows):
                     self.ActionTableWidget.removeRow(row.row())
-                    
                     
     @check_robot_arm_connection
     @check_robot_arm_is_working
@@ -1519,6 +1522,28 @@ class TeachPage(QFrame, teach_page_frame):
                 parent=self
             )
     
+    @check_robot_arm_connection
+    @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
+    @Slot()
+    def set_extend_io_status(self, io_number: int, isChecked: bool):
+        """控制机械臂的外部 IO 
+
+        :param int io_number: 对应 IO 编号 1-4
+        :param bool isChecked: True: 开启, False: 关闭
+        """
+        io_button_name_mark = {"1": "One", "2": "Two", "3": "Three", "4": "Four"}
+        action_button = getattr(self, f'SwitchButton{io_button_name_mark.get(str(io_number))}Icon')
+        if isChecked:
+            action_button.setIcon(FIF.BRIGHTNESS.icon(color="#12d269"))
+        else:
+            action_button.setIcon(FIF.BRIGHTNESS.icon(color="#ff3333"))
+            
+        command = json.dumps({"command": "set_robot_io_interface", "data": [io_number, isChecked]}).replace(' ', "").strip() + '\r\n'
+        with self.get_robot_arm_connector() as robot_arm_connector:
+            robot_arm_connector.send(command.encode())
+        
+            
     # 一些 qt 界面的常用的抽象操作
     def update_table_cell_widget(self, row, col, widget):
         """更新表格指定位置的小部件"""
@@ -1608,7 +1633,11 @@ class TeachPage(QFrame, teach_page_frame):
         self.ToolsControlIcon.setIcon(FIF.ROBOT)
         self.RobotArmZeroButton.setIcon(FIF.HOME)
         self.RobotArmResetButton.setIcon(FIF.SYNC.icon(color="#ffffff"))
-        
+        # IO 控制按钮图标
+        self.SwitchButtonOneIcon.setIcon(FIF.BRIGHTNESS.icon(color="#ff3333"))
+        self.SwitchButtonTwoIcon.setIcon(FIF.BRIGHTNESS.icon(color="#ff3333"))
+        self.SwitchButtonThreeIcon.setIcon(FIF.BRIGHTNESS.icon(color="#ff3333"))
+        self.SwitchButtonFourIcon.setIcon(FIF.BRIGHTNESS.icon(color="#ff3333"))
     
     def update_joint_degrees_text(self, angle_data_list: list):
         """更新界面上的角度值, 并返回实时角度值
@@ -1819,7 +1848,8 @@ class TeachPage(QFrame, teach_page_frame):
         self.ActionTableWidget.setItemDelegateForColumn(5, ColumnSixdelegate)
         self.ActionTableWidget.setItemDelegateForColumn(6, ColumnSpeeddelegate)
         self.ActionTableWidget.setItemDelegateForColumn(9, ColumnDelayTimedelegate)
-        
+
+  
 class ConnectPage(QFrame, connect_page_frame):
     """连接配置页面"""
     def __init__(self, page_name: str, thread_pool: QThreadPool, command_queue: Queue, joints_angle_queue: Queue, coordinate_queue: Queue):

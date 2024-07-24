@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1312</width>
-    <height>676</height>
+    <width>1318</width>
+    <height>718</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +16,9 @@
   <property name="lightCustomQss" stdset="0">
    <string/>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_15">
+  <layout class="QHBoxLayout" name="horizontalLayout_19">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="7,0,3">
+    <layout class="QHBoxLayout" name="horizontalLayout_18">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
@@ -385,7 +385,7 @@ PushButton:hover {
       <widget class="VerticalSeparator" name="VerticalSeparator"/>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QVBoxLayout" name="verticalLayout_9">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
@@ -2174,9 +2174,119 @@ ToolButton:hover {
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <layout class="QHBoxLayout" name="horizontalLayout_17">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_9">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="TransparentToolButton" name="SwitchButtonOneIcon"/>
+             </item>
+             <item>
+              <widget class="BodyLabel" name="SwitchButtonOneLable">
+               <property name="font">
+                <font>
+                 <pointsize>-1</pointsize>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>IO 1</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="SwitchButton" name="SwitchButtonOne">
+               <property name="onText">
+                <string>开</string>
+               </property>
+               <property name="offText">
+                <string>关</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_15">
+             <item>
+              <widget class="TransparentToolButton" name="SwitchButtonTwoIcon"/>
+             </item>
+             <item>
+              <widget class="BodyLabel" name="SwitchButtonTwoLable">
+               <property name="text">
+                <string>IO 2</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="SwitchButton" name="SwitchButtonTwo">
+               <property name="onText">
+                <string>开</string>
+               </property>
+               <property name="offText">
+                <string>关</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <item>
+              <widget class="TransparentToolButton" name="SwitchButtonThreeIcon"/>
+             </item>
+             <item>
+              <widget class="BodyLabel" name="SwitchButtonThreeLable">
+               <property name="text">
+                <string>IO 3</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="SwitchButton" name="SwitchButtonThree">
+               <property name="onText">
+                <string>开</string>
+               </property>
+               <property name="offText">
+                <string>关</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_16">
+             <item>
+              <widget class="TransparentToolButton" name="SwitchButtonFourIcon"/>
+             </item>
+             <item>
+              <widget class="BodyLabel" name="SwitchButtonFourLable">
+               <property name="text">
+                <string>IO 4</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="SwitchButton" name="SwitchButtonFour">
+               <property name="onText">
+                <string>开</string>
+               </property>
+               <property name="offText">
+                <string>关</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="VerticalSeparator" name="VerticalSeparator_2"/>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_tools" stretch="0,0,8">
              <property name="spacing">
@@ -2221,45 +2331,43 @@ ToolButton:hover {
              </item>
             </layout>
            </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <widget class="PushButton" name="RobotArmZeroButton">
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>80</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>回零</string>
-             </property>
-             <property name="lightCustomQss" stdset="0">
-              <string>PushButton {
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="PushButton" name="RobotArmZeroButton">
+               <property name="minimumSize">
+                <size>
+                 <width>80</width>
+                 <height>80</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>回零</string>
+               </property>
+               <property name="lightCustomQss" stdset="0">
+                <string>PushButton {
     background: rgb(255, 224, 0);
 }
 
 PushButton:hover {
     background: rgb(255, 224, 0);
 }</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="PushButton" name="RobotArmResetButton">
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>80</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>初始化</string>
-             </property>
-             <property name="lightCustomQss" stdset="0">
-              <string>PushButton {
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="PushButton" name="RobotArmResetButton">
+               <property name="minimumSize">
+                <size>
+                 <width>80</width>
+                 <height>80</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>初始化</string>
+               </property>
+               <property name="lightCustomQss" stdset="0">
+                <string>PushButton {
     background: rgb(0, 51, 160);
     color:white;
 }
@@ -2268,8 +2376,10 @@ PushButton:hover {
     background: rgb(0, 51, 160);
     color:white;
 }</string>
-             </property>
-            </widget>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>
