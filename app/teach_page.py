@@ -962,6 +962,8 @@ class teach_page_frame(object):
         self.SwitchButtonOneLable = BodyLabel(Frame)
         self.SwitchButtonOneLable.setObjectName(u"SwitchButtonOneLable")
         font = QFont()
+        font.setFamilies([u"Arial"])
+        font.setPointSize(11)
         font.setBold(False)
         self.SwitchButtonOneLable.setFont(font)
 
