@@ -122,51 +122,13 @@ if __name__ == "__main__":
     mirobot = Mirobot(robot_arm_config_file, param_type='DH')
     print(mirobot)
 
-    # 机械臂正运动解
+    # 六轴机器人初始位置
     q1 = radians(0)
     q2 = radians(0)
     q3 = radians(0)
     q4 = radians(0)
     q5 = radians(0)
     q6 = radians(0)
-    print("机械臂关节角度 = ", [round(degrees(i), 2) for i in [q1, q2, q3, q4, q5, q6]])
-    arm_pose_degree = np.array([q1, q2, q3, q4, q5, q6])
-    translation_vector = mirobot.fkine(arm_pose_degree)
-
-    print("机械臂正解结果")
-    print(translation_vector.printline(), '\n')
-    x, y, z = translation_vector.t  # 平移向量
-    print("x = ", round(x, 3))
-    print("y = ", round(y, 3))
-    print("z = ", round(z, 3))
-    print('')
-    print("机械臂末端姿态: ", translation_vector.rpy(unit='deg', order='zyx'))
-    R_x, P_y, Y_z = translation_vector.rpy(unit='deg', order='zyx')  # 旋转角
-    print("r = ", round(R_x, 3))
-    print("p = ", round(P_y, 3))
-    print("y = ", round(Y_z, 3))
-    print("")
-
-    # 机器人逆运动解
-    # 给出符合逆解条件的末端坐标 T 值
-
-    print("机械臂逆解结果")
-    rs_ik = []
-    for i, _ in enumerate(range(10)):
-        R_T = SE3([x, y, z]) * rpy2tr([R_x, P_y, Y_z], unit='deg', order='zyx')
-        sol = mirobot.ikine_LM(R_T, joint_limits=True)
-
-        def get_value(number):
-            res = round(degrees(number), 2)
-            return res
-
-        print(f"第{i + 1}次：", list(map(get_value, sol.q)))
-        rs_ik.append(list(map(get_value, sol.q)))
-
-    # 统计出逆解数据列表数据中，指定数据出现的次数
-    specified_data = list(map(lambda d: round(degrees(d), 2), [q1, q2, q3, q4, q5, q6]))
-    occurrences = rs_ik.count(specified_data)
-    print("Occurrences:", occurrences)
 
     # 机械臂画图
     mirobot.teach([q1, q2, q3, q4, q5, q6], block=True)
