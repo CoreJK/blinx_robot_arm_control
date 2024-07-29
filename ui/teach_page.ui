@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1318</width>
-    <height>718</height>
+    <width>1359</width>
+    <height>790</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +16,12 @@
   <property name="lightCustomQss" stdset="0">
    <string/>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_19">
+  <layout class="QHBoxLayout" name="horizontalLayout_21">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_18">
+    <widget class="VerticalSeparator" name="VerticalSeparator"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_20">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
@@ -382,10 +385,7 @@ PushButton:hover {
       </layout>
      </item>
      <item>
-      <widget class="VerticalSeparator" name="VerticalSeparator"/>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_9">
+      <layout class="QVBoxLayout" name="verticalLayout_11">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
@@ -2174,163 +2174,207 @@ ToolButton:hover {
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_17">
+        <layout class="QHBoxLayout" name="horizontalLayout_19">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <item>
-              <widget class="TransparentToolButton" name="SwitchButtonOneIcon"/>
-             </item>
-             <item>
-              <widget class="BodyLabel" name="SwitchButtonOneLable">
-               <property name="font">
-                <font>
-                 <family>Arial</family>
-                 <pointsize>11</pointsize>
-                 <weight>50</weight>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>IO 1</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="SwitchButton" name="SwitchButtonOne">
-               <property name="onText">
-                <string>开</string>
-               </property>
-               <property name="offText">
-                <string>关</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_15">
-             <item>
-              <widget class="TransparentToolButton" name="SwitchButtonTwoIcon"/>
-             </item>
-             <item>
-              <widget class="BodyLabel" name="SwitchButtonTwoLable">
-               <property name="text">
-                <string>IO 2</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="SwitchButton" name="SwitchButtonTwo">
-               <property name="onText">
-                <string>开</string>
-               </property>
-               <property name="offText">
-                <string>关</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_12">
-             <item>
-              <widget class="TransparentToolButton" name="SwitchButtonThreeIcon"/>
-             </item>
-             <item>
-              <widget class="BodyLabel" name="SwitchButtonThreeLable">
-               <property name="text">
-                <string>IO 3</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="SwitchButton" name="SwitchButtonThree">
-               <property name="onText">
-                <string>开</string>
-               </property>
-               <property name="offText">
-                <string>关</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_16">
-             <item>
-              <widget class="TransparentToolButton" name="SwitchButtonFourIcon"/>
-             </item>
-             <item>
-              <widget class="BodyLabel" name="SwitchButtonFourLable">
-               <property name="text">
-                <string>IO 4</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="SwitchButton" name="SwitchButtonFour">
-               <property name="onText">
-                <string>开</string>
-               </property>
-               <property name="offText">
-                <string>关</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>IO 输出</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_17">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <widget class="TransparentToolButton" name="SwitchButtonOneIcon"/>
+                </item>
+                <item>
+                 <widget class="BodyLabel" name="SwitchButtonOneLable">
+                  <property name="text">
+                   <string>IO 1</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="SwitchButton" name="SwitchButtonOne">
+                  <property name="onText">
+                   <string>开</string>
+                  </property>
+                  <property name="offText">
+                   <string>关</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_15">
+                <item>
+                 <widget class="TransparentToolButton" name="SwitchButtonTwoIcon"/>
+                </item>
+                <item>
+                 <widget class="BodyLabel" name="SwitchButtonTwoLable">
+                  <property name="text">
+                   <string>IO 2</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="SwitchButton" name="SwitchButtonTwo">
+                  <property name="onText">
+                   <string>开</string>
+                  </property>
+                  <property name="offText">
+                   <string>关</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_12">
+                <item>
+                 <widget class="TransparentToolButton" name="SwitchButtonThreeIcon"/>
+                </item>
+                <item>
+                 <widget class="BodyLabel" name="SwitchButtonThreeLable">
+                  <property name="text">
+                   <string>IO 3</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="SwitchButton" name="SwitchButtonThree">
+                  <property name="onText">
+                   <string>开</string>
+                  </property>
+                  <property name="offText">
+                   <string>关</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_16">
+                <item>
+                 <widget class="TransparentToolButton" name="SwitchButtonFourIcon"/>
+                </item>
+                <item>
+                 <widget class="BodyLabel" name="SwitchButtonFourLable">
+                  <property name="text">
+                   <string>IO 4</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="SwitchButton" name="SwitchButtonFour">
+                  <property name="onText">
+                   <string>开</string>
+                  </property>
+                  <property name="offText">
+                   <string>关</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
-          <widget class="VerticalSeparator" name="VerticalSeparator_2"/>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_8">
+          <layout class="QVBoxLayout" name="verticalLayout_10">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_tools" stretch="0,0,8">
-             <property name="spacing">
-              <number>6</number>
+            <widget class="QGroupBox" name="groupBox_2">
+             <property name="title">
+              <string>末端工具</string>
              </property>
-             <item>
-              <widget class="TransparentToolButton" name="ToolIcon"/>
-             </item>
-             <item>
-              <widget class="BodyLabel" name="ArmToolLabel">
-               <property name="text">
-                <string>工具</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="ComboBox" name="ArmToolComboBox"/>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_tool_control" stretch="0,0,0">
-             <item>
-              <widget class="TransparentToolButton" name="ToolsControlIcon"/>
-             </item>
-             <item>
-              <widget class="BodyLabel" name="BodyLabel">
-               <property name="text">
-                <string>执行</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="SwitchButton" name="ArmToolSwitchButton">
-               <property name="onText">
-                <string>吸取</string>
-               </property>
-               <property name="offText">
-                <string>释放</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
+             <layout class="QVBoxLayout" name="verticalLayout_9">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_8">
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_tools" stretch="0,0,8">
+                  <property name="spacing">
+                   <number>6</number>
+                  </property>
+                  <item>
+                   <widget class="TransparentToolButton" name="ToolIcon"/>
+                  </item>
+                  <item>
+                   <widget class="BodyLabel" name="ArmToolLabel">
+                    <property name="text">
+                     <string>工具</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="ComboBox" name="ArmToolComboBox"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_tool_control" stretch="0,0,0">
+                  <item>
+                   <widget class="TransparentToolButton" name="ToolsControlIcon"/>
+                  </item>
+                  <item>
+                   <widget class="BodyLabel" name="BodyLabel">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>吸盘</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="SwitchButton" name="ArmToolSwitchButton">
+                    <property name="onText">
+                     <string>吸取</string>
+                    </property>
+                    <property name="offText">
+                     <string>释放</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_18">
+                  <item>
+                   <widget class="TransparentToolButton" name="GrapToolSliderIcon"/>
+                  </item>
+                  <item>
+                   <widget class="BodyLabel" name="GrapToolLabel">
+                    <property name="text">
+                     <string>夹爪</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Slider" name="GrapToolSlider">
+                    <property name="layoutDirection">
+                     <enum>Qt::LeftToRight</enum>
+                    </property>
+                    <property name="singleStep">
+                     <number>5</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -2416,6 +2460,11 @@ PushButton:hover {
   <customwidget>
    <class>SwitchButton</class>
    <extends>QWidget</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>Slider</class>
+   <extends>QSlider</extends>
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
