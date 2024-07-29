@@ -295,6 +295,7 @@ class TeachPage(QFrame, teach_page_frame):
         
         # 末端工具控制组回调函数绑定
         self.ArmToolSwitchButton.checkedChanged.connect(self.tool_switch_control)
+        self.GrapToolSlider.valueChanged.connect(self.tool_gripper_control)
         self.SwitchButtonOne.checkedChanged.connect(partial(self.set_extend_io_status, 1))
         self.SwitchButtonTwo.checkedChanged.connect(partial(self.set_extend_io_status, 2))
         self.SwitchButtonThree.checkedChanged.connect(partial(self.set_extend_io_status, 3))
@@ -1302,6 +1303,29 @@ class TeachPage(QFrame, teach_page_frame):
     @check_robot_arm_is_working
     @check_robot_arm_emergency_stop
     @Slot()
+    def tool_gripper_control(self):
+        """机械臂夹爪抓取回调函数"""
+        type_of_tool = self.ArmToolComboBox.currentText()
+        if type_of_tool == "夹爪":
+            grap_value = self.GrapToolSlider.value()
+            command = json.dumps({"command":"set_end_tool", "data": [2, grap_value]}).strip() + '\r\n'
+            logger.debug(f"夹爪状态值: {command}")
+            self.command_queue.put(command.encode())
+        else:
+            InfoBar.warning(
+                title="警告",
+                content="末端工具未选择夹爪!",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP,
+                parent=self
+            )
+    
+    @check_robot_arm_connection
+    @check_robot_arm_is_working
+    @check_robot_arm_emergency_stop
+    @Slot()
     def end_tool_coordinate_operate(self, axis: str, action: str = "add"):
         """末端工具坐标增减函数"""
         # 获取末端工具的坐标
@@ -1623,6 +1647,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.ToolsControlIcon.setIcon(FIF.ROBOT)
         self.RobotArmZeroButton.setIcon(FIF.HOME)
         self.RobotArmResetButton.setIcon(FIF.SYNC.icon(color="#ffffff"))
+        self.GrapToolSliderIcon.setIcon(FIF.HEADPHONE)
         # IO 控制按钮图标
         self.SwitchButtonOneIcon.setIcon(FIF.BRIGHTNESS.icon(color="#ff3333"))
         self.SwitchButtonTwoIcon.setIcon(FIF.BRIGHTNESS.icon(color="#ff3333"))
