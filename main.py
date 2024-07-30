@@ -18,7 +18,7 @@ from common.socket_client import ClientSocket, Worker
 from common.work_threads import UpdateJointAnglesTask, AgnleDegreeWatchTask, CommandSenderTask, CommandReceiverTask
 from componets.table_view_control import (JointOneDelegate, JointTwoDelegate, JointThreeDelegate,
                                           JointFourDelegate, JointFiveDelegate, JointSixDelegate, 
-                                          JointSpeedDelegate, JointDelayTimeDelegate)
+                                          JointSpeedDelegate, JointDelayTimeDelegate, ToolControlDelegate)
 
 # UI 相关模块
 from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot, QUrl, QRegularExpression
@@ -364,7 +364,7 @@ class TeachPage(QFrame, teach_page_frame):
                         angle_6 = item.get("J6/X", "")
                         speed_percentage = item.get("速度", 30)  # 速度百分比默认为 30%
                         arm_tool_option = item.get("工具", "")
-                        arm_tool_control = item.get("开关", "")
+                        arm_tool_control = item.get("工具状态", "")
                         arm_action_delay_time = item.get("延时", "")
                         note = item.get("备注", "")
 
@@ -384,11 +384,14 @@ class TeachPage(QFrame, teach_page_frame):
                         arm_tool_combobox.setCurrentText(arm_tool_option)
                         self.update_table_cell_widget(row_position, 7, arm_tool_combobox)
 
-                        # 开关列
-                        arm_tool_control_combobox = ComboBox()
-                        arm_tool_control_combobox.addItems(["", "关", "开"])
-                        arm_tool_control_combobox.setCurrentText(arm_tool_control)
-                        self.update_table_cell_widget(row_position, 8, arm_tool_control_combobox)
+                        # 工具状态列
+                        if arm_tool_option == "吸盘":
+                            arm_tool_control_combobox = ComboBox()
+                            arm_tool_control_combobox.addItems(["", "关", "开"])
+                            arm_tool_control_combobox.setCurrentText(arm_tool_control)
+                            self.update_table_cell_widget(row_position, 8, arm_tool_control_combobox)
+                        elif arm_tool_option == "夹爪":
+                            self.update_table_cell(row_position, 8, arm_tool_control)
 
                         # 延时列
                         self.update_table_cell(row_position, 9, arm_action_delay_time)
@@ -432,19 +435,20 @@ class TeachPage(QFrame, teach_page_frame):
                 angle_6 = self.ActionTableWidget.item(row, 5).text()
                 speed_percentage = self.ActionTableWidget.item(row, 6).text()        # 速度列
                 arm_tool_widget = self.ActionTableWidget.cellWidget(row, 7)          # 工具列
-                arm_tool_control_widget = self.ActionTableWidget.cellWidget(row, 8)  # 开关列
+                
                 arm_action_delay_time = self.ActionTableWidget.item(row, 9).text()   # 延时列
                 note = self.ActionTableWidget.item(row, 10).text()                   # 备注列
 
                 if arm_tool_widget is not None:
                     arm_tool_option = arm_tool_widget.currentText()
-                else:
-                    arm_tool_option = ""
-
-                if arm_tool_control_widget is not None:
-                    arm_tool_control_widget = arm_tool_control_widget.currentText()
-                else:
-                    arm_tool_control_widget = ""
+                    if arm_tool_option == "吸盘":
+                        suction_cup_status_widget = self.ActionTableWidget.cellWidget(row, 8)  # 工具状态列
+                        if suction_cup_status_widget is not None:
+                            tool_control_status = suction_cup_status_widget.currentText()
+                        else:
+                            tool_control_status = ""
+                    elif arm_tool_option == "夹爪":
+                        tool_control_status = self.ActionTableWidget.item(row, 8).text()
 
                 data.append({
                     "J1/X": angle_1,
@@ -455,7 +459,7 @@ class TeachPage(QFrame, teach_page_frame):
                     "J6/X": angle_6,
                     "速度": speed_percentage,
                     "工具": arm_tool_option,
-                    "开关": arm_tool_control_widget,
+                    "工具状态": tool_control_status,
                     "延时": arm_action_delay_time,
                     "备注": note
                 })
@@ -512,7 +516,13 @@ class TeachPage(QFrame, teach_page_frame):
                         json_command = {"command":"set_end_tool", "data": [1, tool_status]}
                         str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
                         self.command_queue.put(str_command.encode())
-                        
+                    
+                    if tool_type_data[0] == "夹爪" and tool_type_data[1] != "":
+                        grap_tool_status = tool_type_data[1]  # 夹爪的开合大小
+                        json_command = {"command":"set_end_tool", "data": [2, grap_tool_status]}
+                        str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+                        self.command_queue.put(str_command.encode())
+                    
                     # SEQ 顺序模式下，发送延时命令，INT 模式不发送延时命令
                     if self.command_model == 'SEQ' and delay_time != 0:
                         set_delay_time = int(delay_time * 1000)
@@ -616,8 +626,13 @@ class TeachPage(QFrame, teach_page_frame):
         angle_5 = float(self.ActionTableWidget.item(row, 4).text())
         angle_6 = float(self.ActionTableWidget.item(row, 5).text())
         speed_percentage = float(self.ActionTableWidget.item(row, 6).text())
+        
         type_of_tool = self.ActionTableWidget.cellWidget(row, 7).currentText()
-        tool_switch = self.ActionTableWidget.cellWidget(row, 8).currentText()
+        if type_of_tool == "吸盘":
+            tool_switch = self.ActionTableWidget.cellWidget(row, 8).currentText()
+        elif type_of_tool == "夹爪":
+            tool_switch = int(self.ActionTableWidget.item(row, 8).text())
+            
         delay_time = float(self.ActionTableWidget.item(row, 9).text())  # 执行动作需要的时间
         
         # 机械臂执行命令
@@ -642,6 +657,12 @@ class TeachPage(QFrame, teach_page_frame):
             str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
             self.command_queue.put(str_command.encode())
 
+        if tool_type_data[0] == "夹爪" and tool_type_data[1] != "":
+            grap_tool_status = tool_type_data[1]  # 夹爪的开合大小
+            json_command = {"command":"set_end_tool", "data": [2, grap_tool_status]}
+            str_command = json.dumps(json_command).replace(' ', "") + '\r\n'
+            self.command_queue.put(str_command.encode())
+        
         self.update_table_action_task_status(status_flag=False)
         
     def update_table_action_task_status(self, status_flag=True):
@@ -802,11 +823,19 @@ class TeachPage(QFrame, teach_page_frame):
         arm_tool_combobox.setCurrentText(type_of_tool)
         self.ActionTableWidget.setCellWidget(row_position, 7, arm_tool_combobox)
 
-        # 开关列添加下拉选择框
-        arm_tool_control = ComboBox()
-        arm_tool_control.addItems(["", "关", "开"])
-        self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control)
-        
+        # 根据工具类型添加不同的控制方式
+        if type_of_tool == "吸盘":
+            arm_tool_control = ComboBox()
+            arm_tool_control.addItems(["", "关", "开"])
+            if self.ArmToolSwitchButton.isChecked():
+                arm_tool_control.setCurrentText("开")
+            else:
+                arm_tool_control.setCurrentText("关")
+            self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control)
+        elif type_of_tool == "夹爪":
+            grap_value = self.GrapToolSlider.value()
+            self.ActionTableWidget.setItem(row_position, 8, QTableWidgetItem(str(grap_value)))
+            
         # 获取延时长短
         self.ActionTableWidget.setItem(row_position, 9, QTableWidgetItem(str(self.JointDelayTimeEdit.text())))
         
@@ -859,8 +888,23 @@ class TeachPage(QFrame, teach_page_frame):
                     elif col == 7:
                         arm_tool_combobox = ComboBox()
                         arm_tool_combobox.addItems(["", "夹爪", "吸盘"])
-                        arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
+                        arm_current_tool_type = self.ArmToolComboBox.currentText()
+                        arm_tool_combobox.setCurrentText(arm_current_tool_type)
                         self.update_table_cell_widget(row.row(), col, arm_tool_combobox)
+                        
+                        # 根据工具类型，更新工具的状态
+                        if arm_current_tool_type == "夹爪":
+                            self.update_table_cell(row.row(), 8, self.GrapToolSlider.value())
+                        
+                        if arm_current_tool_type == "吸盘":
+                            arm_tool_control = ComboBox()
+                            arm_tool_control.addItems(["", "关", "开"])
+                            if self.ArmToolSwitchButton.isChecked():
+                                arm_tool_control.setCurrentText("开")
+                            else:
+                                arm_tool_control.setCurrentText("关")
+                            self.update_table_cell_widget(row.row(), 8, arm_tool_control)
+                            
                     elif col == 9:
                         self.update_table_cell(row.row(), col, self.JointDelayTimeEdit.text())
         else:
@@ -1303,21 +1347,23 @@ class TeachPage(QFrame, teach_page_frame):
     @check_robot_arm_is_working
     @check_robot_arm_emergency_stop
     @Slot()
-    def tool_gripper_control(self):
+    def tool_gripper_control(self, *args, **kwargs):
         """机械臂夹爪抓取回调函数"""
         type_of_tool = self.ArmToolComboBox.currentText()
         if type_of_tool == "夹爪":
             grap_value = self.GrapToolSlider.value()
-            command = json.dumps({"command":"set_end_tool", "data": [2, grap_value]}).strip() + '\r\n'
-            logger.debug(f"夹爪状态值: {command}")
-            self.command_queue.put(command.encode())
+            with self.get_robot_arm_connector() as robot_arm_connector:
+                command = json.dumps({"command":"set_end_tool", "data": [2, grap_value]}).strip() + '\r\n'
+                time.sleep(0.1)
+                robot_arm_connector.send(command.encode())
+                logger.debug(f"夹爪状态值: {command}")
         else:
             InfoBar.warning(
                 title="警告",
                 content="末端工具未选择夹爪!",
                 isClosable=True,
                 orient=Qt.Horizontal,
-                duration=3000,
+                duration=2000,
                 position=InfoBarPosition.TOP,
                 parent=self
             )
@@ -1561,10 +1607,14 @@ class TeachPage(QFrame, teach_page_frame):
     # 一些 qt 界面的常用的抽象操作
     def update_table_cell_widget(self, row, col, widget):
         """更新表格指定位置的小部件"""
+        self.ActionTableWidget.removeCellWidget(row, col)
+        self.ActionTableWidget.takeItem(row, col)
         self.ActionTableWidget.setCellWidget(row, col, widget)
     
     def update_table_cell(self, row, col, value):
         """更新表格指定位置的项"""
+        self.ActionTableWidget.removeCellWidget(row, col)
+        self.ActionTableWidget.takeItem(row, col)
         self.ActionTableWidget.setItem(row, col, QTableWidgetItem(str(value)))
     
     def initJointControlWidiget(self):
@@ -1863,6 +1913,7 @@ class TeachPage(QFrame, teach_page_frame):
         ColumnSixdelegate = JointSixDelegate(parent=self)
         ColumnSpeeddelegate = JointSpeedDelegate(parent=self)
         ColumnDelayTimedelegate = JointDelayTimeDelegate(parent=self)
+        ToolControldelegate = ToolControlDelegate(parent=self)
         self.ActionTableWidget.setItemDelegateForColumn(0, ColumnOnedelegate)
         self.ActionTableWidget.setItemDelegateForColumn(1, ColumnTwodelegate)
         self.ActionTableWidget.setItemDelegateForColumn(2, ColumnThreedelegate)
@@ -1870,6 +1921,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.ActionTableWidget.setItemDelegateForColumn(4, ColumnFivedelegate)
         self.ActionTableWidget.setItemDelegateForColumn(5, ColumnSixdelegate)
         self.ActionTableWidget.setItemDelegateForColumn(6, ColumnSpeeddelegate)
+        self.ActionTableWidget.setItemDelegateForColumn(8, ToolControldelegate)
         self.ActionTableWidget.setItemDelegateForColumn(9, ColumnDelayTimedelegate)
 
   
