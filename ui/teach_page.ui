@@ -21,7 +21,7 @@
     <widget class="VerticalSeparator" name="VerticalSeparator"/>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_20">
+    <layout class="QHBoxLayout" name="horizontalLayout_20" stretch="7,0,3">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
@@ -272,7 +272,7 @@ PushButton:hover {
          </column>
          <column>
           <property name="text">
-           <string>开关</string>
+           <string>工具状态</string>
           </property>
          </column>
          <column>
@@ -383,6 +383,9 @@ PushButton:hover {
         </layout>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="VerticalSeparator" name="VerticalSeparator_2"/>
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_11">

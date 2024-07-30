@@ -1,3 +1,4 @@
+# 限制用户输入的内容，避免用户输入错误的数据
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtWidgets import QItemDelegate
@@ -64,6 +65,14 @@ class JointDelayTimeDelegate(QItemDelegate):
     def createEditor(self, parent, option, index):
         editor = LineEdit(parent)
         only_float_regx = QRegularExpression(r'^(30|[1-2]?[0-9]|0)$')
+        only_float_validator = QRegularExpressionValidator(only_float_regx)
+        editor.setValidator(only_float_validator)
+        return editor
+    
+class ToolControlDelegate(QItemDelegate):
+    def createEditor(self, parent, option, index):
+        editor = LineEdit(parent)
+        only_float_regx = QRegularExpression(r'^(100|[1-9]?[0-9])$')
         only_float_validator = QRegularExpressionValidator(only_float_regx)
         editor.setValidator(only_float_validator)
         return editor

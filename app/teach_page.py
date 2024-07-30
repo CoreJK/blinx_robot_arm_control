@@ -168,6 +168,11 @@ class teach_page_frame(object):
 
         self.horizontalLayout_20.addLayout(self.verticalLayout_7)
 
+        self.VerticalSeparator_2 = VerticalSeparator(Frame)
+        self.VerticalSeparator_2.setObjectName(u"VerticalSeparator_2")
+
+        self.horizontalLayout_20.addWidget(self.VerticalSeparator_2)
+
         self.verticalLayout_11 = QVBoxLayout()
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
         self.horizontalLayout_9 = QHBoxLayout()
@@ -1148,6 +1153,8 @@ class teach_page_frame(object):
 
         self.horizontalLayout_20.addLayout(self.verticalLayout_11)
 
+        self.horizontalLayout_20.setStretch(0, 7)
+        self.horizontalLayout_20.setStretch(2, 3)
 
         self.horizontalLayout_21.addLayout(self.horizontalLayout_20)
 
@@ -1232,7 +1239,7 @@ class teach_page_frame(object):
         ___qtablewidgetitem7 = self.ActionTableWidget.horizontalHeaderItem(7)
         ___qtablewidgetitem7.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177", None));
         ___qtablewidgetitem8 = self.ActionTableWidget.horizontalHeaderItem(8)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("Frame", u"\u5f00\u5173", None));
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177\u72b6\u6001", None));
         ___qtablewidgetitem9 = self.ActionTableWidget.horizontalHeaderItem(9)
         ___qtablewidgetitem9.setText(QCoreApplication.translate("Frame", u"\u5ef6\u65f6", None));
         ___qtablewidgetitem10 = self.ActionTableWidget.horizontalHeaderItem(10)
