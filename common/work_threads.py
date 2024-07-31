@@ -223,8 +223,12 @@ class CommandReceiverTask(QRunnable):
         try:
             for move_status in recv_arm_move_status:
                 json_data = json.loads(move_status)
-                logger.warning(f"机械臂运动状态: {json_data}")
-                pub.sendMessage('joints/move_status', move_status=json_data['data'])
+                if json_data['data'] == 'true':
+                    logger.warning(f"机械臂运动状态: {json_data}")
+                    pub.sendMessage('joints/move_status', move_status=True)
+                else:
+                    logger.warning(f"机械臂运动状态: {json_data}")
+                    pub.sendMessage('joints/move_status', move_status=False)
         except Exception as e:
             logger.error(f"解析命令处理异常: {e}")
             logger.error(rf"异常命令: {move_status}")

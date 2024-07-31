@@ -187,7 +187,7 @@ class TeachPage(QFrame, teach_page_frame):
         self.initJointControlWidiget()
         
         # 状态标志
-        self.move_status = True  # 机械臂运动状态
+        self.move_status = False  # 机械臂运动状态
         self.thread_is_on = True  # 线程工作标志位
         self.table_action_thread_flag = True  # 顺序执行示教动作线程标志位
         self.robot_arm_table_action_status = False  # 顺序执行示教动作任务进行标志位
@@ -569,7 +569,7 @@ class TeachPage(QFrame, teach_page_frame):
         """示教线程工作控制位"""
         self.table_action_thread_flag = flag
     
-    def _joints_move_status(self, move_status=True):
+    def _joints_move_status(self, move_status=False):
         """订阅机械臂的关节运动状态"""
         self.move_status = move_status
     
