@@ -28,7 +28,7 @@ class teach_page_frame(object):
     def setupUi(self, Frame):
         if not Frame.objectName():
             Frame.setObjectName(u"Frame")
-        Frame.resize(1359, 790)
+        Frame.resize(1368, 790)
         self.horizontalLayout_21 = QHBoxLayout(Frame)
         self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
         self.VerticalSeparator = VerticalSeparator(Frame)
@@ -1478,7 +1478,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.CoordinateStepLable.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
+        self.CoordinateStepLable.setText(QCoreApplication.translate("Frame", u"\u6b65\u8fdb", None))
         self.CoordinateStepSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
