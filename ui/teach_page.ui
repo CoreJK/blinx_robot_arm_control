@@ -2194,7 +2194,7 @@ ToolButton:hover {
                 <item>
                  <widget class="BodyLabel" name="SwitchButtonOneLable">
                   <property name="text">
-                   <string>IO 1</string>
+                   <string>OUT 1</string>
                   </property>
                  </widget>
                 </item>
@@ -2218,7 +2218,7 @@ ToolButton:hover {
                 <item>
                  <widget class="BodyLabel" name="SwitchButtonTwoLable">
                   <property name="text">
-                   <string>IO 2</string>
+                   <string>OUT 2</string>
                   </property>
                  </widget>
                 </item>
@@ -2242,7 +2242,7 @@ ToolButton:hover {
                 <item>
                  <widget class="BodyLabel" name="SwitchButtonThreeLable">
                   <property name="text">
-                   <string>IO 3</string>
+                   <string>OUT 3</string>
                   </property>
                  </widget>
                 </item>
@@ -2266,7 +2266,7 @@ ToolButton:hover {
                 <item>
                  <widget class="BodyLabel" name="SwitchButtonFourLable">
                   <property name="text">
-                   <string>IO 4</string>
+                   <string>OUT 4</string>
                   </property>
                  </widget>
                 </item>
