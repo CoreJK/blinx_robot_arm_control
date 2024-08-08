@@ -269,7 +269,7 @@ class teach_page_frame(object):
 
         self.JointOneLaylout.addWidget(self.JointOneLabel)
 
-        self.horizontalSpacer_2 = QSpacerItem(22, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(29, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointOneLaylout.addItem(self.horizontalSpacer_2)
 
@@ -308,7 +308,7 @@ class teach_page_frame(object):
 
         self.JointTwolout.addWidget(self.JointTwoLabel)
 
-        self.horizontalSpacer_9 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_9 = QSpacerItem(27, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointTwolout.addItem(self.horizontalSpacer_9)
 
@@ -347,7 +347,7 @@ class teach_page_frame(object):
 
         self.JointThreeLaylout.addWidget(self.JointThreeLabel)
 
-        self.horizontalSpacer_10 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_10 = QSpacerItem(27, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointThreeLaylout.addItem(self.horizontalSpacer_10)
 
@@ -386,7 +386,7 @@ class teach_page_frame(object):
 
         self.JointFourLaylout.addWidget(self.JointFourLabel)
 
-        self.horizontalSpacer_11 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_11 = QSpacerItem(27, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointFourLaylout.addItem(self.horizontalSpacer_11)
 
@@ -425,7 +425,7 @@ class teach_page_frame(object):
 
         self.JointFiveLaylout.addWidget(self.JointFiveLabel)
 
-        self.horizontalSpacer_12 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_12 = QSpacerItem(27, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointFiveLaylout.addItem(self.horizontalSpacer_12)
 
@@ -464,7 +464,7 @@ class teach_page_frame(object):
 
         self.JointSixLaylout.addWidget(self.JointSixLabel)
 
-        self.horizontalSpacer_13 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_13 = QSpacerItem(27, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointSixLaylout.addItem(self.horizontalSpacer_13)
 
@@ -494,7 +494,7 @@ class teach_page_frame(object):
 
         self.JointAngleStepLaylout = QHBoxLayout()
         self.JointAngleStepLaylout.setObjectName(u"JointAngleStepLaylout")
-        self.horizontalSpacer_46 = QSpacerItem(14, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_46 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointAngleStepLaylout.addItem(self.horizontalSpacer_46)
 
@@ -503,7 +503,7 @@ class teach_page_frame(object):
 
         self.JointAngleStepLaylout.addWidget(self.JointStepLabel)
 
-        self.horizontalSpacer_14 = QSpacerItem(24, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_14 = QSpacerItem(38, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointAngleStepLaylout.addItem(self.horizontalSpacer_14)
 
@@ -532,7 +532,7 @@ class teach_page_frame(object):
 
         self.JointSpeedLaylout = QHBoxLayout()
         self.JointSpeedLaylout.setObjectName(u"JointSpeedLaylout")
-        self.horizontalSpacer_47 = QSpacerItem(14, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_47 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointSpeedLaylout.addItem(self.horizontalSpacer_47)
 
@@ -541,7 +541,7 @@ class teach_page_frame(object):
 
         self.JointSpeedLaylout.addWidget(self.JointSpeedLabel)
 
-        self.horizontalSpacer_15 = QSpacerItem(24, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_15 = QSpacerItem(31, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointSpeedLaylout.addItem(self.horizontalSpacer_15)
 
@@ -570,7 +570,7 @@ class teach_page_frame(object):
 
         self.JointDelayTimeLaylout = QHBoxLayout()
         self.JointDelayTimeLaylout.setObjectName(u"JointDelayTimeLaylout")
-        self.horizontalSpacer_48 = QSpacerItem(14, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_48 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointDelayTimeLaylout.addItem(self.horizontalSpacer_48)
 
@@ -579,7 +579,7 @@ class teach_page_frame(object):
 
         self.JointDelayTimeLaylout.addWidget(self.JointDelayTimeLabel)
 
-        self.horizontalSpacer_18 = QSpacerItem(24, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_18 = QSpacerItem(36, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.JointDelayTimeLaylout.addItem(self.horizontalSpacer_18)
 
@@ -634,7 +634,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_10.addWidget(self.XLable)
 
-        self.horizontalSpacer_19 = QSpacerItem(22, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_19 = QSpacerItem(23, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_10.addItem(self.horizontalSpacer_19)
 
@@ -712,7 +712,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_13.addWidget(self.Zlable)
 
-        self.horizontalSpacer_21 = QSpacerItem(22, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_21 = QSpacerItem(23, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_13.addItem(self.horizontalSpacer_21)
 
@@ -785,7 +785,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_24 = QHBoxLayout()
         self.horizontalLayout_24.setObjectName(u"horizontalLayout_24")
-        self.horizontalSpacer_23 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_23 = QSpacerItem(22, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_24.addItem(self.horizontalSpacer_23)
 
@@ -794,7 +794,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_24.addWidget(self.RxLabel)
 
-        self.horizontalSpacer_79 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_79 = QSpacerItem(23, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_24.addItem(self.horizontalSpacer_79)
 
@@ -824,7 +824,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_25 = QHBoxLayout()
         self.horizontalLayout_25.setObjectName(u"horizontalLayout_25")
-        self.horizontalSpacer_81 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_81 = QSpacerItem(22, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_25.addItem(self.horizontalSpacer_81)
 
@@ -833,7 +833,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_25.addWidget(self.RyLabel)
 
-        self.horizontalSpacer_82 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_82 = QSpacerItem(23, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_25.addItem(self.horizontalSpacer_82)
 
@@ -863,7 +863,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_26 = QHBoxLayout()
         self.horizontalLayout_26.setObjectName(u"horizontalLayout_26")
-        self.horizontalSpacer_84 = QSpacerItem(18, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_84 = QSpacerItem(22, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_26.addItem(self.horizontalSpacer_84)
 
@@ -872,7 +872,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_26.addWidget(self.RzLabel)
 
-        self.horizontalSpacer_85 = QSpacerItem(17, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_85 = QSpacerItem(23, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_26.addItem(self.horizontalSpacer_85)
 
@@ -902,7 +902,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_27 = QHBoxLayout()
         self.horizontalLayout_27.setObjectName(u"horizontalLayout_27")
-        self.horizontalSpacer_87 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_87 = QSpacerItem(12, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_27.addItem(self.horizontalSpacer_87)
 
@@ -911,7 +911,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_27.addWidget(self.ApStepLabel)
 
-        self.horizontalSpacer_88 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_88 = QSpacerItem(19, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_27.addItem(self.horizontalSpacer_88)
 
@@ -1223,25 +1223,25 @@ class teach_page_frame(object):
         self.ActionLoopTimes.setText("")
         self.ActionLoopTimes.setPlaceholderText(QCoreApplication.translate("Frame", u"1~100", None))
         ___qtablewidgetitem = self.ActionTableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("Frame", u"J1", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("Frame", u"J1\u00b0", None));
         ___qtablewidgetitem1 = self.ActionTableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("Frame", u"J2", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("Frame", u"J2\u00b0", None));
         ___qtablewidgetitem2 = self.ActionTableWidget.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("Frame", u"J3", None));
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("Frame", u"J3\u00b0", None));
         ___qtablewidgetitem3 = self.ActionTableWidget.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("Frame", u"J4", None));
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("Frame", u"J4\u00b0", None));
         ___qtablewidgetitem4 = self.ActionTableWidget.horizontalHeaderItem(4)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("Frame", u"J5", None));
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("Frame", u"J5\u00b0", None));
         ___qtablewidgetitem5 = self.ActionTableWidget.horizontalHeaderItem(5)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("Frame", u"J6", None));
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("Frame", u"J6\u00b0", None));
         ___qtablewidgetitem6 = self.ActionTableWidget.horizontalHeaderItem(6)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("Frame", u"\u901f\u5ea6", None));
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("Frame", u"\u901f\u5ea6(%)", None));
         ___qtablewidgetitem7 = self.ActionTableWidget.horizontalHeaderItem(7)
         ___qtablewidgetitem7.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177", None));
         ___qtablewidgetitem8 = self.ActionTableWidget.horizontalHeaderItem(8)
         ___qtablewidgetitem8.setText(QCoreApplication.translate("Frame", u"\u5de5\u5177\u72b6\u6001", None));
         ___qtablewidgetitem9 = self.ActionTableWidget.horizontalHeaderItem(9)
-        ___qtablewidgetitem9.setText(QCoreApplication.translate("Frame", u"\u5ef6\u65f6", None));
+        ___qtablewidgetitem9.setText(QCoreApplication.translate("Frame", u"\u5ef6\u65f6(s)", None));
         ___qtablewidgetitem10 = self.ActionTableWidget.horizontalHeaderItem(10)
         ___qtablewidgetitem10.setText(QCoreApplication.translate("Frame", u"\u5907\u6ce8", None));
         self.ActionDeleteButton.setText(QCoreApplication.translate("Frame", u"\u5220\u9664\u52a8\u4f5c", None))
@@ -1294,7 +1294,7 @@ class teach_page_frame(object):
 "    background: rgba(225, 41, 41, 0.5);\n"
 "    color: white;\n"
 "}", None))
-        self.JointOneLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82821", None))
+        self.JointOneLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82821 ( \u00b0 )", None))
         self.JointOneSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1309,7 +1309,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.JointTwoLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82822", None))
+        self.JointTwoLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82822 ( \u00b0 )", None))
         self.JointTwoSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1324,7 +1324,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.JointThreeLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82823", None))
+        self.JointThreeLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82823 ( \u00b0 )", None))
         self.JointThreeSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1339,7 +1339,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.JointFourLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82824", None))
+        self.JointFourLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82824 ( \u00b0 )", None))
         self.JointFourSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1354,7 +1354,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.JointFiveLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82825", None))
+        self.JointFiveLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82825 ( \u00b0 )", None))
         self.JointFiveSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1369,7 +1369,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.JointSixLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82826", None))
+        self.JointSixLabel.setText(QCoreApplication.translate("Frame", u"\u5173\u82826 ( \u00b0 )", None))
         self.JointSixSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1384,7 +1384,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.JointStepLabel.setText(QCoreApplication.translate("Frame", u"\u6b65\u957f", None))
+        self.JointStepLabel.setText(QCoreApplication.translate("Frame", u"\u6b65\u8fdb( \u00b0 )", None))
         self.JointStepSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1400,7 +1400,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.JointSpeedLabel.setText(QCoreApplication.translate("Frame", u"\u901f\u5ea6", None))
+        self.JointSpeedLabel.setText(QCoreApplication.translate("Frame", u"\u901f\u5ea6( % )", None))
         self.JointSpeedDecButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1416,7 +1416,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.JointDelayTimeLabel.setText(QCoreApplication.translate("Frame", u"\u5ef6\u65f6", None))
+        self.JointDelayTimeLabel.setText(QCoreApplication.translate("Frame", u"\u5ef6\u65f6( s )", None))
         self.JointDelayTimeSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1432,7 +1432,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.XLable.setText(QCoreApplication.translate("Frame", u"X", None))
+        self.XLable.setText(QCoreApplication.translate("Frame", u"X(mm)", None))
         self.XLable.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {     background: rgb(0, 170, 255); }  PushButton:hover {     background: rgb(0, 170, 255); }", None))
         self.XAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
@@ -1448,7 +1448,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.YLable.setText(QCoreApplication.translate("Frame", u"Y", None))
+        self.YLable.setText(QCoreApplication.translate("Frame", u"Y(mm)", None))
         self.YAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1463,7 +1463,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.Zlable.setText(QCoreApplication.translate("Frame", u"Z", None))
+        self.Zlable.setText(QCoreApplication.translate("Frame", u"Z(mm)", None))
         self.ZAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1478,7 +1478,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.CoordinateStepLable.setText(QCoreApplication.translate("Frame", u"\u6b65\u8fdb", None))
+        self.CoordinateStepLable.setText(QCoreApplication.translate("Frame", u"\u6b65\u8fdb(mm)", None))
         self.CoordinateStepSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1494,7 +1494,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.RxLabel.setText(QCoreApplication.translate("Frame", u"Rx", None))
+        self.RxLabel.setText(QCoreApplication.translate("Frame", u"Rx( \u00b0 )", None))
         self.RxAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1509,7 +1509,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.RyLabel.setText(QCoreApplication.translate("Frame", u"Ry", None))
+        self.RyLabel.setText(QCoreApplication.translate("Frame", u"Ry( \u00b0 )", None))
         self.RyAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1524,7 +1524,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.RzLabel.setText(QCoreApplication.translate("Frame", u"Rz", None))
+        self.RzLabel.setText(QCoreApplication.translate("Frame", u"Rz( \u00b0 )", None))
         self.RzAxisSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
@@ -1539,7 +1539,7 @@ class teach_page_frame(object):
 "ToolButton:hover {\n"
 "    background: rgb(33, 150, 243);\n"
 "}", None))
-        self.ApStepLabel.setText(QCoreApplication.translate("Frame", u"\u89d2\u5ea6", None))
+        self.ApStepLabel.setText(QCoreApplication.translate("Frame", u"\u89d2\u5ea6( \u00b0 )", None))
         self.ApStepSubButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"ToolButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "}\n"
