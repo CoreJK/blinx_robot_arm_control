@@ -232,37 +232,37 @@ PushButton:hover {
         <widget class="QTableWidget" name="ActionTableWidget">
          <column>
           <property name="text">
-           <string>J1</string>
+           <string>J1°</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>J2</string>
+           <string>J2°</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>J3</string>
+           <string>J3°</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>J4</string>
+           <string>J4°</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>J5</string>
+           <string>J5°</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>J6</string>
+           <string>J6°</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>速度</string>
+           <string>速度(%)</string>
           </property>
          </column>
          <column>
@@ -277,7 +277,7 @@ PushButton:hover {
          </column>
          <column>
           <property name="text">
-           <string>延时</string>
+           <string>延时(s)</string>
           </property>
          </column>
          <column>
@@ -550,7 +550,7 @@ PushButton:disabled {
                   <item>
                    <widget class="StrongBodyLabel" name="JointOneLabel">
                     <property name="text">
-                     <string>关节1</string>
+                     <string>关节1 ( ° )</string>
                     </property>
                    </widget>
                   </item>
@@ -564,7 +564,7 @@ PushButton:disabled {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>22</width>
+                      <width>29</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -645,7 +645,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="JointTwoLabel">
                     <property name="text">
-                     <string>关节2</string>
+                     <string>关节2 ( ° )</string>
                     </property>
                    </widget>
                   </item>
@@ -659,7 +659,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>20</width>
+                      <width>27</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -740,7 +740,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="JointThreeLabel">
                     <property name="text">
-                     <string>关节3</string>
+                     <string>关节3 ( ° )</string>
                     </property>
                    </widget>
                   </item>
@@ -754,7 +754,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>20</width>
+                      <width>27</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -835,7 +835,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="JointFourLabel">
                     <property name="text">
-                     <string>关节4</string>
+                     <string>关节4 ( ° )</string>
                     </property>
                    </widget>
                   </item>
@@ -849,7 +849,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>20</width>
+                      <width>27</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -930,7 +930,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="JointFiveLabel">
                     <property name="text">
-                     <string>关节5</string>
+                     <string>关节5 ( ° )</string>
                     </property>
                    </widget>
                   </item>
@@ -944,7 +944,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>20</width>
+                      <width>27</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1025,7 +1025,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="JointSixLabel">
                     <property name="text">
-                     <string>关节6</string>
+                     <string>关节6 ( ° )</string>
                     </property>
                    </widget>
                   </item>
@@ -1039,7 +1039,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>20</width>
+                      <width>27</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1111,7 +1111,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>14</width>
+                      <width>10</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1120,7 +1120,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="JointStepLabel">
                     <property name="text">
-                     <string>步长</string>
+                     <string>步进( ° )</string>
                     </property>
                    </widget>
                   </item>
@@ -1134,7 +1134,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>24</width>
+                      <width>38</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1206,7 +1206,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>14</width>
+                      <width>10</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1215,7 +1215,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="JointSpeedLabel">
                     <property name="text">
-                     <string>速度</string>
+                     <string>速度( % )</string>
                     </property>
                    </widget>
                   </item>
@@ -1229,7 +1229,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>24</width>
+                      <width>31</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1301,7 +1301,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>14</width>
+                      <width>10</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1310,7 +1310,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="JointDelayTimeLabel">
                     <property name="text">
-                     <string>延时</string>
+                     <string>延时( s )</string>
                     </property>
                    </widget>
                   </item>
@@ -1324,7 +1324,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>24</width>
+                      <width>36</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1419,7 +1419,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="XLable">
                     <property name="text">
-                     <string>X</string>
+                     <string>X(mm)</string>
                     </property>
                     <property name="lightCustomQss" stdset="0">
                      <string>PushButton {     background: rgb(0, 170, 255); }  PushButton:hover {     background: rgb(0, 170, 255); }</string>
@@ -1436,7 +1436,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>22</width>
+                      <width>23</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1517,7 +1517,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="YLable">
                     <property name="text">
-                     <string>Y</string>
+                     <string>Y(mm)</string>
                     </property>
                    </widget>
                   </item>
@@ -1612,7 +1612,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="Zlable">
                     <property name="text">
-                     <string>Z</string>
+                     <string>Z(mm)</string>
                     </property>
                    </widget>
                   </item>
@@ -1626,7 +1626,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>22</width>
+                      <width>23</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1707,7 +1707,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="CoordinateStepLable">
                     <property name="text">
-                     <string>步进</string>
+                     <string>步进(mm)</string>
                     </property>
                    </widget>
                   </item>
@@ -1796,7 +1796,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>18</width>
+                      <width>22</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1805,7 +1805,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="RxLabel">
                     <property name="text">
-                     <string>Rx</string>
+                     <string>Rx( ° )</string>
                     </property>
                    </widget>
                   </item>
@@ -1819,7 +1819,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>17</width>
+                      <width>23</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1891,7 +1891,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>18</width>
+                      <width>22</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1900,7 +1900,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="RyLabel">
                     <property name="text">
-                     <string>Ry</string>
+                     <string>Ry( ° )</string>
                     </property>
                    </widget>
                   </item>
@@ -1914,7 +1914,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>17</width>
+                      <width>23</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1986,7 +1986,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>18</width>
+                      <width>22</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1995,7 +1995,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="RzLabel">
                     <property name="text">
-                     <string>Rz</string>
+                     <string>Rz( ° )</string>
                     </property>
                    </widget>
                   </item>
@@ -2009,7 +2009,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>17</width>
+                      <width>23</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -2081,7 +2081,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>10</width>
+                      <width>12</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -2090,7 +2090,7 @@ ToolButton:hover {
                   <item>
                    <widget class="StrongBodyLabel" name="ApStepLabel">
                     <property name="text">
-                     <string>角度</string>
+                     <string>角度( ° )</string>
                     </property>
                    </widget>
                   </item>
@@ -2104,7 +2104,7 @@ ToolButton:hover {
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>10</width>
+                      <width>19</width>
                       <height>20</height>
                      </size>
                     </property>
