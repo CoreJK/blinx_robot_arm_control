@@ -2302,7 +2302,7 @@ class BlinxRobotArmControlWindow(MSFluentWindow):
     def initWindow(self):
         """初始化窗口"""
         self.resize(1531, 850)
-        self.setWindowTitle("比邻星六轴机械臂上位机 v4.5.3")
+        self.setWindowTitle("比邻星六轴机械臂上位机 v4.5.6")
         self.setWindowIcon(QIcon(str(settings.WINDOWS_ICON_PATH)))
         setThemeColor('#00AAFF')
         
