@@ -11,7 +11,7 @@ dependencies = [
     "colorama==0.4.6",
     "darkdetect==0.8.0",
     "loguru==0.7.2",
-    "numpy==1.22.4",
+    "numpy @ file:///${PROJECT_ROOT}/numpy-1.22.4%2Bvanilla-cp38-cp38-win_amd64.whl",
     "Pypubsub==4.0.3",
     "pyserial==3.5",
     "PySide6==6.6.2",
@@ -24,6 +24,7 @@ dependencies = [
     "simplejson==3.19.2",
     "win32-setctime==1.1.0",
     "zstandard==0.22.0",
+    "file:///${PROJECT_ROOT}/numpy-1.22.4%2Bvanilla-cp38-cp38-win_amd64.whl",
 ]
 requires-python = "<3.13,>=3.8"
 
