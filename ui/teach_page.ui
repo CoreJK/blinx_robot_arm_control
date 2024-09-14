@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1368</width>
+    <width>1381</width>
     <height>790</height>
    </rect>
   </property>
@@ -21,13 +21,19 @@
     <widget class="VerticalSeparator" name="VerticalSeparator"/>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_20" stretch="7,0,3">
+    <layout class="QHBoxLayout" name="horizontalLayout_20" stretch="6,0,3">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="PushButton" name="ActionImportButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="minimumSize">
             <size>
              <width>80</width>
@@ -68,6 +74,12 @@ PushButton:hover {
          </item>
          <item>
           <widget class="PushButton" name="ActionOutputButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -115,7 +127,7 @@ PushButton:hover {
             </size>
            </property>
            <property name="text">
-            <string>单步执行</string>
+            <string>单步</string>
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
@@ -155,7 +167,7 @@ PushButton:hover {
             </size>
            </property>
            <property name="text">
-            <string>顺序执行</string>
+            <string>连续</string>
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
@@ -195,7 +207,7 @@ PushButton:hover {
             </size>
            </property>
            <property name="text">
-            <string>循环执行</string>
+            <string>循环</string>
            </property>
            <property name="lightCustomQss" stdset="0">
             <string>PushButton {
@@ -212,6 +224,12 @@ PushButton:hover {
          </item>
          <item>
           <widget class="LineEdit" name="ActionLoopTimes">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -219,7 +237,7 @@ PushButton:hover {
             <set>Qt::AlignCenter</set>
            </property>
            <property name="placeholderText">
-            <string>1~100</string>
+            <string>1~100(次数)</string>
            </property>
           </widget>
          </item>

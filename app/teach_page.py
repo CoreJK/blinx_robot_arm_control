@@ -28,7 +28,7 @@ class teach_page_frame(object):
     def setupUi(self, Frame):
         if not Frame.objectName():
             Frame.setObjectName(u"Frame")
-        Frame.resize(1368, 790)
+        Frame.resize(1381, 790)
         self.horizontalLayout_21 = QHBoxLayout(Frame)
         self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
         self.VerticalSeparator = VerticalSeparator(Frame)
@@ -44,6 +44,11 @@ class teach_page_frame(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.ActionImportButton = PushButton(Frame)
         self.ActionImportButton.setObjectName(u"ActionImportButton")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.ActionImportButton.sizePolicy().hasHeightForWidth())
+        self.ActionImportButton.setSizePolicy(sizePolicy)
         self.ActionImportButton.setMinimumSize(QSize(80, 0))
 
         self.horizontalLayout.addWidget(self.ActionImportButton)
@@ -54,6 +59,8 @@ class teach_page_frame(object):
 
         self.ActionOutputButton = PushButton(Frame)
         self.ActionOutputButton.setObjectName(u"ActionOutputButton")
+        sizePolicy.setHeightForWidth(self.ActionOutputButton.sizePolicy().hasHeightForWidth())
+        self.ActionOutputButton.setSizePolicy(sizePolicy)
         self.ActionOutputButton.setMinimumSize(QSize(0, 0))
 
         self.horizontalLayout.addWidget(self.ActionOutputButton)
@@ -90,6 +97,8 @@ class teach_page_frame(object):
 
         self.ActionLoopTimes = LineEdit(Frame)
         self.ActionLoopTimes.setObjectName(u"ActionLoopTimes")
+        sizePolicy.setHeightForWidth(self.ActionLoopTimes.sizePolicy().hasHeightForWidth())
+        self.ActionLoopTimes.setSizePolicy(sizePolicy)
         self.ActionLoopTimes.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout.addWidget(self.ActionLoopTimes)
@@ -1153,7 +1162,7 @@ class teach_page_frame(object):
 
         self.horizontalLayout_20.addLayout(self.verticalLayout_11)
 
-        self.horizontalLayout_20.setStretch(0, 7)
+        self.horizontalLayout_20.setStretch(0, 6)
         self.horizontalLayout_20.setStretch(2, 3)
 
         self.horizontalLayout_21.addLayout(self.horizontalLayout_20)
@@ -1190,7 +1199,7 @@ class teach_page_frame(object):
 "    background: rgb(33, 150, 243);\n"
 "    color:white;\n"
 "}", None))
-        self.ActionStepRunButton.setText(QCoreApplication.translate("Frame", u"\u5355\u6b65\u6267\u884c", None))
+        self.ActionStepRunButton.setText(QCoreApplication.translate("Frame", u"\u5355\u6b65", None))
         self.ActionStepRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "    color:white;\n"
@@ -1200,7 +1209,7 @@ class teach_page_frame(object):
 "    background: rgb(33, 150, 243);\n"
 "    color:white;\n"
 "}", None))
-        self.ActionRunButton.setText(QCoreApplication.translate("Frame", u"\u987a\u5e8f\u6267\u884c", None))
+        self.ActionRunButton.setText(QCoreApplication.translate("Frame", u"\u8fde\u7eed", None))
         self.ActionRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "    color:white;\n"
@@ -1210,7 +1219,7 @@ class teach_page_frame(object):
 "    background: rgb(33, 150, 243);\n"
 "    color:white;\n"
 "}", None))
-        self.ActionLoopRunButton.setText(QCoreApplication.translate("Frame", u"\u5faa\u73af\u6267\u884c", None))
+        self.ActionLoopRunButton.setText(QCoreApplication.translate("Frame", u"\u5faa\u73af", None))
         self.ActionLoopRunButton.setProperty("lightCustomQss", QCoreApplication.translate("Frame", u"PushButton {\n"
 "    background: rgb(33, 150, 243);\n"
 "    color:white;\n"
@@ -1221,7 +1230,7 @@ class teach_page_frame(object):
 "    color:white;\n"
 "}", None))
         self.ActionLoopTimes.setText("")
-        self.ActionLoopTimes.setPlaceholderText(QCoreApplication.translate("Frame", u"1~100", None))
+        self.ActionLoopTimes.setPlaceholderText(QCoreApplication.translate("Frame", u"1~100(\u6b21\u6570)", None))
         ___qtablewidgetitem = self.ActionTableWidget.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("Frame", u"J1\u00b0", None));
         ___qtablewidgetitem1 = self.ActionTableWidget.horizontalHeaderItem(1)
