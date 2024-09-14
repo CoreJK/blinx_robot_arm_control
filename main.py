@@ -849,7 +849,7 @@ class TeachPage(QFrame, teach_page_frame):
     def remove_item(self):
         """示教控制删除一行动作"""
         selected_rows = self.ActionTableWidget.selectionModel().selectedRows()
-        delete_confirm_window = Dialog("⚠️警告", "确定要删除选择的动作吗？删除动作不可恢复(不选择动作，默认从最后一行开始删除)", parent=self)
+        delete_confirm_window = Dialog("⚠️警告", "确定要删除选择的动作吗？删除动作不可恢复(不选择动作，默认从最后一行开始删除)")
         if not selected_rows:
             # 如果没有选中行，则删除最后一行
             if delete_confirm_window.exec():
