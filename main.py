@@ -972,6 +972,8 @@ class TeachPage(QFrame, teach_page_frame):
         """右键菜单"""
         self.context_menu.exec(self.ActionTableWidget.mapToGlobal(pos))
     
+    
+    
     @Slot()
     def copy_selected_row(self):
         """复制选择行"""
@@ -979,15 +981,24 @@ class TeachPage(QFrame, teach_page_frame):
         if selected_row >= 0:
             self.copied_row = []
             for col in range(self.ActionTableWidget.columnCount()):
-                # 工具列、开关列，需要获取下拉框中的文本
-                if col in (7, 8):
-                    item_widget = self.ActionTableWidget.cellWidget(selected_row, col)
-                    if item_widget is not None:
-                        self.copied_row.append(item_widget.currentText())
+                if col == 7:
+                    self.copied_row.append(self.get_tool_type_text(selected_row, col))
+                elif col == 8:
+                    tool_type_text = self.get_tool_type_text(selected_row, 7)
+                    self.copied_row.append(self.get_tool_status_text(selected_row, col, tool_type_text))
                 else:
                     item = self.ActionTableWidget.item(selected_row, col)
-                    if item is not None:
-                        self.copied_row.append(item.text())
+                    self.copied_row.append(item.text() if item else "")
+        else:
+            InfoBar.warning(
+                title="警告",
+                content="请选择需要复制的行! \n点击表格对应行号即可选中",
+                isClosable=True,
+                orient=Qt.Horizontal,
+                duration=3000,
+                position=InfoBarPosition.TOP_LEFT,
+                parent=self
+            )
 
     @Slot()
     def paste_row(self):
@@ -995,19 +1006,23 @@ class TeachPage(QFrame, teach_page_frame):
         if self.copied_row:
             row_position = self.ActionTableWidget.rowCount()
             self.ActionTableWidget.insertRow(row_position)
+            arm_tool_type = ""  # 工具的类型
             for col, value in enumerate(self.copied_row):
                 if col == 7:  # 工具列、开关列需要获取下拉框的选中值
                     # 工具列添加下拉选择框
+                    arm_tool_type = value
                     arm_tool_combobox = ComboBox()
                     arm_tool_combobox.addItems(["", "夹爪", "吸盘"])
                     arm_tool_combobox.setCurrentText(value)
                     self.update_table_cell_widget(row_position, col, arm_tool_combobox)
-                elif col == 8:
+                elif col == 8 and arm_tool_type == "吸盘":
                     # 开关列添加下拉选择框
                     arm_tool_control = ComboBox()
                     arm_tool_control.addItems(["", "关", "开"])
                     arm_tool_control.setCurrentText(value)
                     self.update_table_cell_widget(row_position, col, arm_tool_control)
+                elif col == 8 and arm_tool_type == "夹爪":
+                    self.update_table_cell(row_position, col, value)
                 else:
                     self.update_table_cell(row_position, col, value)
     
@@ -1015,34 +1030,35 @@ class TeachPage(QFrame, teach_page_frame):
     def update_cell(self):
         """更新选中的单元格"""
         selected_items = self.ActionTableWidget.selectedItems()
+        
+        # 定义列索引和对应的值
+        column_value_map = {
+            0: self.q1,
+            1: self.q2,
+            2: self.q3,
+            3: self.q4,
+            4: self.q5,
+            5: self.q6,
+            6: self.JointSpeedEdit.text(),
+            9: self.JointDelayTimeEdit.text()
+        }
+        
         if selected_items:
             selected_row = selected_items[0].row()
-            sellected_col = selected_items[0].column()
-            if sellected_col == 0:
-                self.update_table_cell(selected_row, sellected_col, self.q1)
-            elif sellected_col == 1:
-                self.update_table_cell(selected_row, sellected_col, self.q2)
-            elif sellected_col == 2:
-                self.update_table_cell(selected_row, sellected_col, self.q3)
-            elif sellected_col == 3:
-                self.update_table_cell(selected_row, sellected_col, self.q4)
-            elif sellected_col == 4:
-                self.update_table_cell(selected_row, sellected_col, self.q5)
-            elif sellected_col == 5:
-                self.update_table_cell(selected_row, sellected_col, self.q6)
-            elif sellected_col == 6:
-                self.update_table_cell(selected_row, sellected_col, self.JointSpeedEdit.text())
-            elif sellected_col == 7:
+            selected_col = selected_items[0].column()
+            if selected_col in column_value_map:
+                self.update_table_cell(selected_row, selected_col, column_value_map[selected_col])
+            elif selected_col == 7:
                 arm_tool_combobox = ComboBox()
                 arm_tool_combobox.addItems(["", "夹爪", "吸盘"])
                 arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
-                self.update_table_cell_widget(selected_row, sellected_col, arm_tool_combobox)
-            elif sellected_col == 8:
+                self.update_table_cell_widget(selected_row, selected_col, arm_tool_combobox)
+            elif selected_col == 8 and self.ArmToolComboBox.currentText() == "吸盘":
                 arm_tool_control = ComboBox()
                 arm_tool_control.addItems(["", "关", "开"])
-                self.update_table_cell_widget(selected_row, sellected_col, arm_tool_control)
-            elif sellected_col == 9:
-                self.update_table_cell(selected_row, sellected_col, self.JointDelayTimeEdit.text())
+                self.update_table_cell_widget(selected_row, selected_col, arm_tool_control)
+            elif selected_col == 8 and self.ArmToolComboBox.currentText() == "夹爪":
+                self.update_table_cell(selected_row, selected_col, self.GrapToolSlider.value())
         else:
             InfoBar.warning(
                 title="警告",
@@ -1674,6 +1690,21 @@ class TeachPage(QFrame, teach_page_frame):
         self.ActionTableWidget.removeCellWidget(row, col)
         self.ActionTableWidget.takeItem(row, col)
         self.ActionTableWidget.setItem(row, col, QTableWidgetItem(str(value)))
+    
+    def get_tool_type_text(self, row, col):
+        """获取表格里，指定行列工具的类型"""
+        tool_type_combox = self.ActionTableWidget.cellWidget(row, col)
+        return tool_type_combox.currentText() if tool_type_combox else ""
+
+    def get_tool_status_text(self, row, col, tool_type):
+        """获取表格里，根据工具的类型，获取工具的状态"""
+        if tool_type == "吸盘":
+            tool_status_combox = self.ActionTableWidget.cellWidget(row, col)
+            return tool_status_combox.currentText() if tool_status_combox else ""
+        elif tool_type == "夹爪":
+            item_widget = self.ActionTableWidget.item(row, col)
+            return item_widget.text() if item_widget else ""
+        return ""
     
     def initJointControlWidiget(self):
         """分段导航栏添加子页面控件"""
