@@ -1012,6 +1012,7 @@ class TeachPage(QFrame, teach_page_frame):
                     arm_tool_combobox = ComboBox()
                     arm_tool_combobox.addItems(["夹爪", "吸盘"])
                     arm_tool_combobox.setCurrentText(value)
+                    arm_tool_combobox.currentIndexChanged.connect(lambda: self.on_tool_control_change(row_position))
                     self.update_table_cell_widget(row_position, col, arm_tool_combobox)
                 elif col == 8:
                     # 开关列添加下拉选择框
@@ -1677,6 +1678,33 @@ class TeachPage(QFrame, teach_page_frame):
         self.ActionTableWidget.removeCellWidget(row, col)
         self.ActionTableWidget.takeItem(row, col)
         self.ActionTableWidget.setItem(row, col, QTableWidgetItem(str(value)))
+    
+    def get_tool_type_text(self, row, col):
+        """获取表格里，指定行列工具的类型"""
+        tool_type_combox = self.ActionTableWidget.cellWidget(row, col)
+        return tool_type_combox.currentText() if tool_type_combox else ""
+
+    def get_tool_status_text(self, row, col, tool_type):
+        """获取表格里，根据工具的类型，获取工具的状态"""
+        if tool_type == "吸盘":
+            tool_status_combox = self.ActionTableWidget.cellWidget(row, col)
+            return tool_status_combox.currentText() if tool_status_combox else ""
+        elif tool_type == "夹爪":
+            item_widget = self.ActionTableWidget.item(row, col)
+            return item_widget.text() if item_widget else ""
+        return ""
+    
+    def on_tool_control_change(self, row):
+        """根据工具类型的变化，修改示教表格中对应的工具状态"""
+        tool_type = self.ActionTableWidget.cellWidget(row, 7).currentText()
+        if tool_type == "吸盘":
+            arm_tool_control = ComboBox()
+            arm_tool_control.addItems(["关", "开"])
+            arm_tool_control.setCurrentText("开" if self.ArmToolSwitchButton.isChecked() else "关")
+            self.update_table_cell_widget(row, 8, arm_tool_control)
+        elif tool_type == "夹爪":
+            grap_value = self.GrapToolSlider.value()
+            self.update_table_cell(row, 8, grap_value)
     
     def initJointControlWidiget(self):
         """分段导航栏添加子页面控件"""
