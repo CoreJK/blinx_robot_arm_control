@@ -378,14 +378,14 @@ class TeachPage(QFrame, teach_page_frame):
 
                         # 工具列
                         arm_tool_combobox = ComboBox()
-                        arm_tool_combobox.addItems(["", "夹爪", "吸盘"])
+                        arm_tool_combobox.addItems(["夹爪", "吸盘"])
                         arm_tool_combobox.setCurrentText(arm_tool_option)
                         self.update_table_cell_widget(row_position, 7, arm_tool_combobox)
 
                         # 工具状态列
                         if arm_tool_option == "吸盘":
                             arm_tool_control_combobox = ComboBox()
-                            arm_tool_control_combobox.addItems(["", "关", "开"])
+                            arm_tool_control_combobox.addItems(["关", "开"])
                             arm_tool_control_combobox.setCurrentText(arm_tool_control)
                             self.update_table_cell_widget(row_position, 8, arm_tool_control_combobox)
                         elif arm_tool_option == "夹爪":
