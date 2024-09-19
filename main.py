@@ -831,6 +831,8 @@ class TeachPage(QFrame, teach_page_frame):
         arm_tool_combobox = ComboBox()
         arm_tool_combobox.addItems(["夹爪", "吸盘"])
         arm_tool_combobox.setCurrentText(type_of_tool)
+        # 监听表格中工具类型的变化，修改对应的工具状态
+        arm_tool_combobox.currentIndexChanged.connect(lambda: self.on_tool_control_change(row_position))
         self.ActionTableWidget.setCellWidget(row_position, 7, arm_tool_combobox)
     
         # 根据工具类型添加不同的控制方式
@@ -843,6 +845,18 @@ class TeachPage(QFrame, teach_page_frame):
             grap_value = self.GrapToolSlider.value()
             self.ActionTableWidget.setItem(row_position, 8, QTableWidgetItem(str(grap_value)))
 
+    def on_tool_control_change(self, row):
+        """根据工具类型的变化，修改表格中对应的工具状态"""
+        tool_type = self.ActionTableWidget.cellWidget(row, 7).currentText()
+        if tool_type == "吸盘":
+            arm_tool_control = ComboBox()
+            arm_tool_control.addItems(["关", "开"])
+            arm_tool_control.setCurrentText("开" if self.ArmToolSwitchButton.isChecked() else "关")
+            self.update_table_cell_widget(row, 8, arm_tool_control)
+        elif tool_type == "夹爪":
+            grap_value = self.GrapToolSlider.value()
+            self.update_table_cell(row, 8, grap_value)
+    
     @check_robot_arm_connection
     @check_robot_arm_is_working
     @check_robot_arm_emergency_stop
