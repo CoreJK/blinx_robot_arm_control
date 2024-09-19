@@ -835,14 +835,14 @@ class TeachPage(QFrame, teach_page_frame):
     
         # 工具列添加下拉选择框
         arm_tool_combobox = ComboBox()
-        arm_tool_combobox.addItems(["", "夹爪", "吸盘"])
+        arm_tool_combobox.addItems(["夹爪", "吸盘"])
         arm_tool_combobox.setCurrentText(type_of_tool)
         self.ActionTableWidget.setCellWidget(row_position, 7, arm_tool_combobox)
     
         # 根据工具类型添加不同的控制方式
         if type_of_tool == "吸盘":
             arm_tool_control = ComboBox()
-            arm_tool_control.addItems(["", "关", "开"])
+            arm_tool_control.addItems(["关", "开"])
             arm_tool_control.setCurrentText("开" if self.ArmToolSwitchButton.isChecked() else "关")
             self.ActionTableWidget.setCellWidget(row_position, 8, arm_tool_control)
         elif type_of_tool == "夹爪":
@@ -996,13 +996,13 @@ class TeachPage(QFrame, teach_page_frame):
                 if col == 7:  # 工具列、开关列需要获取下拉框的选中值
                     # 工具列添加下拉选择框
                     arm_tool_combobox = ComboBox()
-                    arm_tool_combobox.addItems(["", "夹爪", "吸盘"])
+                    arm_tool_combobox.addItems(["夹爪", "吸盘"])
                     arm_tool_combobox.setCurrentText(value)
                     self.update_table_cell_widget(row_position, col, arm_tool_combobox)
                 elif col == 8:
                     # 开关列添加下拉选择框
                     arm_tool_control = ComboBox()
-                    arm_tool_control.addItems(["", "关", "开"])
+                    arm_tool_control.addItems(["关", "开"])
                     arm_tool_control.setCurrentText(value)
                     self.update_table_cell_widget(row_position, col, arm_tool_control)
                 else:
@@ -1079,12 +1079,12 @@ class TeachPage(QFrame, teach_page_frame):
             for col in range(self.ActionTableWidget.columnCount()):
                 if col == 7:
                     arm_tool_combobox = ComboBox()
-                    arm_tool_combobox.addItems(["", "夹爪", "吸盘"])
+                    arm_tool_combobox.addItems(["夹爪", "吸盘"])
                     arm_tool_combobox.setCurrentText(self.ArmToolComboBox.currentText())
                     self.update_table_cell_widget(row_position, col, arm_tool_combobox)
                 elif col == 8:
                     arm_tool_control = ComboBox()
-                    arm_tool_control.addItems(["", "关", "开"])
+                    arm_tool_control.addItems(["关", "开"])
                     self.update_table_cell_widget(row_position, col, arm_tool_control)
         else:
             InfoBar.warning(
