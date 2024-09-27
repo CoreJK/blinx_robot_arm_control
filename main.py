@@ -436,6 +436,8 @@ class TeachPage(QFrame, teach_page_frame):
                 
                 arm_action_delay_time = self.ActionTableWidget.item(row, 9).text()   # 延时列
                 note = self.ActionTableWidget.item(row, 10).text()                   # 备注列
+                if note is None:
+                    note = str("")
 
                 if arm_tool_widget is not None:
                     arm_tool_option = arm_tool_widget.currentText()
@@ -820,7 +822,7 @@ class TeachPage(QFrame, teach_page_frame):
             5: str(self.q6),
             6: speed_percentage,
             9: str(self.JointDelayTimeEdit.text()),
-            10: ""
+            10: str("")
         }
     
         # 设置普通单元格的值
