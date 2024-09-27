@@ -885,7 +885,8 @@ class TeachPage(QFrame, teach_page_frame):
                     4: self.q5,
                     5: self.q6,
                     6: self.JointSpeedEdit.text(),
-                    9: self.JointDelayTimeEdit.text()
+                    9: self.JointDelayTimeEdit.text(),
+                    10: str("")
                 }
 
                 # 更新普通单元格的值
@@ -1036,7 +1037,8 @@ class TeachPage(QFrame, teach_page_frame):
             4: self.q5,
             5: self.q6,
             6: self.JointSpeedEdit.text(),
-            9: self.JointDelayTimeEdit.text()
+            9: self.JointDelayTimeEdit.text(),
+            10: str("")
         }
         
         if selected_items:
@@ -1083,7 +1085,8 @@ class TeachPage(QFrame, teach_page_frame):
                 4: self.q5,
                 5: self.q6,
                 6: self.JointSpeedEdit.text(),
-                9: self.JointDelayTimeEdit.text()
+                9: self.JointDelayTimeEdit.text(),
+                10: str("")
             }
 
             # 更新普通单元格的值
