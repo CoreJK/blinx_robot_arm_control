@@ -21,7 +21,7 @@ dependencies = [
     "PySideSix-Frameless-Window==0.3.12",
     "pywin32==306",
     "shiboken6==6.6.2",
-    "simplejson==3.19.2",
+    "simplejson>=3.19.3",
     "win32-setctime==1.1.0",
     "zstandard==0.22.0",
     "file:///${PROJECT_ROOT}/numpy-1.22.4%2Bvanilla-cp38-cp38-win_amd64.whl",
